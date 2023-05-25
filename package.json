@@ -1,0 +1,25 @@
+{
+  "name": "auro-library",
+  "description": "This repository holds shared scripts, utilities, and workflows utilized acorss repositories along the Auro Design System.",
+  "devDependencies": {
+    "@commitlint/cli": "^17.6.3",
+    "@commitlint/config-conventional": "^17.6.3",
+    "husky": "^8.0.0"
+  },
+  "scripts": {
+    "prepare": "husky install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlaskaAirlines/auro-library.git"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=18.15.0"
+  },
+  "bugs": {
+    "url": "https://github.com/AlaskaAirlines/auro-library/issues"
+  },
+  "homepage": "https://github.com/AlaskaAirlines/auro-library#readme"
+}
