@@ -2,6 +2,9 @@ name: Deploy Demo
 
 on:
   workflow_call:
+      secrets:
+        SURGE_TOKEN:
+          required: true
 
 jobs:
   build:
