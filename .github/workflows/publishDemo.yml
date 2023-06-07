@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     name: Deploying Demo to Main
-    
+
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -20,7 +20,12 @@ jobs:
         run: |
           npm ci
           npm run build
-      
+
+      - name: Update HTML Scripts
+        run: |
+          curl https://raw.githubusercontent.com/AlaskaAirlines/auro-library/main/scripts/useBundles.js -o useBundles.js
+          node useBundles.js
+
       - name: Create Surge Domain
         run: |
           repo_name=$(echo ${{github.repository}} | tr / -)
@@ -35,14 +40,14 @@ jobs:
           success_message="Success"
           ! [[ $deployment_output =~ $success_message ]] && exit 1
           echo "deployment_output=$deployment_output" >> $GITHUB_ENV
-          
+
       - name: Format Deployment Message
         run: |
           npm install -g urls-md@5;
-          deployment_message=$(echo "${{env.deployment_output}}/demo/" | urls-md) 
+          deployment_message=$(echo "${{env.deployment_output}}/demo/" | urls-md)
           echo "deployment_result=$deployment_message" >> $GITHUB_ENV
 
-      - name: Comment Success to PR 
+      - name: Comment Success to PR
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
@@ -51,7 +56,7 @@ jobs:
             ${{env.deployment_result}}
           comment_tag: demo_comment
 
-      - name: Comment Failure to PR 
+      - name: Comment Failure to PR
         uses: thollander/actions-comment-pull-request@v2
         if: ${{failure()}}
         with:
