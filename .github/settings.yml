@@ -42,6 +42,8 @@ repository:
 teams: 
   - name: "auroteamreviewers"
     permission: admin
+  - name: "auro-team"
+    permission: admin
 
 branches:
   - name: main
