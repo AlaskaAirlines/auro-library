@@ -1,0 +1,17 @@
+name: Issue assignment
+
+on:
+  workflow_call:
+
+jobs:
+  auto-assign:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: 'Auto-assign issue'
+        uses: pozil/auto-assign-issue@v1
+        with:
+          assignees: blackfalcon, Patrick-Daly-AA
+          numOfAssignee: 2
+          allowSelfAssign: true
