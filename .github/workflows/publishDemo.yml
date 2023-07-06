@@ -23,7 +23,7 @@ jobs:
 
       - name: Update HTML Scripts
         run: |
-          curl https://raw.githubusercontent.com/AlaskaAirlines/auro-library/main/scripts/useBundles.js -o useBundles.js
+          curl https://raw.githubusercontent.com/AlaskaAirlines/auro-library/main/scripts/config/useBundles.js -o useBundles.js
           node useBundles.js
 
       - name: Create Surge Domain
