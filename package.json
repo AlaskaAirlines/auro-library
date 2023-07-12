@@ -23,6 +23,38 @@
     "husky": "^8.0.3",
     "semantic-release": "^21.0.7"
   },
+  "release": {
+    "branches": [
+      "main"
+    ],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      [
+        "@semantic-release/changelog",
+        {
+          "changelogFile": "./CHANGELOG.md",
+          "changelogTitle": "# Semantic Release Automated Changelog"
+        }
+      ],
+      "@semantic-release/npm",
+      [
+        "@semantic-release/git",
+        {
+          "assets": [
+            "./package.json",
+            "./CHANGELOG.md",
+            "./README.md",
+            "./docs/api.md"
+          ]
+        }
+      ],
+      "@semantic-release/github"
+    ]
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "prepare": "husky install",
     "lint": "eslint ./scripts/**/*.js"
