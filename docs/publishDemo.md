@@ -29,3 +29,12 @@ jobs:
 ```
 
 > Note: This will only work properly in components located in the "AlaskaAirlines" organization due to a dependency on the org-wide Actions secret `AURO_SURGE_TOKEN`.
+
+Afterwards you will want to make sure to udpate the script tags you want replaced with bundles in your `./demo/*.html` files with the `data-demo-scripts="true"` attribute.
+
+```diff
+--    <script type="module" src="../index.js"></script>
+++    <script type="module" src="../index.js" data-demo-script="true"></script>
+```
+
+> Note: If you fail to do this, the components will fail to register in your demo.
