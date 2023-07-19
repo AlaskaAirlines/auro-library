@@ -36,6 +36,7 @@ jobs:
         run: |
           npm install -g surge@0.23;
           surge ./ ${{env.domain_name}} --token ${{secrets.AURO_SURGE_TOKEN}} | tee surge_output.txt
+          cat surge_output.txt
           deployment_output=$(cat surge_output.txt | grep -e "Success\|Error\|Aborted" | sed 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g')
           success_message="Success"
           ! [[ $deployment_output =~ $success_message ]] && exit 1
