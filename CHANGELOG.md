@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [1.0.1](https://github.com/AlaskaAirlines/auro-library/compare/v1.0.0...v1.0.1) (2023-07-19)
+
+
+### Bug Fixes
+
+* **versionWriter:** use correct path to node_modules directory [#23](https://github.com/AlaskaAirlines/auro-library/issues/23) ([e926397](https://github.com/AlaskaAirlines/auro-library/commit/e926397a8b31c90e9c7e80fd5126600d20ffc3b5))
+
 # 1.0.0 (2023-07-14)
 
 
