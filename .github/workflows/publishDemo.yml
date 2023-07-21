@@ -28,8 +28,8 @@ jobs:
 
       - name: Create Surge Domain
         run: |
-          repo_name=$(echo ${{github.repository}} | tr / -)
-          branch_domain_name=$(echo ${{github.head_ref}} | tr / -)
+          repo_name=$(echo ${{github.repository}} | tr "/#" -)
+          branch_domain_name=$(echo ${{github.head_ref}} | tr "/#" -)
           echo "domain_name=$repo_name-$branch_domain_name.surge.sh" >> $GITHUB_ENV
 
       - name: Deploy to Surge
