@@ -1,5 +1,13 @@
 # Semantic Release Automated Changelog
 
+## [1.0.2](https://github.com/AlaskaAirlines/auro-library/compare/v1.0.1...v1.0.2) (2023-07-24)
+
+
+### Bug Fixes
+
+* print surge output in publishDemo [#29](https://github.com/AlaskaAirlines/auro-library/issues/29) ([02001d8](https://github.com/AlaskaAirlines/auro-library/commit/02001d8d16c4d874d489a327ddabafb2994e5221))
+* update demo url filter to replace '#' chars [#31](https://github.com/AlaskaAirlines/auro-library/issues/31) ([d81fcc2](https://github.com/AlaskaAirlines/auro-library/commit/d81fcc25dfa6580bb333f0b22241fedd9cf548c4))
+
 ## [1.0.1](https://github.com/AlaskaAirlines/auro-library/compare/v1.0.0...v1.0.1) (2023-07-19)
 
 
