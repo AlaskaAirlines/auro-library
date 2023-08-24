@@ -61,5 +61,8 @@
   },
   "bugs": {
     "url": "https://github.com/AlaskaAirlines/auro-library/issues"
+  },
+  "dependencies": {
+    "markdown-magic": "^2.6.1"
   }
 }
