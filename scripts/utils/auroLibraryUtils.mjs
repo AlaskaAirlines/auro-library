@@ -116,5 +116,64 @@ export default class AuroLibraryUtils {
       }
     }
   }
+
+  /**
+   * Extracts NPM, NAMESPACE, NAME, NPM VERSION and BRANCH NAME from package.json.
+   * @returns {Object} result - Object containing data from package.json. 
+   */
+  nameExtraction() {
+    const packageJson = fs.readFileSync('package.json', 'utf8', function(err) {
+      if (err) {
+        console.log('ERROR: Unable to read package.json file', err);
+      }
+    });
+  
+    const pName = JSON.parse(packageJson).name;
+  
+    let npmStart = pName.indexOf('@');
+    let namespaceStart = pName.indexOf('/');
+    let nameStart = pName.indexOf('-');
+  
+    let result = {
+      'npm': pName.substring(npmStart, namespaceStart),
+      'namespace': pName.substring(namespaceStart + 1, nameStart),
+      'namespaceCap': pName.substring(namespaceStart + 1)[0].toUpperCase() + pName.substring(namespaceStart + 2, nameStart),
+      'name': pName.substring(nameStart + 1),
+      'nameCap': pName.substring(nameStart + 1)[0].toUpperCase() + pName.substring(nameStart + 2)
+    };
+  
+    return result;
+  }
+
+  /**
+   * Replace all instances of [abstractNodeVersion], [branchName], [npm], [name], [Name], [namespace] and [Namespace] accordingly
+   */
+  formatFileContents(content, destination) {
+    let nameExtractionData = this.nameExtraction();
+    let result = content;
+
+    /**
+     * Replace placeholder strings
+     */
+    result = result.replace(/\[npm]/g, nameExtractionData.npm);
+    result = result.replace(/\[name](?!\()/g, nameExtractionData.name);
+    result = result.replace(/\[Name](?!\()/g, nameExtractionData.nameCap);
+    result = result.replace(/\[namespace]/g, nameExtractionData.namespace);
+    result = result.replace(/\[Namespace]/g, nameExtractionData.namespaceCap);
+  
+    /**
+     * Cleanup line breaks
+     */
+    result = result.replace(/(\r\n|\r|\n)[\s]+(\r\n|\r|\n)/g, '\r\n\r\n'); // Replace lines containing only whitespace with a carriage return.
+    result = result.replace(/>(\r\n|\r|\n){2,}/g, '>\r\n'); // Remove empty lines directly after a closing html tag.
+    result = result.replace(/>(\r\n|\r|\n)```/g, '>\r\n\r\n```'); // Ensure an empty line before code samples.
+    result = result.replace(/>(\r\n|\r|\n){2,}```(\r\n|\r|\n)/g, '>\r\n```\r\n'); // Ensure no empty lines before close of code sample.
+    result = result.replace(/([^(\r\n|\r|\n)])(\r\n|\r|\n)+#/g, "$1\r\n\r\n#"); // Ensure empty line before header sections.
+  
+    /**
+     * Write the result to the destination file
+     */
+    fs.writeFileSync(destination, result, { encoding: 'utf8'});
+  }
 }
 
