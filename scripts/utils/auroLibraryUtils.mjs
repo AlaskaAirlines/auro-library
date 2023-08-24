@@ -30,7 +30,7 @@ export default class AuroLibraryUtils {
           this.auroLogger(`Removed file: ${file}`, 'success', false);
 
           filesRemoved += 1;
-        } catch(err) {
+        } catch (err) {
           this.auroLogger(`Failed to remove ${file}: ${err}`, 'error', false);
           filesFailed += 1;
         }
