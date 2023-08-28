@@ -16,7 +16,7 @@ const auroLibraryUtils = new AuroLibraryUtils();
 
 export default class AuroLinters {
   copyLintConfigurations() {
-    auroLibraryUtils.auroLogger(' SYNC TO LATEST LINT CONFIGURATIONS', 'info', true);
+    auroLibraryUtils.auroLogger(' SYNCING TO LATEST LINT CONFIGURATIONS...', 'info', true);
 
     const srcDir = './node_modules/@aurodesignsystem/auro-library/componentTemplates/linters';
     const destDir = './.github/linters';
