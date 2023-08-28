@@ -17,7 +17,7 @@ const auroLibraryUtils = new AuroLibraryUtils();
 
 export default class AuroWorkflows {
   copyWorkflowConfigurations() {
-    auroLibraryUtils.auroLogger(' SYNC TO LATEST WORKFLOW CONFIGURATIONS', 'info', true);
+    auroLibraryUtils.auroLogger(' SYNC TO LATEST WORKFLOW CONFIGURATIONS...', 'info', true);
 
     const srcDir = './node_modules/@aurodesignsystem/auro-library/componentTemplates/workflows';
     const destDir = './.github/workflows';

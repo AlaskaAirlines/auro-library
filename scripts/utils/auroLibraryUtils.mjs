@@ -16,61 +16,56 @@ export default class AuroLibraryUtils {
    * @param {Boolean} removeFiles - If true, removes all files in destination directory before pasting files.
    */
   copyDirectory(srcDir, destDir, removeFiles) {
-    // Removes all files from directory
-    if (removeFiles && fs.existsSync(destDir)) {
-      const destFiles = fs.readdirSync(destDir);
+    if (!fs.existsSync(srcDir)) {
+      this.auroLogger(`Source directory ${srcDir} does not exist`, 'error', false);
+    } else {
+      // Removes all files from directory
+      if (removeFiles && fs.existsSync(destDir)) {
+        const destFiles = fs.readdirSync(destDir);
 
-      let filesRemoved = 0;
-      let filesFailed = 0;
-  
-      destFiles.forEach(file => {
-        try {
+        let filesRemoved = 0;
+    
+        destFiles.forEach(file => {
           const filePath = path.join(destDir, file);
           fs.unlinkSync(filePath);
           this.auroLogger(`Removed file: ${file}`, 'success', false);
 
           filesRemoved += 1;
-        } catch (err) {
-          this.auroLogger(`Failed to remove ${file}: ${err}`, 'error', false);
-          filesFailed += 1;
+        });
+
+        if (filesRemoved > 0) {
+          this.auroLogger(`Removed ${filesRemoved} files`, 'success', false);
+        }
+      }
+
+      // Creates destination directory if it does not exist
+      if (!fs.existsSync(destDir)) {
+        fs.mkdirSync(destDir);
+      }
+    
+      // All files from source directory
+      const files = fs.readdirSync(srcDir);
+    
+      // Copys over all files from source directory to destination directory
+      files.forEach(file => {
+        const sourceFilePath = path.join(srcDir, file);
+        const destFilePath = path.join(destDir, file);
+    
+        const stat = fs.statSync(sourceFilePath);
+    
+        if (stat.isDirectory()) {
+          this.copyDirectory(srcDir, destDir, removeFiles);
+        } else {
+          fs.copyFileSync(sourceFilePath, destFilePath);
+
+          fs.readFile(destFilePath, 'utf8', (err, data) => {
+            this.formatFileContents(data, destFilePath); 
+          });
+
+          this.auroLogger(`Copied file: ${file}`, 'success');
         }
       });
-
-      if (filesRemoved > 0) {
-        this.auroLogger(`Removed ${filesRemoved} files`, 'success', false);
-      }
-
-      if (filesFailed > 0) {
-        this.auroLogger(`Failed to remove ${filesRemoved} files`, 'error', false);
-      }
     }
-
-    // Creates destination directory if it does not exist
-    if (!fs.existsSync(destDir)) {
-      fs.mkdirSync(destDir);
-    }
-  
-    // All files from source directory
-    const files = fs.readdirSync(srcDir);
-  
-    // Copys over all files from source directory to destination directory
-    files.forEach(file => {
-      const sourceFilePath = path.join(srcDir, file);
-      const destFilePath = path.join(destDir, file);
-  
-      const stat = fs.statSync(sourceFilePath);
-  
-      if (stat.isDirectory()) {
-        this.copyDirectory(srcDir, destDir, removeFiles);
-      } else {
-        try {
-          fs.copyFileSync(sourceFilePath, destFilePath);
-          this.auroLogger(`Copied file: ${file}`, 'success');
-        } catch (err) {
-          this.auroLogger(`Error copying file ${file}: ${err}`, 'error');
-        }
-      }
-    });
   }
 
   /**
@@ -118,7 +113,7 @@ export default class AuroLibraryUtils {
   }
 
   /**
-   * Extracts NPM, NAMESPACE, NAME, NPM VERSION and BRANCH NAME from package.json.
+   * Extracts NPM VERSION, BRANCH NAME, NPM, NAMESPACE, and NAME from package.json.
    * @returns {Object} result - Object containing data from package.json. 
    */
   nameExtraction() {
@@ -135,6 +130,8 @@ export default class AuroLibraryUtils {
     let nameStart = pName.indexOf('-');
   
     let result = {
+      'abstractNodeVersion': JSON.parse(packageJson).engines.node.substring(2),
+      'branchName': JSON.parse(packageJson).release.branch,
       'npm': pName.substring(npmStart, namespaceStart),
       'namespace': pName.substring(namespaceStart + 1, nameStart),
       'namespaceCap': pName.substring(namespaceStart + 1)[0].toUpperCase() + pName.substring(namespaceStart + 2, nameStart),
@@ -155,6 +152,8 @@ export default class AuroLibraryUtils {
     /**
      * Replace placeholder strings
      */
+    result = result.replace(/\[abstractNodeVersion]/g, nameExtractionData.abstractNodeVersion);
+    result = result.replace(/\[branchName]/g, nameExtractionData.branchName);
     result = result.replace(/\[npm]/g, nameExtractionData.npm);
     result = result.replace(/\[name](?!\()/g, nameExtractionData.name);
     result = result.replace(/\[Name](?!\()/g, nameExtractionData.nameCap);
