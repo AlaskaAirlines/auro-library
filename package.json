@@ -57,7 +57,8 @@
   },
   "scripts": {
     "prepare": "husky install",
-    "lint": "eslint ./scripts/**/*.js"
+    "lint": "eslint ./scripts/**/*.js",
+    "build:docs": "node scripts/build/generateReadme.mjs"
   },
   "bugs": {
     "url": "https://github.com/AlaskaAirlines/auro-library/issues"
