@@ -1,5 +1,25 @@
 # Semantic Release Automated Changelog
 
+# [1.1.0](https://github.com/AlaskaAirlines/auro-library/compare/v1.0.2...v1.1.0) (2023-08-31)
+
+
+### Bug Fixes
+
+* **err:** update parameter handling ([04af13a](https://github.com/AlaskaAirlines/auro-library/commit/04af13a315ebb35795fe7b6c162373d7b9c5d3b3))
+
+
+### Features
+
+* **automation:** add automation scripts for workflows and linters [#32](https://github.com/AlaskaAirlines/auro-library/issues/32) ([5dff1b7](https://github.com/AlaskaAirlines/auro-library/commit/5dff1b7dcbe2d7862b4994399f40781037b48d69))
+* **surge:** add workflow that deploys surge demo [#35](https://github.com/AlaskaAirlines/auro-library/issues/35) ([7117212](https://github.com/AlaskaAirlines/auro-library/commit/71172129d0309e132821f1bcb5d8673baa746468))
+
+
+### Performance Improvements
+
+* **.npmignore:** update .npmignore ([2de9db7](https://github.com/AlaskaAirlines/auro-library/commit/2de9db717b6e069a8ffb6b6e067a83b08c41d8c6))
+* **docs:** add generateDocs script [#36](https://github.com/AlaskaAirlines/auro-library/issues/36) ([9746820](https://github.com/AlaskaAirlines/auro-library/commit/97468201ca83767b3cc1dd1396e0d78f311a69f5))
+* **extraction:** extract functions and insert into library utils [#36](https://github.com/AlaskaAirlines/auro-library/issues/36) ([c3018eb](https://github.com/AlaskaAirlines/auro-library/commit/c3018eb01acf4b3682b63b0b92c3beb5b3641161))
+
 ## [1.0.2](https://github.com/AlaskaAirlines/auro-library/compare/v1.0.1...v1.0.2) (2023-07-24)
 
 
