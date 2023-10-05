@@ -1,5 +1,18 @@
 # Semantic Release Automated Changelog
 
+# [2.0.0](https://github.com/AlaskaAirlines/auro-library/compare/v1.1.0...v2.0.0) (2023-10-05)
+
+
+### Performance Improvements
+
+* **npmignore:** include scripts/config/ directory [#38](https://github.com/AlaskaAirlines/auro-library/issues/38) ([e4e1a75](https://github.com/AlaskaAirlines/auro-library/commit/e4e1a7526765cc828d6124c71853d8cb9e9d3f6f))
+* **scripts:** update directory file for config scripts [#38](https://github.com/AlaskaAirlines/auro-library/issues/38) ([8167f2f](https://github.com/AlaskaAirlines/auro-library/commit/8167f2f5521a22145419d9f7cd8f5e5c4ba5dd80))
+
+
+### BREAKING CHANGES
+
+* **scripts:** The automation scripts directory name has been changed from "setup" to "config".
+
 # [1.1.0](https://github.com/AlaskaAirlines/auro-library/compare/v1.0.2...v1.1.0) (2023-08-31)
 
 
