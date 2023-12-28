@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+# [2.1.0](https://github.com/AlaskaAirlines/auro-library/compare/v2.0.0...v2.1.0) (2023-12-28)
+
+
+### Features
+
+* **closest:** add closest element function [#43](https://github.com/AlaskaAirlines/auro-library/issues/43) ([f215c74](https://github.com/AlaskaAirlines/auro-library/commit/f215c746c59d70007da2b3fcad7dfb74420bd182))
+
 # [2.0.0](https://github.com/AlaskaAirlines/auro-library/compare/v1.1.0...v2.0.0) (2023-10-05)
 
 
