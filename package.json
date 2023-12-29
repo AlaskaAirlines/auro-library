@@ -1,7 +1,7 @@
 {
   "name": "@aurodesignsystem/auro-library",
   "version": "2.1.0",
-  "description": "This repository holds shared scripts, utilities, and workflows utilized acorss repositories along the Auro Design System.",
+  "description": "This repository holds shared scripts, utilities, and workflows utilized across repositories along the Auro Design System.",
   "repository": {
     "type": "git",
     "url": "https://github.com/AlaskaAirlines/auro-library.git"

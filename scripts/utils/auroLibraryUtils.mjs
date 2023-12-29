@@ -3,6 +3,8 @@
 
 // ---------------------------------------------------------------------
 
+/* eslint-disable arrow-parens, line-comment-position, no-console, no-inline-comments, no-magic-numbers, prefer-arrow-callback, require-unicode-regexp, jsdoc/require-description-complete-sentence, prefer-named-capture-group */
+
 import * as fs from 'fs';
 import * as path from 'path';
 import chalk from 'chalk';
@@ -10,7 +12,7 @@ import chalk from 'chalk';
 export default class AuroLibraryUtils {
 
   /**
-   * Copys and pastes all files in a source directory into a destination directory.
+   * Copies and pastes all files in a source directory into a destination directory.
    * @param {String} srcDir - File path of directory to copy from.
    * @param {String} destDir - File path of directory to paste files into.
    * @param {Boolean} removeFiles - If true, removes all files in destination directory before pasting files.
@@ -24,7 +26,7 @@ export default class AuroLibraryUtils {
         const destFiles = fs.readdirSync(destDir);
 
         let filesRemoved = 0;
-    
+
         destFiles.forEach(file => {
           const filePath = path.join(destDir, file);
           fs.unlinkSync(filePath);
@@ -42,24 +44,24 @@ export default class AuroLibraryUtils {
       if (!fs.existsSync(destDir)) {
         fs.mkdirSync(destDir);
       }
-    
+
       // All files from source directory
       const files = fs.readdirSync(srcDir);
-    
-      // Copys over all files from source directory to destination directory
+
+      // Copies over all files from source directory to destination directory
       files.forEach(file => {
         const sourceFilePath = path.join(srcDir, file);
         const destFilePath = path.join(destDir, file);
-    
+
         const stat = fs.statSync(sourceFilePath);
-    
+
         if (stat.isDirectory()) {
           this.copyDirectory(srcDir, destDir, removeFiles);
         } else {
           fs.copyFileSync(sourceFilePath, destFilePath);
 
           fs.readFile(destFilePath, 'utf8', (err, data) => {
-            this.formatFileContents(data, destFilePath); 
+            this.formatFileContents(data, destFilePath);
           });
 
           this.auroLogger(`Copied file: ${file}`, 'success');
@@ -69,7 +71,7 @@ export default class AuroLibraryUtils {
   }
 
   /**
-   * Logs out messages in a readble format.
+   * Logs out messages in a readable format.
    * @param {String} message - Message to be logged.
    * @param {String} status - Status that determines the color of the logged message.
    * @param {Boolean} section - If true, adds a box around the message for readability.
@@ -80,7 +82,7 @@ export default class AuroLibraryUtils {
       const successColor = '#4CBB17'; // green
       const errorColor = '#ff0000'; // red
 
-      let color = undefined;
+      let color = undefined; // eslint-disable-line no-undef-init
 
       if (status === 'info') {
         color = infoColor;
@@ -93,9 +95,9 @@ export default class AuroLibraryUtils {
       if (section) {
         console.log(chalk.hex(color)(`╭ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ──────────────────────────────╮\n`));
       }
-  
+
       console.log(chalk.hex(color)(message));
-  
+
       if (section) {
         console.log(chalk.hex(color)('\n╰─────────────────────────────── ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─╯'));
       }
@@ -103,9 +105,9 @@ export default class AuroLibraryUtils {
       if (section) {
         console.log(`╭ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ──────────────────────────────╮\n`);
       }
-  
+
       console.log(message);
-  
+
       if (section) {
         console.log(`\n╰─────────────────────────────── ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─╯`);
       }
@@ -114,7 +116,7 @@ export default class AuroLibraryUtils {
 
   /**
    * Extracts NPM VERSION, BRANCH NAME, NPM, NAMESPACE, and NAME from package.json.
-   * @returns {Object} result - Object containing data from package.json. 
+   * @returns {Object} result - Object containing data from package.json.
    */
   nameExtraction() {
     const packageJson = fs.readFileSync('package.json', 'utf8', function(err) {
@@ -122,14 +124,14 @@ export default class AuroLibraryUtils {
         console.log('ERROR: Unable to read package.json file', err);
       }
     });
-  
+
     const pName = JSON.parse(packageJson).name;
-  
-    let npmStart = pName.indexOf('@');
-    let namespaceStart = pName.indexOf('/');
-    let nameStart = pName.indexOf('-');
-  
-    let result = {
+
+    const npmStart = pName.indexOf('@');
+    const namespaceStart = pName.indexOf('/');
+    const nameStart = pName.indexOf('-');
+
+    const result = {
       'abstractNodeVersion': JSON.parse(packageJson).engines.node.substring(2),
       'branchName': JSON.parse(packageJson).release.branch,
       'npm': pName.substring(npmStart, namespaceStart),
@@ -138,19 +140,22 @@ export default class AuroLibraryUtils {
       'name': pName.substring(nameStart + 1),
       'nameCap': pName.substring(nameStart + 1)[0].toUpperCase() + pName.substring(nameStart + 2)
     };
-  
+
     return result;
   }
 
   /**
-   * Replace all instances of [abstractNodeVersion], [branchName], [npm], [name], [Name], [namespace] and [Namespace] accordingly
+   * Replace all instances of [abstractNodeVersion], [branchName], [npm], [name], [Name], [namespace] and [Namespace] accordingly.
+   * @param {String} content - The content to be formatted.
+   * @param {String} destination - The location to write the formatted content.
+   * @returns {void}
    */
   formatFileContents(content, destination) {
-    let nameExtractionData = this.nameExtraction();
+    const nameExtractionData = this.nameExtraction();
     let result = content;
 
     /**
-     * Replace placeholder strings
+     * Replace placeholder strings.
      */
     result = result.replace(/\[abstractNodeVersion]/g, nameExtractionData.abstractNodeVersion);
     result = result.replace(/\[branchName]/g, nameExtractionData.branchName);
@@ -159,36 +164,20 @@ export default class AuroLibraryUtils {
     result = result.replace(/\[Name](?!\()/g, nameExtractionData.nameCap);
     result = result.replace(/\[namespace]/g, nameExtractionData.namespace);
     result = result.replace(/\[Namespace]/g, nameExtractionData.namespaceCap);
-  
+
     /**
-     * Cleanup line breaks
+     * Cleanup line breaks.
      */
     result = result.replace(/(\r\n|\r|\n)[\s]+(\r\n|\r|\n)/g, '\r\n\r\n'); // Replace lines containing only whitespace with a carriage return.
     result = result.replace(/>(\r\n|\r|\n){2,}/g, '>\r\n'); // Remove empty lines directly after a closing html tag.
     result = result.replace(/>(\r\n|\r|\n)```/g, '>\r\n\r\n```'); // Ensure an empty line before code samples.
     result = result.replace(/>(\r\n|\r|\n){2,}```(\r\n|\r|\n)/g, '>\r\n```\r\n'); // Ensure no empty lines before close of code sample.
     result = result.replace(/([^(\r\n|\r|\n)])(\r\n|\r|\n)+#/g, "$1\r\n\r\n#"); // Ensure empty line before header sections.
-  
+
     /**
-     * Write the result to the destination file
+     * Write the result to the destination file.
      */
     fs.writeFileSync(destination, result, { encoding: 'utf8'});
-  }
-
-  /**
-   * Finds and returns the closest HTML Element based on a selector.
-   */
-  closestElement(
-    selector, // selector like in .closest()
-    base = this, // extra functionality to skip a parent
-    __Closest = (el, found = el && el.closest(selector)) =>
-      !el || el === document || el === window
-        ? null // standard .closest() returns null for non-found selectors also
-        : found
-          ? found // found a selector INside this element
-          : __Closest(el.getRootNode().host) // recursion!! break out to parent DOM
-  ) {
-    return __Closest(base);
   }
 }
 
