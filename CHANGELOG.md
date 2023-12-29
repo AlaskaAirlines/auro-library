@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [2.1.1](https://github.com/AlaskaAirlines/auro-library/compare/v2.1.0...v2.1.1) (2023-12-29)
+
+
+### Bug Fixes
+
+* **utils:** move runtime utils to separete file from node utils ([592990e](https://github.com/AlaskaAirlines/auro-library/commit/592990eeb693282999d75998dc49e62f0857012a))
+
 # [2.1.0](https://github.com/AlaskaAirlines/auro-library/compare/v2.0.0...v2.1.0) (2023-12-28)
 
 
