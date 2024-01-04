@@ -13,5 +13,5 @@ jobs:
         uses: pozil/auto-assign-issue@v1
         with:
           assignees: blackfalcon, Patrick-Daly-AA, pgm369
-          numOfAssignee: 2
+          numOfAssignee: 3
           allowSelfAssign: true
