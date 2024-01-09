@@ -1,6 +1,6 @@
 // Script used by `Deploy Demo` workflow to replace component scripts in demos with their bundled versions
 
-const {existsSync, readdirSync, readFileSync, writeFileSync} = require('fs');
+import { existsSync, readdirSync, readFileSync, writeFileSync } from 'fs';
 
 const currDir = process.cwd();
 const demoScriptRegEx = /<script.* data-demo-script="true".*><\/script>/gum;
