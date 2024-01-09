@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [2.2.1](https://github.com/AlaskaAirlines/auro-library/compare/v2.2.0...v2.2.1) (2024-01-09)
+
+
+### Bug Fixes
+
+* update relative path ([d8eed9f](https://github.com/AlaskaAirlines/auro-library/commit/d8eed9ffb985dd57bbd179e7f2a1bbcbbd587b8f))
+
 # [2.2.0](https://github.com/AlaskaAirlines/auro-library/compare/v2.1.1...v2.2.0) (2024-01-09)
 
 
