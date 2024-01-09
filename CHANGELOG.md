@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [2.2.2](https://github.com/AlaskaAirlines/auro-library/compare/v2.2.1...v2.2.2) (2024-01-09)
+
+
+### Bug Fixes
+
+* update dependency script to be ES6 ([426b58f](https://github.com/AlaskaAirlines/auro-library/commit/426b58f13c0c9a72cbe0619c33a3d1773013c56c))
+
 ## [2.2.1](https://github.com/AlaskaAirlines/auro-library/compare/v2.2.0...v2.2.1) (2024-01-09)
 
 
