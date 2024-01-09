@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+# [2.2.0](https://github.com/AlaskaAirlines/auro-library/compare/v2.1.1...v2.2.0) (2024-01-09)
+
+
+### Features
+
+* add build scripts from generator [#47](https://github.com/AlaskaAirlines/auro-library/issues/47) ([ac81a7d](https://github.com/AlaskaAirlines/auro-library/commit/ac81a7d3768e97435d7c80436ae241e2ce38e30b))
+
 ## [2.1.1](https://github.com/AlaskaAirlines/auro-library/compare/v2.1.0...v2.1.1) (2023-12-29)
 
 
