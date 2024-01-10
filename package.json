@@ -11,6 +11,9 @@
   "engines": {
     "node": ">=18.15.0"
   },
+  "bin": {
+    "generateDocs": "./bin/generateDocs.mjs"
+  },
   "devDependencies": {
     "@aurodesignsystem/eslint-config": "^1.3.0",
     "@commitlint/cli": "^17.7.1",
