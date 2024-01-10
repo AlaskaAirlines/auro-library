@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [2.2.3](https://github.com/AlaskaAirlines/auro-library/compare/v2.2.2...v2.2.3) (2024-01-10)
+
+
+### Performance Improvements
+
+* make generateDocs available from bin dir ([157aef6](https://github.com/AlaskaAirlines/auro-library/commit/157aef6ba3641bbf55d6e542d525159e5f780fc5))
+
 ## [2.2.2](https://github.com/AlaskaAirlines/auro-library/compare/v2.2.1...v2.2.2) (2024-01-09)
 
 
