@@ -3,7 +3,7 @@
 import chalk from 'chalk';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
-const pjson = require('../../package.json');
+const pjson = require('../package.json');
 
 console.log(chalk.hex('#f26135')(`
 
