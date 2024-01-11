@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [2.2.4](https://github.com/AlaskaAirlines/auro-library/compare/v2.2.3...v2.2.4) (2024-01-11)
+
+
+### Performance Improvements
+
+* add script to bin dir ([80476b5](https://github.com/AlaskaAirlines/auro-library/commit/80476b5d434446c34bf9a5c22749d4541fb5d8b9))
+
 ## [2.2.3](https://github.com/AlaskaAirlines/auro-library/compare/v2.2.2...v2.2.3) (2024-01-10)
 
 
