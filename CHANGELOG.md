@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [2.2.6](https://github.com/AlaskaAirlines/auro-library/compare/v2.2.5...v2.2.6) (2024-01-19)
+
+
+### Bug Fixes
+
+* update to current version of docs generator script ([31f3ea9](https://github.com/AlaskaAirlines/auro-library/commit/31f3ea9b03a87345ac69c3d84e33375bcdf403a9))
+
 ## [2.2.5](https://github.com/AlaskaAirlines/auro-library/compare/v2.2.4...v2.2.5) (2024-01-11)
 
 
