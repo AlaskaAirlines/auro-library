@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [2.2.7](https://github.com/AlaskaAirlines/auro-library/compare/v2.2.6...v2.2.7) (2024-01-24)
+
+
+### Performance Improvements
+
+* update dependencies ([87ae1c3](https://github.com/AlaskaAirlines/auro-library/commit/87ae1c34601b03cc45d8f62e3c732edea23f175e))
+
 ## [2.2.6](https://github.com/AlaskaAirlines/auro-library/compare/v2.2.5...v2.2.6) (2024-01-19)
 
 
