@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+# [2.3.0](https://github.com/AlaskaAirlines/auro-library/compare/v2.2.7...v2.3.0) (2024-01-25)
+
+
+### Features
+
+* add new workflow template ([368f423](https://github.com/AlaskaAirlines/auro-library/commit/368f42300639587f11a24d9e951eea08767a27a1))
+
 ## [2.2.7](https://github.com/AlaskaAirlines/auro-library/compare/v2.2.6...v2.2.7) (2024-01-24)
 
 
