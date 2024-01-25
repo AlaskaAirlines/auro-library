@@ -2,9 +2,6 @@ name: Add new issues to Auro project
 
 on:
   workflow_call:
-    issues:
-      types:
-        - opened
 
 jobs:
   add-to-project:
