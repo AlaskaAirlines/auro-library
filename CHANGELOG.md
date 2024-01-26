@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+# [2.4.0](https://github.com/AlaskaAirlines/auro-library/compare/v2.3.2...v2.4.0) (2024-01-26)
+
+
+### Features
+
+* add shell scripts ([caccc2a](https://github.com/AlaskaAirlines/auro-library/commit/caccc2a62855337727c4a805d2cc9e3879c42e18))
+
 ## [2.3.2](https://github.com/AlaskaAirlines/auro-library/compare/v2.3.1...v2.3.2) (2024-01-25)
 
 
