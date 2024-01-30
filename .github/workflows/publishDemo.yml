@@ -49,7 +49,7 @@ jobs:
           echo "deployment_result=$deployment_message" >> $GITHUB_ENV
 
       - name: Comment Success to PR
-        uses: thollander/actions-comment-pull-request@v2
+        uses: thollander/actions-comment-pull-request@v2.4.3
         with:
           message: |
             Surge demo deployment succeeded! 🚀🚀🚀
@@ -58,7 +58,7 @@ jobs:
           comment_tag: demo_comment
 
       - name: Comment Failure to PR
-        uses: thollander/actions-comment-pull-request@v2
+        uses: thollander/actions-comment-pull-request@v2.4.3
         if: ${{failure()}}
         with:
           message: |
