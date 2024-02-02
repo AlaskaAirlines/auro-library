@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [2.4.2](https://github.com/AlaskaAirlines/auro-library/compare/v2.4.1...v2.4.2) (2024-02-02)
+
+
+### Performance Improvements
+
+* update regex ([0ac7870](https://github.com/AlaskaAirlines/auro-library/commit/0ac78704cf0cdc8867d3a88190534c7e9fd86d8a))
+
 ## [2.4.1](https://github.com/AlaskaAirlines/auro-library/compare/v2.4.0...v2.4.1) (2024-01-30)
 
 
