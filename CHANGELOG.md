@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [2.4.3](https://github.com/AlaskaAirlines/auro-library/compare/v2.4.2...v2.4.3) (2024-02-02)
+
+
+### Bug Fixes
+
+* remove accidental duplicate line ([9de53ed](https://github.com/AlaskaAirlines/auro-library/commit/9de53ed23512d11f293e30a97a2a7a23dc6e2874))
+
 ## [2.4.2](https://github.com/AlaskaAirlines/auro-library/compare/v2.4.1...v2.4.2) (2024-02-02)
 
 
