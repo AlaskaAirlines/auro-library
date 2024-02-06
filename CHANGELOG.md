@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [2.4.5](https://github.com/AlaskaAirlines/auro-library/compare/v2.4.4...v2.4.5) (2024-02-06)
+
+
+### Performance Improvements
+
+* remove unnecessary auto-assigned ([1d6b88c](https://github.com/AlaskaAirlines/auro-library/commit/1d6b88c004e16de3c8c95d5fe1f1adcf2590496d))
+
 ## [2.4.4](https://github.com/AlaskaAirlines/auro-library/compare/v2.4.3...v2.4.4) (2024-02-06)
 
 
