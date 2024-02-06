@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [2.4.4](https://github.com/AlaskaAirlines/auro-library/compare/v2.4.3...v2.4.4) (2024-02-06)
+
+
+### Performance Improvements
+
+* remove optional labeled filter ([62e2cf2](https://github.com/AlaskaAirlines/auro-library/commit/62e2cf2fe052d6d832701e36ce1d1a71174f7b0b))
+
 ## [2.4.3](https://github.com/AlaskaAirlines/auro-library/compare/v2.4.2...v2.4.3) (2024-02-02)
 
 
