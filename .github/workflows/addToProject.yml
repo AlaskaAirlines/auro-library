@@ -14,5 +14,3 @@ jobs:
           # to the issue
           project-url: https://github.com/orgs/AlaskaAirlines/projects/19/
           github-token: ${{ secrets.ACCESS_TOKEN }}
-          labeled: 'Type: Bug'
-          label-operator: OR
