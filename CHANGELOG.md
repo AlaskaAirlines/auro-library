@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [2.5.1](https://github.com/AlaskaAirlines/auro-library/compare/v2.5.0...v2.5.1) (2024-02-07)
+
+
+### Bug Fixes
+
+* update reference to index.md ([e504708](https://github.com/AlaskaAirlines/auro-library/commit/e5047082cc0e198d0ee8e35fccdd1d715e3ff940))
+
 # [2.5.0](https://github.com/AlaskaAirlines/auro-library/compare/v2.4.7...v2.5.0) (2024-02-07)
 
 
