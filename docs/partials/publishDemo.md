@@ -1,5 +1,3 @@
-## Dependency Tag Versioming
-
 This is an automated workflow that utilizes GitHub Actions to generate surge demos. Upon making any change to a PR a comment will be added or updated on the PR with a link to the demo similar to the following:
 
 ```md
@@ -21,7 +19,6 @@ on:
 
 
 jobs:
-
   call-publish-demo-workflow:
     uses: AlaskaAirlines/auro-library/.github/workflows/publishDemo.yml@main
     secrets:
@@ -30,7 +27,7 @@ jobs:
 
 > Note: This will only work properly in components located in the "AlaskaAirlines" organization due to a dependency on the org-wide Actions secret `AURO_SURGE_TOKEN`.
 
-Afterwards you will want to make sure to udpate the script tags you want replaced with bundles in your `./demo/*.html` files with the `data-demo-scripts="true"` attribute.
+Afterwards you will want to make sure to update the script tags you want replaced with bundles in your `./demo/*.html` files with the `data-demo-scripts="true"` attribute.
 
 ```diff
 --    <script type="module" src="../index.js"></script>
