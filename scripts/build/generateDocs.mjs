@@ -77,7 +77,7 @@ function processDemo() {
     outputDir: './demo'
   };
 
-  const markdownPath = './docs/partials/demo.md';
+  const markdownPath = './docs/partials/index.md';
 
   markdownMagic(markdownPath, configDemo, callback);
 }

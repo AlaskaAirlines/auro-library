@@ -142,7 +142,7 @@ function processDemo() {
     outputDir: './demo'
   };
 
-  const markdownPath = path.join(__dirname, '../docs/partials/demo.md');
+  const markdownPath = path.join(__dirname, '../docs/partials/index.md');
 
   markdownMagic(markdownPath, configDemo, callback);
 }
