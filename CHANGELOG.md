@@ -1,5 +1,18 @@
 # Semantic Release Automated Changelog
 
+# [2.5.0](https://github.com/AlaskaAirlines/auro-library/compare/v2.4.7...v2.5.0) (2024-02-07)
+
+
+### Features
+
+* add alt generator ([4bb0207](https://github.com/AlaskaAirlines/auro-library/commit/4bb0207a47a80230954c876647115f47dc9cdfb4))
+* add support for scrapping package.json ([551b407](https://github.com/AlaskaAirlines/auro-library/commit/551b4071ea407d5d5db68037fb63b1874161a35d))
+
+
+### Performance Improvements
+
+* update to support index.md ([87634f6](https://github.com/AlaskaAirlines/auro-library/commit/87634f62a76a1923e3584bc9c7b98c673f663755))
+
 ## [2.4.7](https://github.com/AlaskaAirlines/auro-library/compare/v2.4.6...v2.4.7) (2024-02-07)
 
 
