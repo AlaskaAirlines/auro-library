@@ -5,22 +5,28 @@
 
 ## Scripts
 
-#### Publish Surge Demo
+### Publish Surge Demo
 
-<!-- AURO-GENERATED-CONTENT:START (FILE:src=./../docs/partials/description.md) -->
+<!-- AURO-GENERATED-CONTENT:START (FILE:src=./../docs/partials/publishDemo.md) -->
 <!-- AURO-GENERATED-CONTENT:END -->
 
-#### Surge Demo Teardown
+---
+
+### Surge Demo Teardown
 
 <!-- AURO-GENERATED-CONTENT:START (FILE:src=./../docs/partials/demoTeardown.md) -->
 <!-- AURO-GENERATED-CONTENT:END -->
 
-#### Dependency Tag Versioning
+---
+
+### Dependency Tag Versioning
 
 <!-- AURO-GENERATED-CONTENT:START (FILE:src=./../docs/partials/dependencyTagVersioning.md) -->
 <!-- AURO-GENERATED-CONTENT:END -->
 
-#### Sync All Templates
+---
+
+### Sync All Templates
 
 <!-- AURO-GENERATED-CONTENT:START (FILE:src=./../docs/partials/syncAllTemplates.md) -->
 <!-- AURO-GENERATED-CONTENT:END -->

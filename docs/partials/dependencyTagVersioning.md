@@ -1,12 +1,10 @@
-## Dependency Tag Versioming
-
 This is a two part utility for the purpose of generating a custom string for dependency component tag naming. This is important to prevent [version conflicts](https://www.thinktecture.com/en/web-components/web-components-flaws/#elementor-toc__heading-anchor-0) when multiple versions of a given Auro component may be loaded on a single page.
 
 _Note: The example configuration used below in all code samples assumes `auro-dropdown` is the dependency component. Substitute any Auro component in the example code as needed._
 
-### Part 1: The Build
+#### Part 1: The Build
 
-#### Configuration
+##### Configuration
 
 1. Create a new file `./scripts/version.js` with the following content:
 
@@ -28,7 +26,7 @@ versionWriter.writeDepVersionFile('@aurodesignsystem/auro-dropdown'); // duplica
 "build": "npm-run-all build:version ... etc.",
 ```
 
-#### Execution
+##### Execution
 
 Once configuration is complete, execute `npm run build`. This must be done once before `npm run dev` when developing locally. When Auro dependencies are initially installed or updated to new versions then `npm run build:version` or a complete `npm run build` must be executed.
 
@@ -36,20 +34,20 @@ Upon execution of `build:version`, for each Auro dependency defined in the `./sc
 
 For example, following these steps:
 1. Run `npm i @aurodesignsystem/auro-dropdown@1.0.0`
-1. add the following to the `./scripts/version.js` script file:
+2. add the following to the `./scripts/version.js` script file:
 ```js
 versionWriter.writeDepVersionFile('@aurodesignsystem/auro-dropdown');
 ```
-1. Run `npm run build`
+3. Run `npm run build`
 
 Will result in:
 - A new file created: `./src/dropdownVersion.js`
 - File content will export the version of the component installed. In this case:
 `export default '1.0.0'`
 
-### Part 2: The Runtime
+#### Part 2: The Runtime
 
-#### Configuration
+##### Configuration
 
 In the main component JS file located in the `./src` directory add the following:
 
@@ -75,7 +73,7 @@ In the component properties add the following:
 dropdownTag: { type: Object }
 ```
 
-#### Usage
+##### Usage
 
 The new dynamically named version of `auro-dropdown` may now be used in your component template as follows:
 
@@ -99,9 +97,12 @@ When the component is rendered during runtime the DOM will now show up as follow
 
 _Note: the numbers attached in the tag name will match the version of the dependency that was installed._
 
-#### Accessing the dynamically named element with JS
+##### Accessing the dynamically named element with JS
 
-The dynamic component is accessible using a the following string in a JS query selector: `this.dropdownTag._$litStatic$`
+The dynamic component is accessible using a the following string in a JS query selector:
+```js
+this.dropdownTag._$litStatic$
+```
 
 ```js
 firstUpdated() {
