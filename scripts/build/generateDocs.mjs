@@ -58,17 +58,17 @@ function processReadme() {
 }
 
 /**
- * Compiles `./docTemplates/demo.md` -> `./demo/demo.md`
+ * Compiles `./docTemplates/demo.md` -> `./demo/index.md`
  */
 
 function processDemo() {
   const callback = function() {
-    if (fs.existsSync('./demo/demo.md')) {
-      fs.readFile('./demo/demo.md', 'utf8', function(err, data) {
-        auroLibraryUtils.formatFileContents(data, './demo/demo.md');
+    if (fs.existsSync('./demo/index.md')) {
+      fs.readFile('./demo/index.md', 'utf8', function(err, data) {
+        auroLibraryUtils.formatFileContents(data, './demo/index.md');
       });
     } else {
-      console.log('ERROR: ./demo/demo.md file is missing');
+      console.log('ERROR: ./demo/index.md file is missing');
     }
   };
 
