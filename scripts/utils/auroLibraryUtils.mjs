@@ -138,7 +138,10 @@ export default class AuroLibraryUtils {
       'namespace': pName.substring(namespaceStart + 1, nameStart),
       'namespaceCap': pName.substring(namespaceStart + 1)[0].toUpperCase() + pName.substring(namespaceStart + 2, nameStart),
       'name': pName.substring(nameStart + 1),
-      'nameCap': pName.substring(nameStart + 1)[0].toUpperCase() + pName.substring(nameStart + 2)
+      'nameCap': pName.substring(nameStart + 1)[0].toUpperCase() + pName.substring(nameStart + 2),
+      'version': pVersion,
+      'tokensVersion': pdtVersion,
+      'wcssVersion': wcssVersion
     };
 
     return result;
@@ -164,6 +167,9 @@ export default class AuroLibraryUtils {
     result = result.replace(/\[Name](?!\()/g, nameExtractionData.nameCap);
     result = result.replace(/\[namespace]/g, nameExtractionData.namespace);
     result = result.replace(/\[Namespace]/g, nameExtractionData.namespaceCap);
+    result = result.replace(/\[Version]/g, nameExtractionData.version);
+    result = result.replace(/\[dtVersion]/g, nameExtractionData.tokensVersion);
+    result = result.replace(/\[wcssVersion]/g, nameExtractionData.wcssVersion);
 
     /**
      * Cleanup line breaks.
