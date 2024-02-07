@@ -22,6 +22,8 @@ function nameExtraction() {
 
   let pName = JSON.parse(packageJson).name;
   let pVersion = JSON.parse(packageJson).version;
+  let pdtVersion = JSON.parse(packageJson).peerDependencies['\@aurodesignsystem/design-tokens'].substring(1)
+  let wcssVersion = JSON.parse(packageJson).peerDependencies['\@aurodesignsystem/webcorestylesheets'].substring(1)
 
   let npmStart = pName.indexOf('@');
   let namespaceStart = pName.indexOf('/');
@@ -33,7 +35,9 @@ function nameExtraction() {
     'namespaceCap': pName.substring(namespaceStart + 1)[0].toUpperCase() + pName.substring(namespaceStart + 2, nameStart),
     'name': pName.substring(nameStart + 1),
     'nameCap': pName.substring(nameStart + 1)[0].toUpperCase() + pName.substring(nameStart + 2),
-    'version': pVersion
+    'version': pVersion,
+    'tokensVersion': pdtVersion,
+    'wcssVersion': wcssVersion
   };
 
   return result;
@@ -56,6 +60,8 @@ function formatTemplateFileContents(content, destination) {
   result = result.replace(/\[namespace]/g, nameExtractionData.namespace);
   result = result.replace(/\[Namespace]/g, nameExtractionData.namespaceCap);
   result = result.replace(/\[Version]/g, nameExtractionData.version);
+  result = result.replace(/\[dtVersion]/g, nameExtractionData.tokensVersion);
+  result = result.replace(/\[wcssVersion]/g, nameExtractionData.wcssVersion);
 
   /**
    * Cleanup line breaks
