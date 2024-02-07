@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [2.4.6](https://github.com/AlaskaAirlines/auro-library/compare/v2.4.5...v2.4.6) (2024-02-07)
+
+
+### Performance Improvements
+
+* add support for version extraction ([d7d80cd](https://github.com/AlaskaAirlines/auro-library/commit/d7d80cda8b605300553fa67c38249d73ab23ca07))
+
 ## [2.4.5](https://github.com/AlaskaAirlines/auro-library/compare/v2.4.4...v2.4.5) (2024-02-06)
 
 
