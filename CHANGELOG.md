@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+# [2.6.0](https://github.com/AlaskaAirlines/auro-library/compare/v2.5.1...v2.6.0) (2024-04-29)
+
+
+### Features
+
+* **tagname:** add new functions for handling custom named components. [#51](https://github.com/AlaskaAirlines/auro-library/issues/51) ([1c7addc](https://github.com/AlaskaAirlines/auro-library/commit/1c7addcb9c637bdf043470e04626b9b4328ed6b6))
+
 ## [2.5.1](https://github.com/AlaskaAirlines/auro-library/compare/v2.5.0...v2.5.1) (2024-02-07)
 
 
