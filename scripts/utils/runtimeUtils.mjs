@@ -25,5 +25,33 @@ export default class AuroLibraryRuntimeUtils {
     return __Closest(base);
   }
   /* eslint-enable jsdoc/require-param */
+
+  /**
+   * If the element passed is registered with a different tag name than what is passed in, the tag name is added as an attribute to the element.
+   * @param {Object} elem - The element to check.
+   * @param {String} tagName - The name of the Auro component to check for or add as an attribute.
+   * @returns {void}
+   */
+  handleComponentTagRename(elem, tagName) {
+    const tag = tagName.toLowerCase();
+    const elemTag = elem.tagName.toLowerCase();
+
+    if (elemTag !== tag) {
+      elem.setAttribute(tag, true);
+    }
+  }
+
+  /**
+   * Validates if an element is a specific Auro component.
+   * @param {Object} elem - The element to validate.
+   * @param {String} tagName - The name of the Auro component to check against.
+   * @returns {Boolean} - Returns true if the element is the specified Auro component.
+   */
+  elementMatch(elem, tagName) {
+    const tag = tagName.toLowerCase();
+    const elemTag = elem.tagName.toLowerCase();
+
+    return elemTag === tag || elem.hasAttribute(tag);
+  }
 }
 
