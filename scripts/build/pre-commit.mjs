@@ -1,6 +1,7 @@
-'use strict';
+/* eslint-disable no-console */
 
 import chalk from 'chalk';
+
 console.log(chalk.hex('#ffd200')(`
 
 ╭ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ──────────────────────────────╮`) + chalk.hex('#f26135')(`
@@ -13,5 +14,4 @@ console.log(chalk.hex('#ffd200')(`
              to ensure that you are compliant.`) + chalk.hex('#ffd200')(`
 
 ╰─────────────────────────────── ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─╯
-`)
-);
+`));
