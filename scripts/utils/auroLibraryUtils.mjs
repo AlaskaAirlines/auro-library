@@ -119,32 +119,30 @@ export default class AuroLibraryUtils {
    * @returns {Object} result - Object containing data from package.json.
    */
   nameExtraction() {
-    const packageJson = fs.readFileSync('package.json', 'utf8', function(err) {
+    let packageJson = fs.readFileSync('package.json', 'utf8', function(err) {
       if (err) {
         console.log('ERROR: Unable to read package.json file', err);
       }
     });
 
-    const pName = JSON.parse(packageJson).name;
+    packageJson = JSON.parse(packageJson);
+
+    const pName = packageJson.name;
 
     const npmStart = pName.indexOf('@');
     const namespaceStart = pName.indexOf('/');
     const nameStart = pName.indexOf('-');
 
-    const result = {
-      'abstractNodeVersion': JSON.parse(packageJson).engines.node.substring(2),
-      'branchName': JSON.parse(packageJson).release.branch,
+    return {
+      'abstractNodeVersion': packageJson.engines.node.substring(2),
+      'branchName': packageJson.release.branch,
       'npm': pName.substring(npmStart, namespaceStart),
       'namespace': pName.substring(namespaceStart + 1, nameStart),
       'namespaceCap': pName.substring(namespaceStart + 1)[0].toUpperCase() + pName.substring(namespaceStart + 2, nameStart),
       'name': pName.substring(nameStart + 1),
       'nameCap': pName.substring(nameStart + 1)[0].toUpperCase() + pName.substring(nameStart + 2),
-      'version': pVersion,
-      'tokensVersion': pdtVersion,
-      'wcssVersion': wcssVersion
+      'version': packageJson.version
     };
-
-    return result;
   }
 
   /**
