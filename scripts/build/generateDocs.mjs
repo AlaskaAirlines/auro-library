@@ -15,22 +15,24 @@ const readmeFilePath = dirDocTemplates + '/README.md';
  */
 
 function nameExtraction() {
-  const packageJson = fs.readFileSync('package.json', 'utf8', function(err, data) {
+  let packageJson = fs.readFileSync('package.json', 'utf8', function(err, data) {
     if (err) {
       console.log('ERROR: Unable to read package.json file', err);
     }
   })
 
-  let pName = JSON.parse(packageJson).name;
-  let pVersion = JSON.parse(packageJson).version;
-  let pdtVersion = JSON.parse(packageJson).peerDependencies['\@aurodesignsystem/design-tokens'].substring(1)
-  let wcssVersion = JSON.parse(packageJson).peerDependencies['\@aurodesignsystem/webcorestylesheets'].substring(1)
+  packageJson = JSON.parse(packageJson); 
+
+  let pName = packageJson.name;
+  let pVersion = packageJson.version;
+  let pdtVersion = packageJson.peerDependencies['\@aurodesignsystem/design-tokens'].substring(1)
+  let wcssVersion = packageJson.peerDependencies['\@aurodesignsystem/webcorestylesheets'].substring(1)
 
   let npmStart = pName.indexOf('@');
   let namespaceStart = pName.indexOf('/');
   let nameStart = pName.indexOf('-');
 
-  let result = {
+  return {
     'npm': pName.substring(npmStart, namespaceStart),
     'namespace': pName.substring(namespaceStart + 1, nameStart),
     'namespaceCap': pName.substring(namespaceStart + 1)[0].toUpperCase() + pName.substring(namespaceStart + 2, nameStart),
@@ -40,8 +42,6 @@ function nameExtraction() {
     'tokensVersion': pdtVersion,
     'wcssVersion': wcssVersion
   };
-
-  return result;
  }
 
 /**
@@ -50,19 +50,23 @@ function nameExtraction() {
 
 function formatTemplateFileContents(content, destination) {
   let nameExtractionData = nameExtraction();
-  let result = content;
 
   /**
    * Replace placeholder strings
    */
-  result = result.replace(/\[npm]/g, nameExtractionData.npm);
-  result = result.replace(/\[name](?!\()/g, nameExtractionData.name);
-  result = result.replace(/\[Name](?!\()/g, nameExtractionData.nameCap);
-  result = result.replace(/\[namespace]/g, nameExtractionData.namespace);
-  result = result.replace(/\[Namespace]/g, nameExtractionData.namespaceCap);
-  result = result.replace(/\[Version]/g, nameExtractionData.version);
-  result = result.replace(/\[dtVersion]/g, nameExtractionData.tokensVersion);
-  result = result.replace(/\[wcssVersion]/g, nameExtractionData.wcssVersion);
+  const placeholders = {
+    '[npm]': 'npm',
+    '[name](?!\\()': 'name',
+    '[Name](?!\\()': 'nameCap',
+    '[namespace]': 'namespace',
+    '[Namespace]': 'namespaceCap',
+    '[Version]': 'version',
+    '[dtVersion]': 'tokensVersion',
+    '[wcssVersion]': 'wcssVersion'
+  };
+
+  let result = Object.entries(placeholders).reduce((acc, [key, value]) => 
+    acc.replace(new RegExp(key, 'g'), nameExtractionData[value]), content);
 
   /**
    * Cleanup line breaks
