@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [2.6.3](https://github.com/AlaskaAirlines/auro-library/compare/v2.6.2...v2.6.3) (2024-08-07)
+
+
+### Bug Fixes
+
+* **readme:** update generateDocs script for dynamic readme support [#57](https://github.com/AlaskaAirlines/auro-library/issues/57) ([f3c3092](https://github.com/AlaskaAirlines/auro-library/commit/f3c3092f4c9cc61dcc9f4b55cb5f63be4127c6de))
+
 ## [2.6.2](https://github.com/AlaskaAirlines/auro-library/compare/v2.6.1...v2.6.2) (2024-08-07)
 
 
