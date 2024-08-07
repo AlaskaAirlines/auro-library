@@ -128,7 +128,6 @@ export default class AuroLibraryUtils {
     packageJson = JSON.parse(packageJson);
 
     const pName = packageJson.name;
-
     const npmStart = pName.indexOf('@');
     const namespaceStart = pName.indexOf('/');
     const nameStart = pName.indexOf('-');
@@ -141,7 +140,10 @@ export default class AuroLibraryUtils {
       'namespaceCap': pName.substring(namespaceStart + 1)[0].toUpperCase() + pName.substring(namespaceStart + 2, nameStart),
       'name': pName.substring(nameStart + 1),
       'nameCap': pName.substring(nameStart + 1)[0].toUpperCase() + pName.substring(nameStart + 2),
-      'version': packageJson.version
+      'version': packageJson.version,
+      'tokensVersion': packageJson.peerDependencies['\@aurodesignsystem/design-tokens'].substring(1),
+      'wcssVersion': packageJson.peerDependencies['\@aurodesignsystem/webcorestylesheets'].substring(1)
+
     };
   }
 
