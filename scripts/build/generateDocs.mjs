@@ -4,6 +4,10 @@ import fs from 'fs';
 import https from 'https';
 import { fileURLToPath } from 'url';
 
+import AuroLibraryUtils from "../utils/auroLibraryUtils.mjs";
+
+const auroLibraryUtils = new AuroLibraryUtils();
+
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
 const readmeTemplateUrl = 'https://raw.githubusercontent.com/AlaskaAirlines/WC-Generator/master/componentDocs/README_esm.md';
@@ -50,23 +54,19 @@ function nameExtraction() {
 
 function formatTemplateFileContents(content, destination) {
   let nameExtractionData = nameExtraction();
+  let result = content;
 
   /**
    * Replace placeholder strings
    */
-  const placeholders = {
-    '[npm]': 'npm',
-    '[name](?!\\()': 'name',
-    '[Name](?!\\()': 'nameCap',
-    '[namespace]': 'namespace',
-    '[Namespace]': 'namespaceCap',
-    '[Version]': 'version',
-    '[dtVersion]': 'tokensVersion',
-    '[wcssVersion]': 'wcssVersion'
-  };
-
-  let result = Object.entries(placeholders).reduce((acc, [key, value]) => 
-    acc.replace(new RegExp(key, 'g'), nameExtractionData[value]), content);
+  result = result.replace(/\[npm]/g, nameExtractionData.npm);
+  result = result.replace(/\[name](?!\()/g, nameExtractionData.name);
+  result = result.replace(/\[Name](?!\()/g, nameExtractionData.nameCap);
+  result = result.replace(/\[namespace]/g, nameExtractionData.namespace);
+  result = result.replace(/\[Namespace]/g, nameExtractionData.namespaceCap);
+  result = result.replace(/\[Version]/g, nameExtractionData.version);
+  result = result.replace(/\[dtVersion]/g, nameExtractionData.tokensVersion);
+  result = result.replace(/\[wcssVersion]/g, nameExtractionData.wcssVersion);
 
   /**
    * Cleanup line breaks
@@ -122,7 +122,7 @@ function processReadme() {
     outputDir: './'
   };
 
-  const markdownPath = path.join(__dirname, '../docTemplates/README.md');
+  const markdownPath = path.join(__dirname, './../../../../../docTemplates/README.md');
 
   markdownMagic(markdownPath, config, callback);
 }
@@ -135,7 +135,8 @@ function processDemo() {
   const callback = function(updatedContent, outputConfig) {
     if (fs.existsSync('./demo/index.md')) {
       fs.readFile('./demo/index.md', 'utf8', function(err, data) {
-        formatTemplateFileContents(data, './demo/index.md');
+        // formatTemplateFileContents(data, './demo/index.md');
+        auroLibraryUtils.formatFileContents(data, './demo/index.md');
       });
     } else {
       console.log('ERROR: ./demo/index.md file is missing');
@@ -147,7 +148,7 @@ function processDemo() {
     outputDir: './demo'
   };
 
-  const markdownPath = path.join(__dirname, '../docs/partials/index.md');
+  const markdownPath = path.join(__dirname, './../../../../../docs/partials/index.md');
 
   markdownMagic(markdownPath, configDemo, callback);
 }
@@ -172,7 +173,7 @@ function processApiExamples() {
     outputDir: './demo'
   };
 
-  const markdownPath = path.join(__dirname, '../docs/partials/api.md');
+  const markdownPath = path.join(__dirname, './../../../../../docs/partials/api.md');
 
   markdownMagic(markdownPath, config, callback);
 }
