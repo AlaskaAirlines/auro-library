@@ -10,9 +10,22 @@ const auroLibraryUtils = new AuroLibraryUtils();
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
-const readmeTemplateUrl = 'https://raw.githubusercontent.com/AlaskaAirlines/WC-Generator/master/componentDocs/README_esm.md';
 const dirDocTemplates = './docTemplates';
 const readmeFilePath = dirDocTemplates + '/README.md';
+
+// List of components that do not support ESM to determine which README to use
+const nonEsmComponents = ['combobox', 'datepicker', 'menu', 'pane', 'select'];
+
+function generateReadmeUrl() {
+  let nameExtractionData = nameExtraction();
+  let esmString = '';
+
+  if (!nonEsmComponents.includes(nameExtractionData.name)) {
+    esmString = '_esm';
+  }
+
+  return 'https://raw.githubusercontent.com/AlaskaAirlines/WC-Generator/master/componentDocs/README' + esmString + '.md';
+}
 
 /**
  * Extract NPM, NAMESPACE and NAME from package.json
@@ -25,12 +38,12 @@ function nameExtraction() {
     }
   })
 
-  packageJson = JSON.parse(packageJson); 
-
+  packageJson = JSON.parse(packageJson);
+  
   let pName = packageJson.name;
   let pVersion = packageJson.version;
-  let pdtVersion = packageJson.peerDependencies['\@aurodesignsystem/design-tokens'].substring(1)
-  let wcssVersion = packageJson.peerDependencies['\@aurodesignsystem/webcorestylesheets'].substring(1)
+  let pdtVersion = packageJson.peerDependencies['\@aurodesignsystem/design-tokens'].substring(1);
+  let wcssVersion = packageJson.peerDependencies['\@aurodesignsystem/webcorestylesheets'].substring(1);
 
   let npmStart = pName.indexOf('@');
   let namespaceStart = pName.indexOf('/');
@@ -46,7 +59,7 @@ function nameExtraction() {
     'tokensVersion': pdtVersion,
     'wcssVersion': wcssVersion
   };
- }
+}
 
 /**
  * Replace all instances of [npm], [name], [Name], [namespace] and [Namespace] accordingly
@@ -183,7 +196,6 @@ function processApiExamples() {
  * */
 
 function copyReadmeLocally() {
-
   if (!fs.existsSync(dirDocTemplates)){
     fs.mkdirSync(dirDocTemplates);
   }
@@ -196,7 +208,7 @@ function copyReadmeLocally() {
     });
   }
 
-  https.get(readmeTemplateUrl, function(response) {
+  https.get(generateReadmeUrl(), function(response) {
     let writeTemplate = response.pipe(fs.createWriteStream(readmeFilePath));
 
     writeTemplate.on('finish', () => {
@@ -214,3 +226,4 @@ function copyReadmeLocally() {
 copyReadmeLocally();
 processApiExamples();
 processDemo();
+
