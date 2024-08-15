@@ -6,6 +6,7 @@
 /* eslint-disable arrow-parens, line-comment-position, no-console, no-inline-comments, no-magic-numbers, prefer-arrow-callback, require-unicode-regexp, jsdoc/require-description-complete-sentence, prefer-named-capture-group */
 
 import * as fs from 'fs';
+import fsAsync from 'node:fs/promises';
 import * as path from 'path';
 import chalk from 'chalk';
 
@@ -184,6 +185,20 @@ export default class AuroLibraryUtils {
      * Write the result to the destination file.
      */
     fs.writeFileSync(destination, result, { encoding: 'utf8'});
+  }
+
+  /**
+   * Check if a file or directory exists.
+   * @param filePath
+   * @return {Promise<boolean>}
+   */
+  async existsAsync(filePath) {
+    try {
+      await fsAsync.access(filePath);
+      return true;
+    } catch {
+      return false;
+    }
   }
 }
 
