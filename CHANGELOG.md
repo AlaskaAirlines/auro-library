@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+# [2.7.0](https://github.com/AlaskaAirlines/auro-library/compare/v2.6.3...v2.7.0) (2024-08-21)
+
+
+### Features
+
+* add registerComponent function ([fc3a135](https://github.com/AlaskaAirlines/auro-library/commit/fc3a135f5fad8e3b5fc022f2e0f38443b11681fc))
+
 ## [2.6.3](https://github.com/AlaskaAirlines/auro-library/compare/v2.6.2...v2.6.3) (2024-08-07)
 
 
