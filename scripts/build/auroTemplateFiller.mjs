@@ -33,6 +33,10 @@ export class AuroTemplateFiller {
     this.values = null;
   }
 
+  async prepare() {
+    await this.extractNames()
+  }
+
   /**
    * Extract various data for filling template files from the package.json file.
    * @returns {Promise<ExtractedNames>}
@@ -147,6 +151,32 @@ export class AuroTemplateFiller {
     return result;
   }
 
+
+  /**
+   *
+   * @param {string} content
+   */
+  formatApiTable(content) {
+    let result = `${content}`;
+
+    result = result
+      .replace(/\r\n|\r|\n####\s`([a-zA-Z]*)`/g, `\r\n#### <a name="$1"></a>\`$1\`<a href="#" style="float: right; font-size: 1rem; font-weight: 100;">back to top</a>`)
+      .replace(/\r\n|\r|\n\|\s`([a-zA-Z]*)`/g, '\r\n| [$1](#$1)')
+      .replace(/\| \[\]\(#\)/g, "");
+
+    return result
+  }
+
+  /**
+   * Wrapper for writing any string to a file
+   * @param {string} content
+   * @param {string} destination
+   * @return {Promise<void>}
+   */
+  async writeToFile(content, destination) {
+    await fs.writeFile(destination, content, {encoding: "utf-8"});
+  }
+
   /**
    * Replace all instances of [npm], [name], [Name], [namespace] and [Namespace] accordingly.
    *
@@ -165,6 +195,6 @@ export class AuroTemplateFiller {
     /**
      * Write the result to the destination file.
      */
-    await fs.writeFile(destination, result, { encoding: 'utf8'});
+    await this.writeToFile(result, destination);
   }
 }
