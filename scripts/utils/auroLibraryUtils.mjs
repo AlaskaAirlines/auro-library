@@ -11,6 +11,11 @@ import * as path from 'path';
 import chalk from 'chalk';
 
 export default class AuroLibraryUtils {
+  PROJECT_ROOT_FROM_SCRIPTS__BUILD = "./../../../../.."
+
+  get projectRootFromBuildScriptDir() {
+    return this.PROJECT_ROOT_FROM_SCRIPTS__BUILD
+  }
 
   /**
    * Copies and pastes all files in a source directory into a destination directory.
@@ -74,7 +79,7 @@ export default class AuroLibraryUtils {
   /**
    * Logs out messages in a readable format.
    * @param {String} message - Message to be logged.
-   * @param {String} status - Status that determines the color of the logged message.
+   * @param {"info" | "success" | "error"} status - Status that determines the color of the logged message.
    * @param {Boolean} section - If true, adds a box around the message for readability.
    */
   auroLogger(message, status, section) {
