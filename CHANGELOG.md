@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+# [2.8.0](https://github.com/AlaskaAirlines/auro-library/compare/v2.7.0...v2.8.0) (2024-09-19)
+
+
+### Features
+
+* add runtime script for Floating UI [#65](https://github.com/AlaskaAirlines/auro-library/issues/65) ([e180fcb](https://github.com/AlaskaAirlines/auro-library/commit/e180fcb319e9ab6673765041b5a96057e562bd60))
+
 # [2.7.0](https://github.com/AlaskaAirlines/auro-library/compare/v2.6.3...v2.7.0) (2024-08-21)
 
 

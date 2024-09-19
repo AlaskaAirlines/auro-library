@@ -1,6 +1,6 @@
 {
   "name": "@aurodesignsystem/auro-library",
-  "version": "2.7.0",
+  "version": "2.8.0",
   "description": "This repository holds shared scripts, utilities, and workflows utilized across repositories along the Auro Design System.",
   "repository": {
     "type": "git",
