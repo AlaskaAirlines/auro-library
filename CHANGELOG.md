@@ -1,5 +1,18 @@
 # Semantic Release Automated Changelog
 
+# [2.9.0](https://github.com/AlaskaAirlines/auro-library/compare/v2.8.0...v2.9.0) (2024-10-07)
+
+
+### Bug Fixes
+
+* add matchWord to md magic config ([372cb28](https://github.com/AlaskaAirlines/auro-library/commit/372cb28a1c9eb0bd5f1014a4a8a9e6415cf659e5))
+
+
+### Features
+
+* add handlebars template support ([bc3851d](https://github.com/AlaskaAirlines/auro-library/commit/bc3851dd87eb907927a3e2e22de53013c5e4e958))
+* add new processing paradigm ([9a1dd25](https://github.com/AlaskaAirlines/auro-library/commit/9a1dd254e1288a6c7873b145a62087a37233a641))
+
 # [2.8.0](https://github.com/AlaskaAirlines/auro-library/compare/v2.7.0...v2.8.0) (2024-09-19)
 
 
