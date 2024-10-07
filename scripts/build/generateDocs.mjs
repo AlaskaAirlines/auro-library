@@ -51,8 +51,7 @@ const applyMarkdownMagic = mdMagic.default
 
 /** @type {MarkdownMagicOptions} */
 export const MD_MAGIC_CONFIG = {
-  open: "AURO-GENERATED-CONTENT:START",
-  close: "AURO-GENERATED-CONTENT:END",
+  matchWord: "AURO-GENERATED-CONTENT",
   output: {
     directory: "./",
     applyTransformsToSource: true

@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 
-import {Logger} from "../utils/logger";
+import {Logger} from "../utils/logger.mjs";
 
 export class AuroFileHandler {
 
