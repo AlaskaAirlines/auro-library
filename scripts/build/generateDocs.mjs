@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 
 import AuroLibraryUtils from "../utils/auroLibraryUtils.mjs";
 import { AuroTemplateFiller } from "./auroTemplateFiller.mjs";
+import { AuroFileHandler } from "./auroFileHandler.mjs";
 import {Logger} from "../utils/logger.mjs";
 
 
@@ -61,6 +62,7 @@ export const MD_MAGIC_CONFIG = {
 // Initialize utility services
 export const auroLibraryUtils = new AuroLibraryUtils();
 export const templateFiller = new AuroTemplateFiller();
+export const auroFileHandler = new AuroFileHandler();
 
 // List of components that do not support ESM to determine which README to use
 export const nonEsmComponents = ['combobox', 'datepicker', 'menu', 'pane', 'select'];
@@ -118,7 +120,7 @@ export function generateReadmeUrl(tag = 'master', variantOverride = '') {
  * @typedef {Object} InputFileType
  * @property {string} remoteUrl - The remote template to fetch
  * @property {string} fileName - Path including file name to store
- * @property {boolean?} overwrite - Write contents regardless of existing template file
+ * @property {boolean} [overwrite] - Default is true. Choose to overwrite the file if it exists
  */
 
 
@@ -130,6 +132,53 @@ export function generateReadmeUrl(tag = 'master', variantOverride = '') {
  * @property {Array<(contents: string) => string>} [postProcessors] - extra processor functions to run on content
  */
 
+
+// Individual file processing steps
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+/**
+ * Optionally retrieve a remote file using a provided configuration.
+ * @param {InputFileType} input - the input file configuration
+ * @return {Promise<void>}
+ */
+export async function optionallyRetrieveRemoteFile(input) {
+  const bareFileName = input.fileName
+  const shouldOverwrite = input.overwrite ?? true
+
+  // If the file exists and overwrite is false, skip fetching
+  if (await AuroFileHandler.exists(input.fileName) && !shouldOverwrite) {
+    Logger.warn(`NOTICE: Using existing "${bareFileName}" file since overwrite is FALSE`);
+
+    return;
+  }
+
+  Logger.log(`Retrieving latest "${bareFileName}" file...`);
+
+  // 0b. Attempt to populate from remote file
+  const contents = await fetch(input.remoteUrl, {
+    redirect: 'follow'
+  }).then(r => r.text());
+
+  // 0c. Write remote contents to local folder as cache
+  await AuroFileHandler.tryWriteFile(input.fileName, contents);
+}
+
+
+/**
+ * Run markdown magic on a file.
+ * @param {string} input
+ * @param {string} output
+ * @param {Partial<MarkdownMagicOptions>} [extraMdMagicConfig] - extra configuration options for md magic
+ * @return {Promise<void>}
+ */
+export async function runMarkdownMagicOnFile(input, output, extraMdMagicConfig = {}) {
+  await applyMarkdownMagic(output, {
+    ...MD_MAGIC_CONFIG,
+    ...extraMdMagicConfig
+  });
+}
+
+
 /**
  * Process the content of a file.
  *
@@ -140,56 +189,45 @@ export function generateReadmeUrl(tag = 'master', variantOverride = '') {
  * @param {FileProcessorConfig} config - the config for this file
  */
 export async function processContentForFile(config) {
-  const { input, output, mdMagicConfig } = config
+  const { input: rawInput, output, mdMagicConfig } = config
 
-  // TODO: Extract this file name derive feature into utility
-  const derivedInputPath = typeof input === 'string' ? input : input.fileName;
+  // Helper vars
+  const derivedInputPath = typeof rawInput === 'string' ? rawInput : rawInput.fileName;
   const segments = derivedInputPath.split("/")
   const bareFileName = segments[segments.length - 1]
 
-  // (optional) 0. If configured to pull from a remote file, fetches that first
-  if (typeof input === "object") {
-    // 0a. Check if local copy exists AND overwrite not set
-    if (!input.overwrite && await auroLibraryUtils.existsAsync(input.fileName)) {
-      Logger.warn(`NOTICE: Using existing "${bareFileName}" file`);
-      await fs.copyFile(input.fileName, output);
-    } else {
-      // Either overwrite is TRUE or file doesn't exist, so get the file
-      Logger.log(`Retrieving latest "${bareFileName}" file...`);
-
-      // 0b. Attempt to populate from remote file
-      const contents = await fetch(input.remoteUrl, {
-        redirect: 'follow'
-      }).then(r => r.text());
-
-      // 0c. Write remote contents to local folder as cache
-      await fs.writeFile(input.fileName, contents, {encoding: 'utf-8'});
-    }
+  // 0. Optionally retrieve a remote file
+  if (typeof rawInput === 'object') {
+    await optionallyRetrieveRemoteFile(rawInput);
   }
 
   // 1. Copy input or local input cache to output
-  await fs.copyFile(derivedInputPath, output);
-
-  // 2. If markdown file, run markdown magic to inject contents and perform replacements
-  if (output.endsWith(".md")) {
-    const extraConfig = mdMagicConfig ? mdMagicConfig : {}
-    await applyMarkdownMagic(output, {
-      matchWord: 'AURO-GENERATED-CONTENT',
-      ...MD_MAGIC_CONFIG,
-      ...extraConfig
-    });
+  if (!await AuroFileHandler.tryCopyFile(derivedInputPath, output)) {
+    throw new Error(`Error copying "${bareFileName}" file to output ${output}`);
   }
 
-  // 3. Replace template variables in output file
+  // 2. If the file is a Markdown file, run markdown magic to inject contents and perform replacements
+  if (output.endsWith(".md")) {
+    await runMarkdownMagicOnFile(derivedInputPath, output, mdMagicConfig);
+  }
+
+  // 3a. Read the output file contents
   let fileContents = await fs.readFile(output, {encoding: 'utf-8'});
+
+  // 3b. Replace template variables in output file
   fileContents = templateFiller.replaceTemplateValues(fileContents);
+
+  // 3c. Run any post-processors
   if (config.postProcessors) {
     for (const processor of config.postProcessors) {
       fileContents = processor(fileContents)
     }
   }
 
-  await fs.writeFile(output, fileContents, {encoding: 'utf-8'});
+  // 3d. Write the final file contents
+  if (!await AuroFileHandler.tryWriteFile(output, fileContents)) {
+    throw new Error(`Error writing "${bareFileName}" file to output ${output}`);
+  }
 }
 
 // Finally, the main function
@@ -211,7 +249,6 @@ export async function processDocFiles(remoteReadmeVersion = 'master', readmeVari
   await processContentForFile({
     input: {
       remoteUrl: generateReadmeUrl(remoteReadmeVersion, readmeVariant),
-      overwrite: false,
       fileName: fromAuroComponentRoot(`/docTemplates/README.md`),
     },
     output: fromAuroComponentRoot("/README.md")

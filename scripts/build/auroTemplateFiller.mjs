@@ -166,35 +166,4 @@ export class AuroTemplateFiller {
 
     return result
   }
-
-  /**
-   * Wrapper for writing any string to a file
-   * @param {string} content
-   * @param {string} destination
-   * @return {Promise<void>}
-   */
-  async writeToFile(content, destination) {
-    await fs.writeFile(destination, content, {encoding: "utf-8"});
-  }
-
-  /**
-   * Replace all instances of [npm], [name], [Name], [namespace] and [Namespace] accordingly.
-   *
-   * # WIP
-   * This function is a work in progress and will be updated to handle more complex templating needs.
-   * For example, we plan to directly add handlebars.js support.
-   *
-   * @param {string} content - The content of the template file.
-   * @param {string} destination - The destination file path.
-   *
-   * @returns {Promise<void>}
-   */
-  async formatTemplateAndWriteToFile(content, destination) {
-    const result = this.replaceTemplateValues(content);
-
-    /**
-     * Write the result to the destination file.
-     */
-    await this.writeToFile(result, destination);
-  }
 }
