@@ -245,10 +245,12 @@ export async function processDocFiles(remoteReadmeVersion = 'master', readmeVari
   // process
   // README.md
 
+  Logger.warn('WARNING: overwrite is set to FALSE for README.md - please update this when template changes are merged');
   await processContentForFile({
     input: {
       remoteUrl: generateReadmeUrl(remoteReadmeVersion, readmeVariant),
       fileName: fromAuroComponentRoot(`/docTemplates/README.md`),
+      overwrite: false
     },
     output: fromAuroComponentRoot("/README.md")
   })
