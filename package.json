@@ -24,7 +24,8 @@
     "eslint": "^9.8.0",
     "eslint-plugin-jsdoc": "^48.0.2",
     "husky": "^8.0.3",
-    "semantic-release": "^23.0.0"
+    "semantic-release": "^23.0.0",
+    "vitest": "^2.1.2"
   },
   "release": {
     "branches": [
@@ -68,7 +69,9 @@
     "prepare": "husky install",
     "esLint": "eslint ./scripts/**/*.js",
     "linters": "npm-run-all esLint",
-    "build:docs": "node scripts/build/generateReadme.mjs"
+    "build:docs": "node scripts/build/generateReadme.mjs",
+    "test": "vitest --run",
+    "test:watch": "vitest"
   },
   "bugs": {
     "url": "https://github.com/AlaskaAirlines/auro-library/issues"
