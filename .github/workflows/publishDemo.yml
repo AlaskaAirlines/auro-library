@@ -19,6 +19,7 @@ jobs:
       - name: Build Demo
         run: |
           npm ci
+          npm run test
           npm run build
 
       - name: Update HTML Scripts
