@@ -1,5 +1,24 @@
 # Semantic Release Automated Changelog
 
+# [2.10.0](https://github.com/AlaskaAirlines/auro-library/compare/v2.9.0...v2.10.0) (2024-10-09)
+
+
+### Bug Fixes
+
+* add tmp/ to npmignore ([94a61b5](https://github.com/AlaskaAirlines/auro-library/commit/94a61b526b72dbe445633dfbea41bf56cc4fef89))
+* update file ending and disable overwrite by default ([fd65cf3](https://github.com/AlaskaAirlines/auro-library/commit/fd65cf39f0051577c5fb43e77bd6bdd6cb0ccdf9))
+
+
+### Features
+
+* add first test suites for doc gen ([88d8987](https://github.com/AlaskaAirlines/auro-library/commit/88d8987126d04f82d14a6ac11078d509eb3e8629))
+* add vitest for unit testing ([0f96702](https://github.com/AlaskaAirlines/auro-library/commit/0f967027ea177f0218d3b6f44e973ce5d22768a8))
+
+
+### Performance Improvements
+
+* remove extra comment from early in dev ([25ac890](https://github.com/AlaskaAirlines/auro-library/commit/25ac8903be38ca600fbd8b1e2ec02d56bc711770))
+
 # [2.9.0](https://github.com/AlaskaAirlines/auro-library/compare/v2.8.0...v2.9.0) (2024-10-07)
 
 
