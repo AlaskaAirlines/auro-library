@@ -4,6 +4,7 @@
 *conf*
 LICENSE
 NOTICE
+tests/
 
 .github/
 .gitignore
