@@ -41,7 +41,6 @@ async function exists(filePath) {
 
 describe('optionallyCopyFile', () => {
   beforeEach(async () => {
-    // test goes here
     if (!await exists(workingDir)) {
       await mkdir(workingDir, {
         recursive: true
