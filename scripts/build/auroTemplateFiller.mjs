@@ -49,8 +49,8 @@ export class AuroTemplateFiller {
 
     const pName = parsedPackageJson.name;
     const pVersion = parsedPackageJson.version;
-    const pdtVersion = parsedPackageJson.peerDependencies[AuroTemplateFiller.designTokenPackage].substring(1);
-    const wcssVersion = parsedPackageJson.peerDependencies[AuroTemplateFiller.webCoreStylesheetsPackage].substring(1);
+    const pdtVersion = parsedPackageJson.peerDependencies?.[AuroTemplateFiller.designTokenPackage].substring(1) ?? '';
+    const wcssVersion = parsedPackageJson.peerDependencies?.[AuroTemplateFiller.webCoreStylesheetsPackage].substring(1) ?? '';
 
     const npmStart = pName.indexOf('@');
     const namespaceStart = pName.indexOf('/');
@@ -69,8 +69,7 @@ export class AuroTemplateFiller {
   }
 
   /**
-   * @param {string} template
-   * @param {ExtractedNames} values
+   * @param {string} template - The string to use to run variable replacement
    * @return {string}
    */
   replaceTemplateValues(template) {

@@ -23,11 +23,12 @@ const applyMarkdownMagic = mdMagic.default
  */
 
 /**
- * Configuration for markdown magic
+ * Configuration for Markdown magic
  *
  * Below is the main config for `markdown-magic` - copy-pasted directly from the library
  *
  * @typedef {object} MarkdownMagicOptions
+ * @property {string} matchWord - [v2-only] string to match for variables
  * @property {FilePathsOrGlobs} [files] - Files to process.
  * @property {Array} [transforms = defaultTransforms] - Custom commands to transform block contents, see transforms & custom transforms sections below.
  * @property {OutputConfig} [output] - Output configuration
@@ -136,20 +137,12 @@ export function generateReadmeUrl(tag = 'master', variantOverride = '') {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /**
- * Optionally retrieve a remote file using a provided configuration.
+ * Retrieve a remote file using a provided configuration and store at a local path.
  * @param {InputFileType} input - the input file configuration
  * @return {Promise<void>}
  */
-export async function optionallyRetrieveRemoteFile(input) {
+export async function retrieveRemoteFileCopy(input) {
   const bareFileName = input.fileName
-  const shouldOverwrite = input.overwrite ?? true
-
-  // If the file exists and overwrite is false, skip fetching
-  if (await AuroFileHandler.exists(input.fileName) && !shouldOverwrite) {
-    Logger.warn(`NOTICE: Using existing "${bareFileName}" file since overwrite is FALSE`);
-
-    return;
-  }
 
   Logger.log(`Retrieving latest "${bareFileName}" file...`);
 
@@ -179,6 +172,23 @@ export async function runMarkdownMagicOnFile(input, output, extraMdMagicConfig =
 
 
 /**
+ * Optionally copy a file to a new location.
+ * @param {string} input - the input file path
+ * @param {string} output - the output file path
+ * @param {boolean} overwrite - whether to overwrite the file if it exists (default is true)
+ * @return {Promise<void>}
+ */
+export async function optionallyCopyFile(input, output, overwrite = true) {
+  if (await AuroFileHandler.exists(output) && !overwrite) {
+    return;
+  }
+
+  if (!await AuroFileHandler.tryCopyFile(input, output)) {
+    throw new Error(`Error copying "${input}" file to output ${output}`);
+  }
+}
+
+/**
  * Process the content of a file.
  *
  * This is a high level function that performs the following via lower functions:
@@ -197,13 +207,11 @@ export async function processContentForFile(config) {
 
   // 0. Optionally retrieve a remote file
   if (typeof rawInput === 'object') {
-    await optionallyRetrieveRemoteFile(rawInput);
+    await retrieveRemoteFileCopy(rawInput);
   }
 
   // 1. Copy input or local input cache to output
-  if (!await AuroFileHandler.tryCopyFile(derivedInputPath, output)) {
-    throw new Error(`Error copying "${bareFileName}" file to output ${output}`);
-  }
+  await optionallyCopyFile(derivedInputPath, output, rawInput.overwrite ?? true);
 
   // 2. If the file is a Markdown file, run markdown magic to inject contents and perform replacements
   if (output.endsWith(".md")) {
