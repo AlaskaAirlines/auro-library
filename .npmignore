@@ -13,4 +13,5 @@ tests/
 
 docs/
 docTemplates/
+tmp/
 **/__tests__/
