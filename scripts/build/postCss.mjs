@@ -12,8 +12,7 @@ const __dirname = path.dirname(__filename);
 // Define possible directory paths
 const possiblePaths = [
   path.join(__dirname, '../src'),
-  path.join(__dirname, '../components'),
-  '/components'
+  path.join(__dirname, '../components')
 ];
 
 // Find the first existing directory
