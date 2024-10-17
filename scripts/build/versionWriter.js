@@ -13,10 +13,10 @@ const auroSubNameIndex = 5;
  */
 function writeDepVersionFile(pkg) {
   const fs = require('fs');
-  const path = `${pkg}/package.json`;
+  const path = pkg === 'root' ? require('path').relative(__dirname, './package.json') : `${pkg}/package.json`;
   const json = require(path);
   const {version} = json;
-  const elemSubName = pkg.substring(pkg.indexOf('auro-') + auroSubNameIndex);
+  const elemSubName = pkg === 'root' ? pkg : pkg.substring(pkg.indexOf('auro-') + auroSubNameIndex);
   const versionFilePath = `./src/${elemSubName}Version.js`;
 
   fs.writeFileSync(versionFilePath, `export default '${version}'`);
