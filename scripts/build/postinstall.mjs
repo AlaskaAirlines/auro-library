@@ -2,8 +2,11 @@
 
 import chalk from 'chalk';
 import { createRequire } from 'node:module';
+import { resolve } from 'path';
+
+
 const require = createRequire(import.meta.url);
-const pjson = require('../package.json');
+const pjson = require(resolve(process.cwd(), 'package.json'));
 
 console.log(chalk.hex('#f26135')(`
 
