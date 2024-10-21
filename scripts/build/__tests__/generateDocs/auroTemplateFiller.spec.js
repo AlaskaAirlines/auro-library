@@ -4,17 +4,9 @@ import fs from 'node:fs/promises';
 
 vi.mock('node:fs/promises');
 
-const handlebarsTemplate = `
-# {{Name}} Documentation
+const handlebarsTemplate = `{{Name}} Documentation | Installing {{ withAuroNamespace name}}`;
 
-## Installing {{ withAuroNamespace name}}
-`;
-
-const legacyTemplate = `
-# [name] Documentation
-
-## Installing [namespace]-[name]
-`;
+const legacyTemplate = `[Name] Documentation | Installing [namespace]-[name]`;
 
 describe('AuroTemplateFiller', () => {
 
@@ -55,7 +47,7 @@ describe('AuroTemplateFiller', () => {
     });
   });
 
-  it('should replace template values correctly', async () => {
+  it('should replace handlebars template values correctly', () => {
     filler.values = {
       name: 'button',
       nameCap: 'Button',
@@ -66,9 +58,24 @@ describe('AuroTemplateFiller', () => {
       wcssVersion: '3.0.0'
     };
 
-    const template = 'Component: {{Name}}, Version: {{Version}}';
-    const result = filler.replaceTemplateValues(template);
+    const result = filler.replaceTemplateValues(handlebarsTemplate);
 
-    expect(result).toBe('Component: Button, Version: 1.0.0');
+    expect(result.trim()).toBe('Button Documentation | Installing auro-button');
+  });
+
+  it('should replace legacy template values correctly', () => {
+    filler.values = {
+      name: 'button',
+      nameCap: 'Button',
+      namespace: 'auro',
+      namespaceCap: 'Auro',
+      version: '1.0.0',
+      tokensVersion: '2.0.0',
+      wcssVersion: '3.0.0'
+    };
+
+    const result = filler.replaceTemplateValues(legacyTemplate);
+
+    expect(result.trim()).toBe('Button Documentation | Installing auro-button');
   });
 });
