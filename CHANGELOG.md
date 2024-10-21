@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [2.10.1](https://github.com/AlaskaAirlines/auro-library/compare/v2.10.0...v2.10.1) (2024-10-21)
+
+
+### Bug Fixes
+
+* reference consuming component's package.json, rather than relatively ([21cf238](https://github.com/AlaskaAirlines/auro-library/commit/21cf2382a54d4a620d1d5d658fa928b54e15d077))
+
 # [2.10.0](https://github.com/AlaskaAirlines/auro-library/compare/v2.9.0...v2.10.0) (2024-10-09)
 
 
