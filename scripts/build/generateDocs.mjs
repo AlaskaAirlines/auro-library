@@ -107,7 +107,8 @@ export function generateReadmeUrl(branchOrTag = 'master', variantOverride = '') 
   const baseRepoUrl = 'https://raw.githubusercontent.com/AlaskaAirlines/WC-Generator'
 
   // check if tag starts with 'vX' since our tags are `v4.0.0`
-  const isTag = /^v\d.*$/.test(branchOrTag);
+  const isTag = branchOrTag.startsWith('v') &&
+    /^\d+\.\d+\.\d+(-.*)?$/.test(branchOrTag.slice(1));
 
   if (isTag) {
     return `${baseRepoUrl}/refs/tags/${branchOrTag}/componentDocs/README` + variantString + '.md';
