@@ -84,11 +84,11 @@ export function fromAuroComponentRoot(pathLike) {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /**
- * @param {string} tag - the release version tag to use instead of master
+ * @param {string} branchOrTag - the git branch or tag to use for the README source
  * @param {string} [variantOverride] - override the variant string
  * @return {string}
  */
-export function generateReadmeUrl(tag = 'master', variantOverride = '') {
+export function generateReadmeUrl(branchOrTag = 'master', variantOverride = '') {
   // LEGACY CODE FOR NON-ESM COMPONENTS
 
   const nameExtractionData = templateFiller.values;
@@ -105,8 +105,16 @@ export function generateReadmeUrl(tag = 'master', variantOverride = '') {
   }
 
   const baseRepoUrl = 'https://raw.githubusercontent.com/AlaskaAirlines/WC-Generator'
-  if (tag !== 'master') {
-    return `${baseRepoUrl}/refs/tags/${tag}/componentDocs/README` + variantString + '.md';
+
+  // check if tag starts with 'vX' since our tags are `v4.0.0`
+  const isTag = /^v\d.*$/.test(branchOrTag);
+
+  if (isTag) {
+    return `${baseRepoUrl}/refs/tags/${branchOrTag}/componentDocs/README` + variantString + '.md';
+  }
+
+  if (branchOrTag !== 'master') {
+    return `${baseRepoUrl}/refs/heads/${branchOrTag}/componentDocs/README` + variantString + '.md';
   }
 
   return `${baseRepoUrl}/master/componentDocs/README` + variantString + '.md';
@@ -241,12 +249,22 @@ export async function processContentForFile(config) {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /**
+ * Processor config object
+ * @typedef {Object} ProcessorConfig
+ * @property {boolean} [overwriteLocalCopies=true] - the release version tag to use instead of master
+ * @property {string} [remoteReadmeVersion="master"] - the release version tag to use instead of master
+ * @property {string} [remoteReadmeVariant=""] - the variant string to use for the README source
+ * (like "_esm" to make README_esm.md)
+ */
+
+/**
  *
- * @param {string} remoteReadmeVersion - the release version tag to use instead of master
- * @param {string} [readmeVariant] - the release version tag to use instead of master
+ * @param {ProcessorConfig} config - the configuration for this processor
  * @return {Promise<void>}
  */
-export async function processDocFiles(remoteReadmeVersion = 'master', readmeVariant = undefined) {
+export async function processDocFiles(config) {
+  const { overwriteLocalCopies = true, remoteReadmeVersion = "master", readmeVariant = "" } = config;
+
   // setup
   await templateFiller.extractNames();
 
@@ -258,7 +276,7 @@ export async function processDocFiles(remoteReadmeVersion = 'master', readmeVari
     input: {
       remoteUrl: generateReadmeUrl(remoteReadmeVersion, readmeVariant),
       fileName: fromAuroComponentRoot(`/docTemplates/README.md`),
-      overwrite: false
+      overwrite: overwriteLocalCopies
     },
     output: fromAuroComponentRoot("/README.md")
   })
