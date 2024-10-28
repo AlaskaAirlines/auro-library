@@ -18,6 +18,10 @@ describe('generateReadmeUrl', () => {
       expect(generateReadmeUrl('v1.1.1')).toEqual('https://raw.githubusercontent.com/AlaskaAirlines/WC-Generator/refs/tags/v1.1.1/componentDocs/README_esm.md');
     });
 
+    it('should generate a tag url when given a version tag with a pre-release', () => {
+      expect(generateReadmeUrl('v1.1.1-beta.1')).toEqual('https://raw.githubusercontent.com/AlaskaAirlines/WC-Generator/refs/tags/v1.1.1-beta.1/componentDocs/README_esm.md');
+    });
+
     it('should generate a branch url when given a branch name other than master', () => {
       expect(generateReadmeUrl('feature/branch')).toEqual('https://raw.githubusercontent.com/AlaskaAirlines/WC-Generator/refs/heads/feature/branch/componentDocs/README_esm.md');
     });
@@ -34,6 +38,10 @@ describe('generateReadmeUrl', () => {
 
     it('should add variant to README filename when given a version tag', () => {
       assert(generateReadmeUrl('v1.1.1', '_some_variant').endsWith('README_some_variant.md'));
+    });
+
+    it('should add variant to README filename when given a version tag with a pre-release', () => {
+      expect(generateReadmeUrl('v1.1.1-beta.1', '_some_variant')).toEqual('https://raw.githubusercontent.com/AlaskaAirlines/WC-Generator/refs/tags/v1.1.1-beta.1/componentDocs/README_some_variant.md');
     });
 
     it('should add variant to README filename when given a branch name other than master', () => {
