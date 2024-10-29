@@ -143,8 +143,9 @@ export function generateReadmeUrl(branchOrTag = 'master', variantOverride = '') 
 
 /**
  * @typedef {Object} FileProcessorConfig
- * @property {string | InputFileType} input - path to input file, including filename
- * @property {string} output - path to output file, including filename
+ * @property {string} identifier - A unique identifier for this file (used for logging).
+ * @property {string | InputFileType} input - path to an input file, including filename
+ * @property {string} output - path to an output file, including filename
  * @property {Partial<MarkdownMagicOptions>} [mdMagicConfig] - extra configuration options for md magic
  * @property {Array<(contents: string) => string>} [postProcessors] - extra processor functions to run on content
  */
