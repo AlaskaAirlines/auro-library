@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { AuroFileHandler } from '../../auroFileHandler.mjs';
+import { AuroFileHandler } from '../../../utils/auroFileHandler.mjs';
 import fs from 'node:fs/promises';
 import { Logger } from '../../../utils/logger.mjs';
 

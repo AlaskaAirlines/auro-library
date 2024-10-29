@@ -3,7 +3,7 @@
 import {describe, it, beforeEach, afterAll, expect} from 'vitest';
 import {mkdir, writeFile, access, rm, readFile} from 'node:fs/promises';
 
-import {optionallyCopyFile} from "../../generateDocs.mjs";
+import {optionallyCopyFile} from "../../sharedFileProcessorUtils.mjs";
 
 const workingDir = './tmp/optionallyCopyFile';
 
