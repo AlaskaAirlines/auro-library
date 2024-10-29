@@ -1,5 +1,5 @@
 import {beforeEach, describe, expect, assert, it} from "vitest";
-import {generateReadmeUrl, templateFiller} from "../../generateDocs.mjs";
+import {generateReadmeUrl, templateFiller} from "../../sharedFileProcessorUtils.mjs";
 
 
 describe('generateReadmeUrl', () => {
