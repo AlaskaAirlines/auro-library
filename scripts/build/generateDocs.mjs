@@ -19,6 +19,41 @@ import {
  */
 
 /**
+ * @param {ProcessorConfig} config - The configuration for this processor.
+ * @returns {import('../utils/sharedFileProcessorUtils').FileProcessorConfig[]}
+ */
+export const fileConfigs = ({remoteReadmeVersion, remoteReadmeVariant, overwriteLocalCopies}) => [
+  // README.md
+  {
+    identifier: 'README.md',
+    input: {
+      remoteUrl: generateReadmeUrl(remoteReadmeVersion, remoteReadmeVariant),
+      fileName: fromAuroComponentRoot(`/docTemplates/README.md`),
+      overwrite: overwriteLocalCopies
+    },
+    output: fromAuroComponentRoot("/README.md")
+  },
+  // index.md
+  {
+    identifier: 'index.md',
+    input: fromAuroComponentRoot("/docs/partials/index.md"),
+    output: fromAuroComponentRoot("/demo/index.md"),
+    mdMagicConfig: {
+      output: {
+        directory: fromAuroComponentRoot("/demo")
+      }
+    }
+  },
+  // api.md
+  {
+    identifier: 'api.md',
+    input: fromAuroComponentRoot("/docs/partials/api.md"),
+    output: fromAuroComponentRoot("/demo/api.md"),
+    postProcessors: [templateFiller.formatApiTable],
+  }
+];
+
+/**
  *
  * @param {ProcessorConfig} config - The configuration for this processor.
  * @return {Promise<void>}
@@ -28,41 +63,17 @@ export async function processDocFiles(config = {
   remoteReadmeVersion: "master",
   readmeVariant: ""
 }) {
-  const { overwriteLocalCopies, remoteReadmeVersion, readmeVariant } = config;
-
   // setup
   await templateFiller.extractNames();
 
-  // process
-  // README.md
-
-  Logger.warn('WARNING: overwrite is set to FALSE for README.md - please update this when template changes are merged');
-  await processContentForFile({
-    input: {
-      remoteUrl: generateReadmeUrl(remoteReadmeVersion, readmeVariant),
-      fileName: fromAuroComponentRoot(`/docTemplates/README.md`),
-      overwrite: overwriteLocalCopies
-    },
-    output: fromAuroComponentRoot("/README.md")
-  });
-
-  // Demo MD file
-  await processContentForFile({
-    input: fromAuroComponentRoot("/docs/partials/index.md"),
-    output: fromAuroComponentRoot("/demo/index.md"),
-    mdMagicConfig: {
-      output: {
-        directory: fromAuroComponentRoot("/demo")
-      }
+  for (const fileConfig of fileConfigs(config)) {
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      await processContentForFile(fileConfig);
+    } catch (err) {
+      Logger.error(`Error processing ${fileConfig.identifier}: ${err.message}`);
     }
-  });
-
-  // API MD file
-  await processContentForFile({
-    input: fromAuroComponentRoot("/docs/partials/api.md"),
-    output: fromAuroComponentRoot("/demo/api.md"),
-    postProcessors: [templateFiller.formatApiTable],
-  });
+  }
 }
 
 processDocFiles().then(() => {
