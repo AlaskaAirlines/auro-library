@@ -3,7 +3,7 @@ import * as mdMagic from 'markdown-magic';
 import fs from 'node:fs/promises';
 import { fileURLToPath } from 'url';
 
-import AuroLibraryUtils from "../utils/auroLibraryUtils.mjs";
+import AuroLibraryUtils from "./auroLibraryUtils.mjs";
 import { AuroTemplateFiller } from "./auroTemplateFiller.mjs";
 import { AuroFileHandler } from "./auroFileHandler.mjs";
 
@@ -72,6 +72,7 @@ export const nonEsmComponents = ['combobox', 'datepicker', 'menu', 'pane', 'sele
  * @param {string} pathLike - Please include the preceding slash! Like so: `/docTemplates/README.md`
  * @return {string}
  */
+// TODO: test this in auro-flight before merging to main
 export function fromAuroComponentRoot(pathLike) {
   const currentDir = fileURLToPath(new URL('.', import.meta.url))
   return path.join(currentDir, `${auroLibraryUtils.projectRootFromBuildScriptDir}${pathLike}`)
