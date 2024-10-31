@@ -6,15 +6,30 @@
 /* eslint-disable arrow-parens, line-comment-position, no-console, no-inline-comments, no-magic-numbers, prefer-arrow-callback, require-unicode-regexp, jsdoc/require-description-complete-sentence, prefer-named-capture-group */
 
 import * as fs from 'fs';
-import fsAsync from 'node:fs/promises';
 import * as path from 'path';
 import chalk from 'chalk';
+import {Logger} from "./logger.mjs";
 
 export default class AuroLibraryUtils {
-  PROJECT_ROOT_FROM_SCRIPTS__BUILD = "./../../../../.."
+  getDirname() {
+    if (typeof __dirname === 'undefined') {
+      Logger.warn('Unable to determine project root as __dirname is not defined. Assuming current directory is okay!', true);
+      return '';
+    }
+
+    // eslint-disable-next-line no-undef
+    return __dirname;
+  }
 
   get projectRootFromBuildScriptDir() {
-    return this.PROJECT_ROOT_FROM_SCRIPTS__BUILD
+    const currentDir = this.getDirname();
+
+    if (!currentDir.includes('node_modules')) {
+      Logger.warn(`Unable to determine best project root as node_modules is not in the directory path. Assuming ${currentDir} is okay!`, true);
+      return currentDir;
+    }
+
+    return currentDir.split('node_modules')[0];
   }
 
   /**
@@ -190,20 +205,6 @@ export default class AuroLibraryUtils {
      * Write the result to the destination file.
      */
     fs.writeFileSync(destination, result, { encoding: 'utf8'});
-  }
-
-  /**
-   * Check if a file or directory exists.
-   * @param filePath
-   * @return {Promise<boolean>}
-   */
-  async existsAsync(filePath) {
-    try {
-      await fsAsync.access(filePath);
-      return true;
-    } catch {
-      return false;
-    }
   }
 }
 
