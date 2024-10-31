@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { AuroFileHandler } from '../../../utils/auroFileHandler.mjs';
+import { AuroFileHandler } from '../../auroFileHandler.mjs';
 import fs from 'node:fs/promises';
-import { Logger } from '../../../utils/logger.mjs';
+import { Logger } from '../../logger.mjs';
 
 vi.mock('node:fs/promises');
 vi.mock('../../../utils/logger.mjs');

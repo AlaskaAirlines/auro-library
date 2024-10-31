@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { AuroTemplateFiller } from '../../../utils/auroTemplateFiller.mjs';
+import { AuroTemplateFiller } from '../../auroTemplateFiller.mjs';
 import fs from 'node:fs/promises';
 
 vi.mock('node:fs/promises');
