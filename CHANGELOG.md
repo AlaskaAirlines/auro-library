@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+# [2.11.0](https://github.com/AlaskaAirlines/auro-library/compare/v2.10.1...v2.11.0) (2024-11-01)
+
+
+### Features
+
+* adding .editoconfig file for IDE formatting ([82e2b64](https://github.com/AlaskaAirlines/auro-library/commit/82e2b64673319c8d5b18269dca2d0d3f8a7de83b))
+
 ## [2.10.1](https://github.com/AlaskaAirlines/auro-library/compare/v2.10.0...v2.10.1) (2024-10-21)
 
 
