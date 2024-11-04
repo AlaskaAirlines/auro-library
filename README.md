@@ -30,6 +30,7 @@ on:
   pull_request:
     branches: [ main ]
 
+
 jobs:
   call-publish-demo-workflow:
     uses: AlaskaAirlines/auro-library/.github/workflows/publishDemo.yml@main
@@ -48,6 +49,7 @@ Afterwards you will want to make sure to update the script tags you want replace
 
 > Note: If you fail to do this, the components will fail to register in your demo.
 <!-- AURO-GENERATED-CONTENT:END -->
+
 ---
 
 ### Surge Demo Teardown
@@ -60,6 +62,7 @@ This workflow works to automatically delete and clear any surge demos that have 
 
 In order to clear all our surge projects we rely on [this GitHub Action](https://github.com/marketplace/actions/surge-sh-teardown) to handle the deletion logic.
 <!-- AURO-GENERATED-CONTENT:END -->
+
 ---
 
 ### Dependency Tag Versioning
@@ -178,13 +181,13 @@ firstUpdated() {
 };
 ```
 <!-- AURO-GENERATED-CONTENT:END -->
+
 ---
 
 ### Sync All Templates
 
 <!-- AURO-GENERATED-CONTENT:START (FILE:src=./../docs/partials/syncAllTemplates.md) -->
 <!-- The below content is automatically added from ./../docs/partials/syncAllTemplates.md -->
-
 ### How to Run the `syncAllTemplates.mjs` Script
 
 To run the `syncAllTemplates.mjs` script, you will need to add a new node script into the linked component and point that to the `syncAllTemplates.mjs` file. You can individually run the workflow configurations by pointing to the `syncAllTemplates.mjs` file and adding a `--github` parameter after the path. The same can be done for the linter configurations by adding a `--linters` parameter.
@@ -204,5 +207,29 @@ To run the `syncAllTemplates.mjs` script, you will need to add a new node script
 ```
 // Only sync linter configuration templates
 "syncTemplates": "./node_modules/@aurodesignsystem/auro-library/scripts/config/syncAllTemplates.mjs --linters"
+```
+<!-- AURO-GENERATED-CONTENT:END -->
+
+
+---
+
+### Prep to build api.md
+
+<!-- AURO-GENERATED-CONTENT:START (FILE:src=./../docs/partials/generateWcaComponent.md) -->
+<!-- The below content is automatically added from ./../docs/partials/generateWcaComponent.md -->
+# How to Run the `generateWcaComponent.mjs` Script
+
+To run the `generateWcaComponent.mjs` script, you need to provide the file paths for the components you want to process with WCA. This script should be executed only once after adding a new component to the project. Upon running the script, `.js` files will be generated in the `scripts/wca` folder.
+
+## Example Calls
+
+```json
+// Common case: 1 component in 1 project
+"build:api:prepare": "node ./node_modules/@aurodesignsystem/auro-library/scripts/generateWcaComponent.mjs 'src/auro-flight.js'"
+```
+
+```
+// multiple components in 1 project
+"build:api:prepare": "node ./node_modules/@aurodesignsystem/auro-library/scripts/config/syncAllTemplates.mjs 'src/auro-flight*.js'"
 ```
 <!-- AURO-GENERATED-CONTENT:END -->
