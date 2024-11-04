@@ -13,6 +13,5 @@ export default (code, sourcePath) => {
   if (!customElements.get(${defaultTag})) {
     customElements.define(${defaultTag}, ${className}WCA);
   }
-
   `;
 };
