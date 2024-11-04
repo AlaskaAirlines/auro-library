@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import glob from 'glob';
 import util from 'util';
-import getTemplatedComponentCode from './extendedComponentTemplate.mjs';
+import getTemplatedComponentCode from './prepWcaCompatibleCode.mjs';
 
 const promisifiedGlob = util.promisify(glob);
 
