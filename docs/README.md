@@ -31,3 +31,10 @@
 <!-- AURO-GENERATED-CONTENT:START (FILE:src=./../docs/partials/syncAllTemplates.md) -->
 <!-- AURO-GENERATED-CONTENT:END -->
 
+
+---
+
+### Prep to build api.md
+
+<!-- AURO-GENERATED-CONTENT:START (FILE:src=./../docs/partials/generateWcaComponent.md) -->
+<!-- AURO-GENERATED-CONTENT:END -->
