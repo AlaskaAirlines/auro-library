@@ -6,7 +6,7 @@ import getTemplatedComponentCode from './prepWcaCompatibleCode.mjs';
 
 const promisifiedGlob = util.promisify(glob);
 
-const WAC_DIR = path.resolve(process.cwd(), './docs/wca');
+const WAC_DIR = path.resolve(process.cwd(), './scripts/wca');
 
 async function globPath(sources) {
   try {
