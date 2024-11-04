@@ -30,7 +30,7 @@ async function createExtendsFile(filePaths) {
     const fileContent = await fs.promises.readFile(resolvedPath, 'utf-8',);
     const newPath = path.resolve(WAC_DIR, `${path.basename(filePath)}`);
     const newCode = getTemplatedComponentCode(fileContent, path.relative(WAC_DIR, filePath));
-    fs.writeFileSync(newPath, newCode);
+    await fs.promises.writeFile(newPath, newCode);
   }
 }
 
