@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import AuroLibraryUtils from "./auroLibraryUtils.mjs";
 import { AuroTemplateFiller } from "./auroTemplateFiller.mjs";
 import { AuroFileHandler } from "./auroFileHandler.mjs";
+import {Logger} from "./logger.mjs";
 
 
 // This JSDoc type trickery is here so you get "decent enough" auto complete
