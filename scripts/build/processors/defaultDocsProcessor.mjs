@@ -25,14 +25,14 @@ export const defaultDocsProcessorConfig = {
   // eslint-disable-next-line no-warning-comments
   // TODO: remove this variant when all components are updated to use latest auro-library
   // AND the default README.md is updated to use the new paths
-  readmeVariant: "_updated_paths"
+  remoteReadmeVariant: "_updated_paths"
 };
 
 /**
  * @param {ProcessorConfig} config - The configuration for this processor.
  * @returns {import('../utils/sharedFileProcessorUtils').FileProcessorConfig[]}
  */
-export const fileConfigs = (config = defaultDocsProcessorConfig) => [
+export const fileConfigs = (config) => [
   // README.md
   {
     identifier: 'README.md',
