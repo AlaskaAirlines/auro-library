@@ -1,5 +1,26 @@
 # Semantic Release Automated Changelog
 
+# [3.0.0](https://github.com/AlaskaAirlines/auro-library/compare/v2.11.0...v3.0.0) (2024-11-05)
+
+
+### Bug Fixes
+
+* add missing logger import ([8258705](https://github.com/AlaskaAirlines/auro-library/commit/8258705385b20950dba442a59fa41b56052955bf))
+* sourcery feedback - change tag detection ([51b134f](https://github.com/AlaskaAirlines/auro-library/commit/51b134fea57c79e9625b6053296049c19959595a))
+
+
+### Features
+
+* add more consistent "component root" path generator ([c88f5a8](https://github.com/AlaskaAirlines/auro-library/commit/c88f5a8018fcbcbc1deefa35a0152c1696681957))
+* add syncGithubFiles.mjs script ([207009d](https://github.com/AlaskaAirlines/auro-library/commit/207009d000565566aed4687ed45ee7e286528856))
+* **build:** new script that generate extended component files for `wca` to be able to analyze [#85](https://github.com/AlaskaAirlines/auro-library/issues/85) ([ae8e6ab](https://github.com/AlaskaAirlines/auro-library/commit/ae8e6ab41db40df05f53562e14692a943c37d796))
+* change API for generateReadmeURL and processDocs ([a1a975c](https://github.com/AlaskaAirlines/auro-library/commit/a1a975c0d9020bdd71c9da0bf165777c54801e8b))
+
+
+### BREAKING CHANGES
+
+* `processDocFiles` no longer accepts individual config arguments
+
 # [2.11.0](https://github.com/AlaskaAirlines/auro-library/compare/v2.10.1...v2.11.0) (2024-11-01)
 
 
