@@ -59,7 +59,7 @@ export const fileConfigs = (config) => [
     identifier: 'api.md',
     input: fromAuroComponentRoot("/docs/partials/api.md"),
     output: fromAuroComponentRoot("/demo/api.md"),
-    postProcessors: [templateFiller.formatApiTable],
+    preProcessors: [templateFiller.formatApiTable],
   }
 ];
 

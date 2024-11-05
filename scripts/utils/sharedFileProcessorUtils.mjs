@@ -1,7 +1,5 @@
-import path from 'path';
 import * as mdMagic from 'markdown-magic';
 import fs from 'node:fs/promises';
-import { fileURLToPath } from 'url';
 
 import AuroLibraryUtils from "./auroLibraryUtils.mjs";
 import { AuroTemplateFiller } from "./auroTemplateFiller.mjs";
@@ -75,8 +73,12 @@ export const nonEsmComponents = ['combobox', 'datepicker', 'menu', 'pane', 'sele
  */
 // TODO: test this in auro-flight before merging to main
 export function fromAuroComponentRoot(pathLike) {
-  const currentDir = fileURLToPath(new URL('.', import.meta.url))
-  return path.join(currentDir, `${auroLibraryUtils.getProjectRootPath}${pathLike}`)
+  if (pathLike.startsWith('/')) {
+    // remove the first slash
+    return auroLibraryUtils.getProjectRootPath + pathLike.slice(1)
+  }
+
+  return auroLibraryUtils.getProjectRootPath + pathLike
 }
 
 
@@ -149,6 +151,7 @@ export function generateReadmeUrl(branchOrTag = 'master', variantOverride = '') 
  * @property {string | InputFileType} input - path to an input file, including filename
  * @property {string} output - path to an output file, including filename
  * @property {Partial<MarkdownMagicOptions>} [mdMagicConfig] - extra configuration options for md magic
+ * @property {Array<(contents: string) => string>} [preProcessors] - extra processor functions to run on content AFTER markdownmagic and BEFORE templateFiller
  * @property {Array<(contents: string) => string>} [postProcessors] - extra processor functions to run on content
  */
 
@@ -240,6 +243,13 @@ export async function processContentForFile(config) {
 
   // 3a. Read the output file contents
   let fileContents = await fs.readFile(output, {encoding: 'utf-8'});
+
+  // 3c. Run any post-processors
+  if (config.postProcessors) {
+    for (const processor of config.postProcessors) {
+      fileContents = processor(fileContents)
+    }
+  }
 
   // 3b. Replace template variables in output file
   fileContents = templateFiller.replaceTemplateValues(fileContents);
