@@ -21,11 +21,11 @@ export default class AuroLibraryUtils {
     return __dirname;
   }
 
-  get projectRootFromBuildScriptDir() {
+  get getProjectRootPath() {
     const currentDir = this.getDirname();
 
     if (!currentDir.includes('node_modules')) {
-      Logger.warn(`Unable to determine best project root as node_modules is not in the directory path. Assuming ${currentDir} is okay!`, true);
+      Logger.warn(`Unable to determine best project root as node_modules \nis not in the directory path.\n\nAssuming - "${currentDir}"`, true);
       return currentDir;
     }
 
@@ -162,8 +162,8 @@ export default class AuroLibraryUtils {
       'name': pName.substring(nameStart + 1),
       'nameCap': pName.substring(nameStart + 1)[0].toUpperCase() + pName.substring(nameStart + 2),
       'version': packageJson.version,
-      'tokensVersion': packageJson.peerDependencies['\@aurodesignsystem/design-tokens'].substring(1),
-      'wcssVersion': packageJson.peerDependencies['\@aurodesignsystem/webcorestylesheets'].substring(1)
+      'tokensVersion': packageJson.peerDependencies['@aurodesignsystem/design-tokens'].substring(1),
+      'wcssVersion': packageJson.peerDependencies['@aurodesignsystem/webcorestylesheets'].substring(1)
 
     };
   }
