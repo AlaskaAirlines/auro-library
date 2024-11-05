@@ -12,13 +12,7 @@ import {Logger} from "./logger.mjs";
 
 export default class AuroLibraryUtils {
   getDirname() {
-    if (typeof __dirname === 'undefined') {
-      Logger.warn('Unable to determine project root as __dirname is not defined. Assuming current directory is okay!', true);
-      return '';
-    }
-
-    // eslint-disable-next-line no-undef
-    return __dirname;
+    return import.meta.url.replace("file://", "");
   }
 
   get getProjectRootPath() {
