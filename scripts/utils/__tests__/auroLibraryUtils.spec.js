@@ -8,7 +8,7 @@ describe('AuroLibraryUtils', () => {
       const mockDirname = '/user/project/scripts/utils';
       vi.spyOn(utils, 'getDirname').mockReturnValue(mockDirname);
 
-      const result = utils.projectRootFromBuildScriptDir;
+      const result = utils.getProjectRootPath;
       expect(result).toBe(mockDirname);
     });
 
@@ -17,7 +17,7 @@ describe('AuroLibraryUtils', () => {
       const mockDirname = '/user/project/node_modules/some-package';
       vi.spyOn(utils, 'getDirname').mockReturnValue(mockDirname);
 
-      const result = utils.projectRootFromBuildScriptDir;
+      const result = utils.getProjectRootPath;
       expect(result).toBe('/user/project/');
     });
   });

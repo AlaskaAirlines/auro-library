@@ -76,7 +76,7 @@ export const nonEsmComponents = ['combobox', 'datepicker', 'menu', 'pane', 'sele
 // TODO: test this in auro-flight before merging to main
 export function fromAuroComponentRoot(pathLike) {
   const currentDir = fileURLToPath(new URL('.', import.meta.url))
-  return path.join(currentDir, `${auroLibraryUtils.projectRootFromBuildScriptDir}${pathLike}`)
+  return path.join(currentDir, `${auroLibraryUtils.getProjectRootPath}${pathLike}`)
 }
 
 
