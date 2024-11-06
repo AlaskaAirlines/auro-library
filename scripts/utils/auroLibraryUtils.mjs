@@ -8,11 +8,13 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import chalk from 'chalk';
+import { fileURLToPath } from 'url';
+
 import {Logger} from "./logger.mjs";
 
 export default class AuroLibraryUtils {
   getDirname() {
-    return import.meta.url.replace("file://", "");
+    return fileURLToPath(import.meta.url);
   }
 
   get getProjectRootPath() {
