@@ -1,5 +1,6 @@
 import * as mdMagic from 'markdown-magic';
 import fs from 'node:fs/promises';
+import path from "node:path";
 
 import AuroLibraryUtils from "./auroLibraryUtils.mjs";
 import { AuroTemplateFiller } from "./auroTemplateFiller.mjs";
@@ -75,10 +76,10 @@ export const nonEsmComponents = ['combobox', 'datepicker', 'menu', 'pane', 'sele
 export function fromAuroComponentRoot(pathLike) {
   if (pathLike.startsWith('/')) {
     // remove the first slash
-    return auroLibraryUtils.getProjectRootPath + pathLike.slice(1)
+    return path.join(auroLibraryUtils.getProjectRootPath, pathLike.slice(1))
   }
 
-  return auroLibraryUtils.getProjectRootPath + pathLike
+  return path.join(auroLibraryUtils.getProjectRootPath, pathLike)
 }
 
 
@@ -244,24 +245,24 @@ export async function processContentForFile(config) {
   // 3a. Read the output file contents
   let fileContents = await fs.readFile(output, {encoding: 'utf-8'});
 
-  // 3c. Run any post-processors
-  if (config.postProcessors) {
-    for (const processor of config.postProcessors) {
+  // 3b. Run any pre-processors
+  if (config.preProcessors) {
+    for (const processor of config.preProcessors) {
       fileContents = processor(fileContents)
     }
   }
 
-  // 3b. Replace template variables in output file
+  // 3c. Replace template variables in output file
   fileContents = templateFiller.replaceTemplateValues(fileContents);
 
-  // 3c. Run any post-processors
+  // 3d. Run any post-processors
   if (config.postProcessors) {
     for (const processor of config.postProcessors) {
       fileContents = processor(fileContents)
     }
   }
 
-  // 3d. Write the final file contents
+  // 3e. Write the final file contents
   if (!await AuroFileHandler.tryWriteFile(output, fileContents)) {
     throw new Error(`Error writing "${bareFileName}" file to output ${output}`);
   }
