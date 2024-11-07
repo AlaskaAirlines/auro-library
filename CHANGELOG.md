@@ -1,5 +1,16 @@
 # Semantic Release Automated Changelog
 
+## [3.0.1](https://github.com/AlaskaAirlines/auro-library/compare/v3.0.0...v3.0.1) (2024-11-07)
+
+
+### Bug Fixes
+
+* make api table formatter a preProcessor ([98d3de1](https://github.com/AlaskaAirlines/auro-library/commit/98d3de1e290ea2e3f03da9ef0d167c3291bc195b))
+* properly consume remoteReadmeVariant ([7b5f108](https://github.com/AlaskaAirlines/auro-library/commit/7b5f1082710288d86f8bf182c0ceb71ac3ad7420))
+* sourcery feedback ([de11fe8](https://github.com/AlaskaAirlines/auro-library/commit/de11fe8d70946b6096970026406f63bd9fdc10ba))
+* use fileURLToPath instead of manual formatting ([3d4e834](https://github.com/AlaskaAirlines/auro-library/commit/3d4e8348bf249620eb88a6e1094a8f920c34369a))
+* use import.meta.url instead of __dirname ([9185197](https://github.com/AlaskaAirlines/auro-library/commit/9185197d8b0179dfe645497c640b025d8f39c6b3))
+
 # [3.0.0](https://github.com/AlaskaAirlines/auro-library/compare/v2.11.0...v3.0.0) (2024-11-05)
 
 
