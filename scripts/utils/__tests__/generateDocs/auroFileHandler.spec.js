@@ -8,6 +8,7 @@ vi.mock('../../../utils/logger.mjs');
 
 describe('AuroFileHandler', () => {
   const filePath = 'test.txt';
+  const fakeDir = 'fakeDir';
   const fileContents = 'Hello, world!';
   const source = 'source.txt';
   const destination = 'destination.txt';
@@ -55,6 +56,16 @@ describe('AuroFileHandler', () => {
     const result = await AuroFileHandler.tryWriteFile(filePath, fileContents);
 
     expect(result).toBe(true);
+  });
+
+  it('should create directory if it does not exist', async () => {
+    fs.mkdir.mockResolvedValue();
+    fs.writeFile.mockResolvedValue();
+
+    const result = await AuroFileHandler.tryWriteFile(`${fakeDir}/${filePath}`, fileContents);
+
+    expect(result).toBe(true);
+    expect(fs.mkdir).toHaveBeenCalledWith(fakeDir, { recursive: true });
   });
 
   it('should return false if file cannot be written', async () => {
