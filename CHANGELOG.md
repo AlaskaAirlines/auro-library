@@ -1,5 +1,17 @@
 # Semantic Release Automated Changelog
 
+## [3.0.2](https://github.com/AlaskaAirlines/auro-library/compare/v3.0.1...v3.0.2) (2024-11-13)
+
+
+### Bug Fixes
+
+* automatically create `docTemplate` when generating docs [#94](https://github.com/AlaskaAirlines/auro-library/issues/94) ([e6195d9](https://github.com/AlaskaAirlines/auro-library/commit/e6195d958233cd5b0902cb5afbf769dff246e852))
+
+
+### Performance Improvements
+
+* omit dir exist checking (sourcery reccomendation) ([68de618](https://github.com/AlaskaAirlines/auro-library/commit/68de61844960bf6d32df2ed66ca714857da1d623))
+
 ## [3.0.1](https://github.com/AlaskaAirlines/auro-library/compare/v3.0.0...v3.0.1) (2024-11-07)
 
 
