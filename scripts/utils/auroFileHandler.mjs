@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises';
+import path from 'node:path';
 
 import {Logger} from "../utils/logger.mjs";
 
@@ -40,7 +41,12 @@ export class AuroFileHandler {
    * @returns {Promise<boolean>}
    */
   static async tryWriteFile(filePath, fileContents) {
-    try {
+    try { 
+      const dirname = path.dirname(filePath);
+      const dirExists = await this.exists(dirname);
+      if (!dirExists) {
+        await fs.mkdir(dirname, {recursive: true});
+      }
       await fs.writeFile(filePath, fileContents, {encoding: 'utf-8'});
       return true;
     } catch (err) {
