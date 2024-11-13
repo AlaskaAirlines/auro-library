@@ -43,10 +43,7 @@ export class AuroFileHandler {
   static async tryWriteFile(filePath, fileContents) {
     try { 
       const dirname = path.dirname(filePath);
-      const dirExists = await this.exists(dirname);
-      if (!dirExists) {
-        await fs.mkdir(dirname, {recursive: true});
-      }
+      await fs.mkdir(dirname, {recursive: true});
       await fs.writeFile(filePath, fileContents, {encoding: 'utf-8'});
       return true;
     } catch (err) {
