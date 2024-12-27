@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [3.0.4](https://github.com/AlaskaAirlines/auro-library/compare/v3.0.3...v3.0.4) (2024-12-27)
+
+
+### Performance Improvements
+
+* update `floatingUI` to match with `auro-formkit/dropdown` ([d003072](https://github.com/AlaskaAirlines/auro-library/commit/d00307245d16ad3a4d5aa1b2d60bb374caf3d454))
+
 ## [3.0.3](https://github.com/AlaskaAirlines/auro-library/compare/v3.0.2...v3.0.3) (2024-12-23)
 
 
