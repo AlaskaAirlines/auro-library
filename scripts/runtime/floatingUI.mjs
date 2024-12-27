@@ -314,6 +314,9 @@ export default class AuroFloatingUI {
           this.handleFocusLoss();
           break;
         case 'click':
+          if (document.activeElement === document.body) {
+            event.currentTarget.focus();
+          }
           this.handleClick();
           break;
         default:
