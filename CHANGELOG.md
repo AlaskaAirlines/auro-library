@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [3.0.5](https://github.com/AlaskaAirlines/auro-library/compare/v3.0.4...v3.0.5) (2024-12-27)
+
+
+### Bug Fixes
+
+* force focus state to dropdown.trigger as `document.activeElement` stays in body even with clicking [#99](https://github.com/AlaskaAirlines/auro-library/issues/99) ([5bfec7a](https://github.com/AlaskaAirlines/auro-library/commit/5bfec7a004c48b4f9612193eb4a64057b81e57cc))
+
 ## [3.0.4](https://github.com/AlaskaAirlines/auro-library/compare/v3.0.3...v3.0.4) (2024-12-27)
 
 
