@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [3.0.6](https://github.com/AlaskaAirlines/auro-library/compare/v3.0.5...v3.0.6) (2025-01-02)
+
+
+### Bug Fixes
+
+* postCSS reference path ([6d33791](https://github.com/AlaskaAirlines/auro-library/commit/6d33791e9f1b74c5052ffcaadc456a798c1ece4d))
+
 ## [3.0.5](https://github.com/AlaskaAirlines/auro-library/compare/v3.0.4...v3.0.5) (2024-12-27)
 
 
