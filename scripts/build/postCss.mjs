@@ -1,11 +1,14 @@
+/* eslint-disable brace-style, eqeqeq, object-property-newline, arrow-parens, array-element-newline, object-shorthand, dot-location, no-use-before-define, prefer-template, consistent-return, no-underscore-dangle, prefer-arrow-callback */
+
 import autoprefixer from 'autoprefixer';
 import postcss from 'postcss';
 import comments from 'postcss-discard-comments';
 import path from 'path';
 import fs from 'fs';
+import process from 'process';
 
-const __dirname = new URL('.', import.meta.url).pathname;
-const directoryPath = path.join(__dirname, '../src');
+const __dirname = process.cwd();
+const directoryPath = path.join(__dirname, '/src');
 
 /**
  * Default postCSS run
@@ -13,11 +16,11 @@ const directoryPath = path.join(__dirname, '../src');
  * through the standardProcessor() function.
  */
 fs.readdir(directoryPath, function (err, files) {
-  //handling error
+  // handling error
   if (err) {
-    return console.log('Unable to scan directory: ' + err);
+    return console.log('Unable to scan directory: ' + err); // eslint-disable-line no-console
   }
-  //listing all files using forEach
+  // listing all files using forEach
   files.forEach(function (file) {
     if (file.includes(".css")) {
       standardProcessor(file);
@@ -28,19 +31,19 @@ fs.readdir(directoryPath, function (err, files) {
 /**
  * The standardProcessor function applies tokens for fallback selectors
  * and completes a post cleanup.
- * @param {string} file
+ * @param {string} file - The file to process.
  */
 function standardProcessor(file) {
- fs.readFile(`src/${file}`, (err, css) => {
-   postcss([autoprefixer, comments])
-   .use(comments({
-     remove: function(comment) { return comment[0] == "@"; }
-   }))
-   .process(css, { from: `src/${file}`, to: `src/${file}` })
-   .then(result => {
-     fs.writeFile(`src/${file}`, result.css, () => true)
-   })
- });
+  fs.readFile(`src/${file}`, (err, css) => {
+    postcss([autoprefixer, comments])
+      .use(comments({
+        remove: function(comment) { return comment[0] == "@"; }
+      }))
+      .process(css, { from: `src/${file}`, to: `src/${file}` })
+      .then(result => {
+        fs.writeFile(`src/${file}`, result.css, () => true);
+      });
+  });
 }
 
 /**
