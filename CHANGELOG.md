@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [3.0.7](https://github.com/AlaskaAirlines/auro-library/compare/v3.0.6...v3.0.7) (2025-01-13)
+
+
+### Performance Improvements
+
+* add ability to pass custom env variables [#103](https://github.com/AlaskaAirlines/auro-library/issues/103) ([fab4c8e](https://github.com/AlaskaAirlines/auro-library/commit/fab4c8e10cab475426b3ed5dfe6db7e9ac99f07c))
+
 ## [3.0.6](https://github.com/AlaskaAirlines/auro-library/compare/v3.0.5...v3.0.6) (2025-01-02)
 
 
