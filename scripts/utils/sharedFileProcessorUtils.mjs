@@ -154,6 +154,7 @@ export function generateReadmeUrl(branchOrTag = 'master', variantOverride = '') 
  * @property {Partial<MarkdownMagicOptions>} [mdMagicConfig] - extra configuration options for md magic
  * @property {Array<(contents: string) => string>} [preProcessors] - extra processor functions to run on content AFTER markdownmagic and BEFORE templateFiller
  * @property {Array<(contents: string) => string>} [postProcessors] - extra processor functions to run on content
+ * @property {object} [extraVars] - extra variables to use in the template
  */
 
 
@@ -222,7 +223,7 @@ export async function optionallyCopyFile(input, output, overwrite = true) {
  * @param {FileProcessorConfig} config - the config for this file
  */
 export async function processContentForFile(config) {
-  const { input: rawInput, output, mdMagicConfig } = config
+  const { input: rawInput, output, mdMagicConfig, extraVars = {} } = config
 
   // Helper vars
   const derivedInputPath = typeof rawInput === 'string' ? rawInput : rawInput.fileName;
@@ -253,7 +254,7 @@ export async function processContentForFile(config) {
   }
 
   // 3c. Replace template variables in output file
-  fileContents = templateFiller.replaceTemplateValues(fileContents);
+  fileContents = templateFiller.replaceTemplateValues(fileContents, extraVars);
 
   // 3d. Run any post-processors
   if (config.postProcessors) {

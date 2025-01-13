@@ -70,9 +70,10 @@ export class AuroTemplateFiller {
 
   /**
    * @param {string} template - The string to use to run variable replacement
+   * @param {object} extraVars - Additional variables to use in the template
    * @return {string}
    */
-  replaceTemplateValues(template) {
+  replaceTemplateValues(template, extraVars = {}) {
     const compileResult = Handlebars.compile(template);
 
     // replace all handlebars placeholders FIRST, then apply legacy replacements
@@ -84,7 +85,8 @@ export class AuroTemplateFiller {
       Namespace: this.values.namespaceCap,
       Version: this.values.version,
       dtVersion: this.values.tokensVersion,
-      wcssVersion: this.values.wcssVersion
+      wcssVersion: this.values.wcssVersion,
+      ...extraVars
     }, {
       helpers: {
         'capitalize': (str) => str.charAt(0).toUpperCase() + str.slice(1),

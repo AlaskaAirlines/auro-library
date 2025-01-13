@@ -78,4 +78,24 @@ describe('AuroTemplateFiller', () => {
 
     expect(result.trim()).toBe('Button Documentation | Installing auro-button');
   });
+
+  it('should replace handlebars template values correctly with extra variables', () => {
+    filler.values = {
+      name: 'button',
+      nameCap: 'Button',
+      namespace: 'auro',
+      namespaceCap: 'Auro',
+      version: '1.0.0',
+      tokensVersion: '2.0.0',
+      wcssVersion: '3.0.0',
+    };
+
+    const extraVars = {
+      formkitVersion: '1.5.0'
+    };
+
+    const result = filler.replaceTemplateValues('{{formkitVersion}}', extraVars);
+
+    expect(result.trim()).toBe('1.5.0');
+  });
 });
