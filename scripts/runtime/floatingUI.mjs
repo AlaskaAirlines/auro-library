@@ -130,7 +130,11 @@ export default class AuroFloatingUI {
 
   updateState() {
     const isVisible = this.element.isPopoverVisible;
-    this.element.trigger.setAttribute('aria-expanded', isVisible);
+
+    // Refactor this to apply attribute to correct focusable element
+    // Reference Issue: https://github.com/AlaskaAirlines/auro-library/issues/105
+    //
+    // this.element.trigger.setAttribute('aria-expanded', isVisible);
 
     if (isVisible) {
       this.element.bib.setAttribute('data-show', true);
