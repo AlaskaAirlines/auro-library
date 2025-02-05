@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [3.0.8](https://github.com/AlaskaAirlines/auro-library/compare/v3.0.7...v3.0.8) (2025-02-05)
+
+
+### Bug Fixes
+
+* temporarily comment out aria-expanded code [#105](https://github.com/AlaskaAirlines/auro-library/issues/105) ([b7cd263](https://github.com/AlaskaAirlines/auro-library/commit/b7cd2632047641d92b3557beef9450d4d9f109c2))
+
 ## [3.0.7](https://github.com/AlaskaAirlines/auro-library/compare/v3.0.6...v3.0.7) (2025-01-13)
 
 
