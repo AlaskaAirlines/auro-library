@@ -55,10 +55,11 @@ export class AuroTemplateFiller {
     const npmStart = pName.indexOf('@');
     const namespaceStart = pName.indexOf('/');
     const nameStart = pName.indexOf('-');
+    const packageNamespace = pName.substring(namespaceStart + 1, nameStart);
 
     this.values = {
       'npm': pName.substring(npmStart, namespaceStart),
-      'namespace': pName.substring(namespaceStart + 1, nameStart),
+      'namespace': packageNamespace,
       'namespaceCap': pName.substring(namespaceStart + 1)[0].toUpperCase() + pName.substring(namespaceStart + 2, nameStart),
       'name': pName.substring(nameStart + 1),
       'nameCap': pName.substring(nameStart + 1)[0].toUpperCase() + pName.substring(nameStart + 2),
@@ -90,7 +91,10 @@ export class AuroTemplateFiller {
     }, {
       helpers: {
         'capitalize': (str) => str.charAt(0).toUpperCase() + str.slice(1),
+        // Hard codes `auro-*` with whatever string is passed in.
         'withAuroNamespace': (str) => `auro-${str}`,
+        // Recreats the string from package.json: auro-component, eslint-config, etc.
+        'packageName': () => `${this.values['namespace']}-${this.values['name']}`
       }
     })
 
