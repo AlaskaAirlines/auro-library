@@ -57,6 +57,10 @@ export class AuroTemplateFiller {
     const nameStart = pName.indexOf('-');
     const packageNamespace = pName.substring(namespaceStart + 1, nameStart);
 
+    if (nameStart === -1) {
+      throw new Error(`No name can be derived from package.json "name" field: '${pName}'. Expected pattern with \`-\` split like [\`@aurodesignsystem/auro-component\` or \`@aurodesignsystem/eslint-config\`, etc.]`);
+    }
+
     this.values = {
       'npm': pName.substring(npmStart, namespaceStart),
       'namespace': packageNamespace,

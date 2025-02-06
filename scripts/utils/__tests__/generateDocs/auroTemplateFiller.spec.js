@@ -8,6 +8,8 @@ const handlebarsTemplate = `{{Name}} Documentation | Installing {{ withAuroNames
 
 const legacyTemplate = `[Name] Documentation | Installing [namespace]-[name]`;
 
+const nonStandardTemplate = `{{packageName}} test | {{namespace}}-{{name}}`;
+
 describe('AuroTemplateFiller', () => {
 
   /* @type {AuroTemplateFiller} */
@@ -59,8 +61,50 @@ describe('AuroTemplateFiller', () => {
     };
 
     const result = filler.replaceTemplateValues(handlebarsTemplate);
+    const packageNameResult = filler.replaceTemplateValues(nonStandardTemplate);
 
     expect(result.trim()).toBe('Button Documentation | Installing auro-button');
+    expect(packageNameResult.trim()).toBe('auro-button test | auro-button');
+  });
+
+  it('should replace non-standard repository template values correctly', async () => {
+    const mockPackageJson = JSON.stringify({
+      name: '@aurodesignsystem/wc-generator',
+      version: '1.0.0',
+      peerDependencies: {
+        '@aurodesignsystem/design-tokens': '^2.0.0',
+        '@aurodesignsystem/webcorestylesheets': '^3.0.0'
+      }
+    });
+
+    fs.readFile.mockResolvedValue(mockPackageJson);
+
+    await filler.extractNames();
+
+    const result = filler.replaceTemplateValues(nonStandardTemplate);
+
+    expect(result.trim()).toBe('wc-generator test | wc-generator');
+  });
+
+  it('should throw an error when given a malformed package name', async () => {
+    const mockPackageJson = JSON.stringify({
+      name: '@aurodesignsystem/nunyabusiness',
+      version: '1.0.0',
+      peerDependencies: {
+        '@aurodesignsystem/design-tokens': '^2.0.0',
+        '@aurodesignsystem/webcorestylesheets': '^3.0.0'
+      }
+    });
+
+    async function shouldThrowAnErrorFunction() {
+      fs.readFile.mockResolvedValue(mockPackageJson);
+
+      await filler.extractNames();
+
+      filler.replaceTemplateValues(nonStandardTemplate);
+    }
+
+    await expect(() => shouldThrowAnErrorFunction()).rejects.toThrow(/No name can be derived/gu);
   });
 
   it('should replace legacy template values correctly', () => {
