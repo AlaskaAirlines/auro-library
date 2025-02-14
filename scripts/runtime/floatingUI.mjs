@@ -238,6 +238,7 @@ export default class AuroFloatingUI {
       this.updateCurrentExpandedDropdown();
       this.element.isPopoverVisible = true;
       this.element.triggerChevron?.setAttribute('data-expanded', true);
+      document.body.style.overflow = 'hidden';
       this.dispatchEventDropdownToggle();
       this.position();
       
@@ -255,6 +256,7 @@ export default class AuroFloatingUI {
   hideBib() {
     if (this.element.isPopoverVisible && !this.element.disabled && !this.element.noToggle) {
       this.element.isPopoverVisible = false;
+      document.body.style.overflow = '';
       this.element.triggerChevron?.removeAttribute('data-expanded');
       this.dispatchEventDropdownToggle();
     }
