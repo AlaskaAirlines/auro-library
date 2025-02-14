@@ -79,13 +79,21 @@ export default class AuroFloatingUI {
    * and applies the calculated position to the bib's style.
    */
   position() {
+    const wasFullscreen = this.element.bib.getAttribute('isFullscreen') === 'true';
     const strategy = this.getPositioningStrategy();
+    
     if (strategy === 'fullscreen') {
-      this.configureBibFullscreen(true);
-      this.mirrorSize(true);
+      if (!wasFullscreen) {
+        this.configureBibFullscreen(true);
+        this.mirrorSize(true);
+        this.dispatchEventStrategyChange(strategy);
+      }
     } else {
       this.configureBibFullscreen(false);
       this.mirrorSize(false);
+      if (wasFullscreen) {
+        this.dispatchEventStrategyChange(strategy);
+      }
 
       // Define the middlware for the floater configuration
       const middleware = [
@@ -256,10 +264,25 @@ export default class AuroFloatingUI {
    * @private
    * @returns {void} Dispatches event with an object showing the state of the dropdown.
    */
+  dispatchEventStrategyChange(strategy) {
+    const event = new CustomEvent(this.eventPrefix ? `${this.eventPrefix}-strategy-change` : 'strategy-change', {
+      detail: {
+        strategy,
+      },
+      composed: true
+    });
+
+    this.element.dispatchEvent(event);
+  }
+
+  /**
+   * @private
+   * @returns {void} Dispatches event with an object showing the state of the dropdown.
+   */
   dispatchEventDropdownToggle() {
     const event = new CustomEvent(this.eventPrefix ? `${this.eventPrefix}-toggled` : 'toggled', {
       detail: {
-        expanded: this.isPopoverVisible,
+        expanded: this.element.isPopoverVisible,
       },
       composed: true
     });
@@ -276,7 +299,7 @@ export default class AuroFloatingUI {
 
     const event = new CustomEvent(this.eventPrefix ? `${this.eventPrefix}-triggerClick` : "triggerClick", {
       composed: true,
-      details: {
+      detail: {
         expanded: this.element.isPopoverVisible
       }
     });
@@ -343,6 +366,9 @@ export default class AuroFloatingUI {
     ];
 
     const triggerNode = this.element.querySelectorAll('[slot="trigger"]')[0];
+    if (!triggerNode) {
+      return;
+    }
     const triggerNodeTagName = triggerNode.tagName.toLowerCase();
 
     focusableElementSelectors.forEach((selector) => {
