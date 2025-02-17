@@ -16,37 +16,23 @@ export default class AuroFloatingUI {
   }
 
   /**
-   * @private
-   * Adjusts the size of the bib content based on the bibSizer dimensions.
-   *
-   * This method retrieves the computed styles of the bibSizer element and applies them to the bib content.
-   * If the fullscreen parameter is true, it resets the dimensions to their default values. Otherwise, it
-   * mirrors the width and height from the bibSizer, ensuring that they are not set to zero.
-   *
-   * @param {boolean} fullscreen - A flag indicating whether to reset the dimensions for fullscreen mode.
-   *                               If true, the bib content dimensions are cleared; if false, they are set
-   *                               based on the bibSizer's computed styles.
+   * Mirrors the size of the bibSizer element to the bib content.
+   * Copies the width, height, max-width, and max-height styles from the bibSizer element to the bib content container.
+   * This ensures that the bib content has the same dimensions as the sizer element.
    */
-  mirrorSize(fullscreen) {
+  mirrorSize() {
     // mirror the boxsize from bibSizer
     if (this.element.bibSizer) {
       const sizerStyle = window.getComputedStyle(this.element.bibSizer);
       const bibContent = this.element.bib.shadowRoot.querySelector(".container");
-      if (fullscreen) {
-        bibContent.style.width = '';
-        bibContent.style.height = '';
-        bibContent.style.maxWidth = '';
-        bibContent.style.maxHeight = '';
-      } else {
-        if (sizerStyle.width !== '0px') {
-          bibContent.style.width = sizerStyle.width;
-        }
-        if (sizerStyle.height !== '0px') {
-          bibContent.style.height = sizerStyle.height;
-        }
-        bibContent.style.maxWidth = sizerStyle.maxWidth;
-        bibContent.style.maxHeight = sizerStyle.maxHeight;
+      if (sizerStyle.width !== '0px') {
+        bibContent.style.width = sizerStyle.width;
       }
+      if (sizerStyle.height !== '0px') {
+        bibContent.style.height = sizerStyle.height;
+      }
+      bibContent.style.maxWidth = sizerStyle.maxWidth;
+      bibContent.style.maxHeight = sizerStyle.maxHeight;
     }
   }
 
@@ -62,11 +48,12 @@ export default class AuroFloatingUI {
   getPositioningStrategy() {
     let strategy = 'floating';
     if (this.element.bib.mobileFullscreenBreakpoint) {
-      const isMobile = window.matchMedia(`(max-width: ${this.element.bib.mobileFullscreenBreakpoint})`).matches;
-      if (isMobile) {
+      const smallerThanBreakpoint = window.matchMedia(`(max-width: ${this.element.bib.mobileFullscreenBreakpoint})`).matches;
+      if (smallerThanBreakpoint) {
         strategy = 'fullscreen';
       }
     }
+
     return strategy;
   }
 
@@ -79,22 +66,11 @@ export default class AuroFloatingUI {
    * and applies the calculated position to the bib's style.
    */
   position() {
-    const wasFullscreen = this.element.bib.getAttribute('isFullscreen') === 'true';
     const strategy = this.getPositioningStrategy();
-    
-    if (strategy === 'fullscreen') {
-      if (!wasFullscreen) {
-        this.configureBibFullscreen(true);
-        this.mirrorSize(true);
-        this.dispatchEventStrategyChange(strategy);
-      }
-    } else {
-      this.configureBibFullscreen(false);
-      this.mirrorSize(false);
-      if (wasFullscreen) {
-        this.dispatchEventStrategyChange(strategy);
-      }
+    this.configureBibStrategy(strategy);
 
+    if (strategy === 'floating') {
+      this.mirrorSize();
       // Define the middlware for the floater configuration
       const middleware = [
         offset(this.element.floaterConfig.offset || 0),
@@ -117,22 +93,40 @@ export default class AuroFloatingUI {
 
   /**
    * @private
-   * Configures the bib element for fullscreen mode based on the mobile status.
+   * Configures the bib element's display strategy.
    *
-   * This method sets the 'isFullscreen' attribute on the bib element to "true" if the `isMobile` parameter is true, 
-   * and resets its position to the top-left corner of the viewport. If `isMobile` is false, it removes the 
-   * 'isFullscreen' attribute, indicating that the bib is not in fullscreen mode.
+   * Sets the bib to fullscreen or floating mode based on the provided strategy.
+   * Dispatches a 'strategy-change' event if the strategy changes.
    *
-   * @param {boolean} isMobile - A flag indicating whether the current device is mobile.
+   * @param {string} strategy - The positioning strategy ('fullscreen' or 'floating').
    */
-  configureBibFullscreen(isMobile) {
-    if (isMobile) {
-      this.element.bib.setAttribute('isFullscreen', "true");
+  configureBibStrategy(strategy) {
+    const prevStrategy = this.element.isBibFullscreen ? 'fullscreen' : 'floating';
+    if (strategy === 'fullscreen') {
+      this.element.isBibFullscreen = true;
       // reset the prev position
       this.element.bib.style.top = "0px";
       this.element.bib.style.left = "0px";
+
+      // reset the size that was mirroring `size` css-part
+      const bibContent = this.element.bib.shadowRoot.querySelector(".container");
+      bibContent.style.width = '';
+      bibContent.style.height = '';
+      bibContent.style.maxWidth = '';
+      bibContent.style.maxHeight = '';
     } else {
-      this.element.bib.removeAttribute('isFullscreen');
+      this.element.isBibFullscreen = false;
+    }
+
+    if (prevStrategy !== strategy) {
+      const event = new CustomEvent(this.eventPrefix ? `${this.eventPrefix}-strategy-change` : 'strategy-change', {
+        detail: {
+          strategy,
+        },
+        composed: true
+      });
+
+      this.element.dispatchEvent(event);
     }
   }
 
@@ -266,21 +260,6 @@ export default class AuroFloatingUI {
    * @private
    * @returns {void} Dispatches event with an object showing the state of the dropdown.
    */
-  dispatchEventStrategyChange(strategy) {
-    const event = new CustomEvent(this.eventPrefix ? `${this.eventPrefix}-strategy-change` : 'strategy-change', {
-      detail: {
-        strategy,
-      },
-      composed: true
-    });
-
-    this.element.dispatchEvent(event);
-  }
-
-  /**
-   * @private
-   * @returns {void} Dispatches event with an object showing the state of the dropdown.
-   */
   dispatchEventDropdownToggle() {
     const event = new CustomEvent(this.eventPrefix ? `${this.eventPrefix}-toggled` : 'toggled', {
       detail: {
@@ -354,6 +333,12 @@ export default class AuroFloatingUI {
     }
   }
 
+  /**
+   * Manages the tabIndex of the trigger element based on its focusability.
+   *
+   * If the trigger element or any of its children are inherently focusable, the tabIndex of the component is set to -1.
+   * This prevents the component itself from being focusable when the trigger element already handles focus.
+   */
   handleTriggerTabIndex() {
     const focusableElementSelectors = [
       'a',
@@ -399,12 +384,13 @@ export default class AuroFloatingUI {
 
     this.handleTriggerTabIndex();
 
-    this.element.trigger.addEventListener('keydown', (event) => this.handleEvent(event));
-    this.element.trigger.addEventListener('click', (event) => this.handleEvent(event));
-    this.element.trigger.addEventListener('mouseenter', (event) => this.handleEvent(event));
-    this.element.trigger.addEventListener('mouseleave', (event) => this.handleEvent(event));
-    this.element.trigger.addEventListener('focus', (event) => this.handleEvent(event));
-    this.element.trigger.addEventListener('blur', (event) => this.handleEvent(event));
+    this.handleEvent = this.handleEvent.bind(this);
+    this.element.trigger.addEventListener('keydown', this.handleEvent);
+    this.element.trigger.addEventListener('click', this.handleEvent);
+    this.element.trigger.addEventListener('mouseenter', this.handleEvent);
+    this.element.trigger.addEventListener('mouseleave', this.handleEvent);
+    this.element.trigger.addEventListener('focus', this.handleEvent);
+    this.element.trigger.addEventListener('blur', this.handleEvent);
   }
 
   disconnect() {
@@ -413,12 +399,12 @@ export default class AuroFloatingUI {
     
     // Remove event & keyboard listeners
     if (this.element?.trigger) {
-      this.element.trigger.removeEventListener('keydown', (event) => this.handleEvent(event));
-      this.element.trigger.removeEventListener('click', (event) => this.handleEvent(event));
-      this.element.trigger.removeEventListener('mouseenter', (event) => this.handleEvent(event));
-      this.element.trigger.removeEventListener('mouseleave', (event) => this.handleEvent(event));
-      this.element.trigger.removeEventListener('focus', (event) => this.handleEvent(event));
-      this.element.trigger.removeEventListener('blur', (event) => this.handleEvent(event));
+      this.element.trigger.removeEventListener('keydown', this.handleEvent);
+      this.element.trigger.removeEventListener('click', this.handleEvent);
+      this.element.trigger.removeEventListener('mouseenter', this.handleEvent);
+      this.element.trigger.removeEventListener('mouseleave', this.handleEvent);
+      this.element.trigger.removeEventListener('focus', this.handleEvent);
+      this.element.trigger.removeEventListener('blur', this.handleEvent);
     }
   }
 }
