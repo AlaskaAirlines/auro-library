@@ -114,8 +114,14 @@ export default class AuroFloatingUI {
       bibContent.style.height = '';
       bibContent.style.maxWidth = '';
       bibContent.style.maxHeight = '';
+
+      if (this.element.isPopoverVisible) {
+        document.body.style.overflow = 'hidden';
+      }
     } else {
       this.element.isBibFullscreen = false;
+
+      document.body.style.overflow = '';
     }
 
     if (prevStrategy !== strategy) {
@@ -232,7 +238,7 @@ export default class AuroFloatingUI {
       this.updateCurrentExpandedDropdown();
       this.element.isPopoverVisible = true;
       this.element.triggerChevron?.setAttribute('data-expanded', true);
-      document.body.style.overflow = 'hidden';
+      
       this.dispatchEventDropdownToggle();
       this.position();
       
