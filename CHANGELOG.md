@@ -1,5 +1,19 @@
 # Semantic Release Automated Changelog
 
+## [3.0.9](https://github.com/AlaskaAirlines/auro-library/compare/v3.0.8...v3.0.9) (2025-02-17)
+
+
+### Bug Fixes
+
+* fix runtime error on floatingui with no trigger slot ([060c30f](https://github.com/AlaskaAirlines/auro-library/commit/060c30f3da32004e5e0d978949e7d65c661ddfed))
+* lock body scroll only when bib is open in fullscreen mode ([ce5df91](https://github.com/AlaskaAirlines/auro-library/commit/ce5df91b981d7b41b9e938b7d41cc114a279cb59))
+* simplify the strategy logic on `floatingUI` ([42c89db](https://github.com/AlaskaAirlines/auro-library/commit/42c89dbdf9cb48756928143b09b25aa82989dfd4))
+
+
+### Performance Improvements
+
+* lock body's scroll while bib is open ([d78b46e](https://github.com/AlaskaAirlines/auro-library/commit/d78b46ecc689f45b75b3a5317ae029d8b3061c1e))
+
 ## [3.0.8](https://github.com/AlaskaAirlines/auro-library/compare/v3.0.7...v3.0.8) (2025-02-05)
 
 
