@@ -93,12 +93,14 @@ export default class AuroFloatingUI {
 
   /**
    * @private
-   * scroll body lock
-   * @param {Boolean} lock - unlock scroll when it's false
+   * Controls whether to lock the scrolling for the document's body.
+   * @param {Boolean} lock - If true, locks the body's scrolling functionlity; otherwise, unlock.
    */
   lockScroll(lock = true) {
     if (lock) {
       document.body.style.overflow = 'hidden'; // hide body's scrollbar
+
+      // Move `bib` by the amount the viewport is shifted to stay aligned in fullscreen.
       this.element.bib.style.transform = `translateY(${visualViewport.offsetTop}px)`;
     } else {
       document.body.style.overflow = '';
