@@ -93,6 +93,20 @@ export default class AuroFloatingUI {
 
   /**
    * @private
+   * scroll body lock
+   * @param {Boolean} lock - unlock scroll when it's false
+   */
+  lockScroll(lock = true) {
+    if (lock) {
+      document.body.style.overflow = 'hidden'; // hide body's scrollbar
+      this.element.bib.style.transform = `translateY(${visualViewport.offsetTop}px)`;
+    } else {
+      document.body.style.overflow = '';
+    }
+  }
+
+  /**
+   * @private
    * Configures the bib element's display strategy.
    *
    * Sets the bib to fullscreen or floating mode based on the provided strategy.
@@ -113,15 +127,15 @@ export default class AuroFloatingUI {
       bibContent.style.width = '';
       bibContent.style.height = '';
       bibContent.style.maxWidth = '';
-      bibContent.style.maxHeight = '';
+      bibContent.style.maxHeight = `${window.visualViewport.height}px`;
 
       if (this.element.isPopoverVisible) {
-        document.body.style.overflow = 'hidden';
+        this.lockScroll(true);
       }
     } else {
       this.element.isBibFullscreen = false;
 
-      document.body.style.overflow = '';
+      this.lockScroll(false);
     }
 
     if (prevStrategy !== strategy) {
@@ -256,7 +270,7 @@ export default class AuroFloatingUI {
   hideBib() {
     if (this.element.isPopoverVisible && !this.element.disabled && !this.element.noToggle) {
       this.element.isPopoverVisible = false;
-      document.body.style.overflow = '';
+      this.lockScroll(false);
       this.element.triggerChevron?.removeAttribute('data-expanded');
       this.dispatchEventDropdownToggle();
     }
