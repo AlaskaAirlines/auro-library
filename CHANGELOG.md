@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [3.0.10](https://github.com/AlaskaAirlines/auro-library/compare/v3.0.9...v3.0.10) (2025-02-20)
+
+
+### Bug Fixes
+
+* make bib not to pushed up by keyboard ([50773d0](https://github.com/AlaskaAirlines/auro-library/commit/50773d08141bebc5a9f8b50b83c94cd34149fc3d))
+
 ## [3.0.9](https://github.com/AlaskaAirlines/auro-library/compare/v3.0.8...v3.0.9) (2025-02-17)
 
 
