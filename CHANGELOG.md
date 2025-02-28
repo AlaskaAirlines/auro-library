@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [3.0.11](https://github.com/AlaskaAirlines/auro-library/compare/v3.0.10...v3.0.11) (2025-02-28)
+
+
+### Performance Improvements
+
+* update eslint-config to get rid of node version warnings ([ecb349e](https://github.com/AlaskaAirlines/auro-library/commit/ecb349ebf223a9eb14f0e01ddaee5cfdc4558acd))
+
 ## [3.0.10](https://github.com/AlaskaAirlines/auro-library/compare/v3.0.9...v3.0.10) (2025-02-20)
 
 
