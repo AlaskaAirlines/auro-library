@@ -1,8 +1,15 @@
 # Alaska Airlines Pull Request
 
-## Before Submitting this pull request:
-- Link all tickets in this repository related to this PR in the `Development` section
-_note: all pull requests require at least one linked ticket_
-- If this PR is `Ready For Review`, all ticket's linked under `Development` must have their status changed to `Ready For Review` as well
+Please include a summary of the change and which issue is fixed. Please also include relevant motivation and context. List any dependencies that are required for this change.
 
-**By submitting this Pull Request, I confirm that my contribution is made under the terms of the Apache 2.0 license and I have performed a self-review of my own update.**
+## Checklist:
+
+- [ ] My update follows the CONTRIBUTING guidelines of this project
+- [ ] I have performed a self-review of my own update
+
+**By submitting this Pull Request, I confirm that my contribution is made under the terms of the Apache 2.0 license.**
+
+_Pull Requests will be evaluated by their quality of update and whether it is consistent with the goals and values of this project. Any submission is to be considered a conversation between the submitter and the maintainers of this project and may require changes to your submission._
+
+**Thank you for your submission!**<br>
+-- Auro Design System Team
