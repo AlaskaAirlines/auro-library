@@ -9,12 +9,10 @@
 * This script is for the purpose of keeping a component repository in sync with the latest set of workflows defined for Auro components. 
 * Running this script will delete all workflows that exist in the repository and replace them with the latest defined workflows for Auro components. **/
 
-import AuroWorkflows from './syncWorkflows.mjs';
 import AuroLinters from './syncLinters.mjs';
 
 import AuroLibraryUtils from '../utils/auroLibraryUtils.mjs';
 
-const auroWorkflows = new AuroWorkflows();
 const auroLinters = new AuroLinters();
 
 const auroLibraryUtils = new AuroLibraryUtils();
@@ -33,14 +31,4 @@ if (args.length > 0) {
   auroLibraryUtils.auroLogger(message, 'info', true);
 }
 
-if (args.includes('--github')) {
-  // Run only github workflows script
-  auroWorkflows.copyWorkflowConfigurations();
-} else if (args.includes('--linters')) {
-  // Run only linter configuration script
-  auroLinters.copyLintConfigurations();
-} else {
-  // Run both configuration scripts
-  auroWorkflows.copyWorkflowConfigurations();
-  auroLinters.copyLintConfigurations();
-}
+auroLinters.copyLintConfigurations();
