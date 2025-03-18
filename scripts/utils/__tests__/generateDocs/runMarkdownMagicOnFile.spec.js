@@ -75,7 +75,7 @@ describe("runMarkdownMagicOnFile", () => {
   });
 
   /**
-   * We are expecting to runMarkdownMagicOnFile works with bothg path styles Windows and Unix.
+   * We are expecting to runMarkdownMagicOnFile works with both path styles Windows and Unix.
    * For this reason this test should throw the exact same result for both path styles.
    * If replace function is removed from runMarkdownMagicOnFile function you will see the first test (Windows path) fails.
    */

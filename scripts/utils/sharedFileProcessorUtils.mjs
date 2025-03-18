@@ -190,7 +190,7 @@ export async function retrieveRemoteFileCopy(input) {
 export async function runMarkdownMagicOnFile(output, extraMdMagicConfig = {}) {
   /**
    * For windows this functions returned "No files matched pattern"
-   * It seems mardown-magic internally uses globby and it seems that globby doesn't support Windows path convention.
+   * It seems markdown-magic internally uses globby and it seems that globby doesn't support Windows path convention.
    * To fix this a "replace" function was added to convert Windows default path (\) to  Unix (/)
    */
   const unixPathOutput = output.replace(/\\/g, "/");
