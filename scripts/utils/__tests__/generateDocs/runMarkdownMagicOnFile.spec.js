@@ -64,6 +64,9 @@ describe("runMarkdownMagicOnFile", () => {
     await createMockfiles(workingDir, mockReadmeFile, mockReadmeFileData);
     await createMockfiles(workingDir, mockTemplateFile, mockTemplateFileData);
   });
+  afterEach(async () => {
+    await writeFile(mockReadmeFile, mockReadmeFileData);
+  });
 
   afterAll(async () => {
     if (await exists(workingDir)) {
@@ -74,33 +77,20 @@ describe("runMarkdownMagicOnFile", () => {
     }
   });
 
-  /**
-   * We are expecting to runMarkdownMagicOnFile works with both path styles Windows and Unix.
-   * For this reason this test should throw the exact same result for both path styles.
-   * If replace function is removed from runMarkdownMagicOnFile function you will see the first test (Windows path) fails.
-   */
-  describe("should replace md files content regardless of the path style.", () => {
-    afterEach(async () => {
-      await writeFile(mockReadmeFile, mockReadmeFileData);
-    });
+  it("should not replace file content if output is using Windows path style", async () => {
+    await runMarkdownMagicOnFile(windowsPathStyleOutputDir, mockMdMagicConfig);
 
-    it("should replace file content using Windows path style", async () => {
-      await runMarkdownMagicOnFile(
-        windowsPathStyleOutputDir,
-        mockMdMagicConfig
-      );
+    const fileContents = (await readFile(mockReadmeFile)).toString();
+    // If we are suing windows path styles the output result should not be the same as the expected result
+    expect(fileContents).not.toEqual(expectedFileData);
+    // Instead it should return the data exactly as it was before
+    expect(fileContents).toEqual(mockReadmeFileData);
+  });
 
-      const fileContents = (await readFile(mockReadmeFile)).toString();
-      expect(fileContents).toEqual(expectedFileData);
-    });
+  it("should replace file content if output is using Unix path style", async () => {
+    await runMarkdownMagicOnFile(mockReadmeFile, mockMdMagicConfig);
 
-    it("should replace file content using Unix path style", async () => {
-      const fileContents1 = (await readFile(mockReadmeFile)).toString();
-      expect(fileContents1).toEqual(mockReadmeFileData);
-      await runMarkdownMagicOnFile(mockReadmeFile, mockMdMagicConfig);
-
-      const fileContents = (await readFile(mockReadmeFile)).toString();
-      expect(fileContents).toEqual(expectedFileData);
-    });
+    const fileContents = (await readFile(mockReadmeFile)).toString();
+    expect(fileContents).toEqual(expectedFileData);
   });
 });

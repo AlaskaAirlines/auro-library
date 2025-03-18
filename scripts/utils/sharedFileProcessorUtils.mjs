@@ -76,10 +76,11 @@ export const nonEsmComponents = ['combobox', 'datepicker', 'menu', 'pane', 'sele
 export function fromAuroComponentRoot(pathLike) {
   if (pathLike.startsWith('/')) {
     // remove the first slash
-    return path.join(auroLibraryUtils.getProjectRootPath, pathLike.slice(1))
+    // To prevent errors with markdown-magic we need to convert Windows default path (\) to  Unix (/)
+    return path.join(auroLibraryUtils.getProjectRootPath, pathLike.slice(1)).replace(/\\/g, '/')
   }
 
-  return path.join(auroLibraryUtils.getProjectRootPath, pathLike)
+  return path.join(auroLibraryUtils.getProjectRootPath, pathLike).replace(/\\/g, '/')
 }
 
 
@@ -188,13 +189,7 @@ export async function retrieveRemoteFileCopy(input) {
  * @return {Promise<void>}
  */
 export async function runMarkdownMagicOnFile(output, extraMdMagicConfig = {}) {
-  /**
-   * For windows this functions returned "No files matched pattern"
-   * It seems markdown-magic internally uses globby and it seems that globby doesn't support Windows path convention.
-   * To fix this a "replace" function was added to convert Windows default path (\) to  Unix (/)
-   */
-  const unixPathOutput = output.replace(/\\/g, "/");
-  await applyMarkdownMagic(unixPathOutput, {
+  await applyMarkdownMagic(output, {
     ...MD_MAGIC_CONFIG,
     ...extraMdMagicConfig
   });
