@@ -183,12 +183,11 @@ export async function retrieveRemoteFileCopy(input) {
 
 /**
  * Run markdown magic on a file.
- * @param {string} input
  * @param {string} output
  * @param {Partial<MarkdownMagicOptions>} [extraMdMagicConfig] - extra configuration options for md magic
  * @return {Promise<void>}
  */
-export async function runMarkdownMagicOnFile(input, output, extraMdMagicConfig = {}) {
+export async function runMarkdownMagicOnFile(output, extraMdMagicConfig = {}) {
   /**
    * For windows this functions returned "No files matched pattern"
    * It seems mardown-magic internally uses globby and it seems that globby doesn't support Windows path convention.
@@ -246,7 +245,7 @@ export async function processContentForFile(config) {
 
   // 2. If the file is a Markdown file, run markdown magic to inject contents and perform replacements
   if (output.endsWith(".md")) {
-    await runMarkdownMagicOnFile(derivedInputPath, output, mdMagicConfig);
+    await runMarkdownMagicOnFile(output, mdMagicConfig);
   }
 
   // 3a. Read the output file contents
