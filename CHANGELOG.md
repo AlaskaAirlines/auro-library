@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [3.0.12](https://github.com/AlaskaAirlines/auro-library/compare/v3.0.11...v3.0.12) (2025-03-19)
+
+
+### Bug Fixes
+
+* update dropdown reference in AuroFloatingUI class ([0fe1cb3](https://github.com/AlaskaAirlines/auro-library/commit/0fe1cb3b127b83ad5e39748429263c99580dee70))
+
 ## [3.0.11](https://github.com/AlaskaAirlines/auro-library/compare/v3.0.10...v3.0.11) (2025-02-28)
 
 
