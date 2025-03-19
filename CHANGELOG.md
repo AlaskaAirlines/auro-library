@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [3.0.13](https://github.com/AlaskaAirlines/auro-library/compare/v3.0.12...v3.0.13) (2025-03-19)
+
+
+### Bug Fixes
+
+* correct method call to hide dropdown in AuroFloatingUI class ([27d9c6c](https://github.com/AlaskaAirlines/auro-library/commit/27d9c6cc8df7f5e6603e5dc231fae2d72a75a486))
+
 ## [3.0.12](https://github.com/AlaskaAirlines/auro-library/compare/v3.0.11...v3.0.12) (2025-03-19)
 
 
