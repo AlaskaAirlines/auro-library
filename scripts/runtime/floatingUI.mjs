@@ -242,11 +242,11 @@ export default class AuroFloatingUI {
 
   updateCurrentExpandedDropdown() {
     // Close any other dropdown that is already open
-    if (document.expandedAuroDropdown) {
-      this.hideBib(document.expandedAuroDropdown);
+    if (document.expandedAuroFormkitDropdown) {
+      this.hideBib(document.expandedAuroFormkitDropdown);
     }
 
-    document.expandedAuroDropdown = this;
+    document.expandedAuroFormkitDropdown = this;
   }
 
   showBib() {
