@@ -259,12 +259,11 @@ export default class AuroFloatingUI {
       if ((!evt.composedPath().includes(this.element.trigger) &&
         !evt.composedPath().includes(this.element.bib)) ||
         (this.element.bib.backdrop && evt.composedPath().includes(this.element.bib.backdrop))) {
-        const existedVisibleFloatingUI = document.expandedAuroDropdown || document.expandedAuroFormkitDropdown || document.expandedAuroFloater;
+        const existedVisibleFloatingUI = document.expandedAuroFormkitDropdown || document.expandedAuroFloater;
 
         if (existedVisibleFloatingUI && existedVisibleFloatingUI.element.isPopoverVisible) {
-          // if something else is open, clost that
+          // if something else is open, close that
           existedVisibleFloatingUI.hideBib();
-          document.expandedAuroDropdown = null;
           document.expandedAuroFormkitDropdown = null;
           document.expandedAuroFloater = this;
         } else {
@@ -276,7 +275,7 @@ export default class AuroFloatingUI {
     // ESC key handler
     this.keyDownHandler = (evt) => {
       if (evt.key === 'Escape' && this.element.isPopoverVisible) {
-        const existedVisibleFloatingUI = document.expandedAuroDropdown || document.expandedAuroFormkitDropdown || document.expandedAuroFloater;
+        const existedVisibleFloatingUI = document.expandedAuroFormkitDropdown || document.expandedAuroFloater;
         if (existedVisibleFloatingUI && existedVisibleFloatingUI !== this && existedVisibleFloatingUI.element.isPopoverVisible) {
           // if something else is open, let it handle itself
           return;
@@ -285,8 +284,10 @@ export default class AuroFloatingUI {
       }
     };
 
-    // Add event listeners using the stored references
-    document.addEventListener('focusin', this.focusHandler);
+    if (this.behavior !== 'drawer' && this.behavior !== 'dialog') {
+      // Add event listeners using the stored references
+      document.addEventListener('focusin', this.focusHandler);
+    }
 
     document.addEventListener('keydown', this.keyDownHandler);
 
@@ -323,7 +324,7 @@ export default class AuroFloatingUI {
 
   updateCurrentExpandedDropdown() {
     // Close any other dropdown that is already open
-    const existedVisibleFloatingUI = document.expandedAuroDropdown || document.expandedAuroFormkitDropdown || document.expandedAuroFloater;
+    const existedVisibleFloatingUI = document.expandedAuroFormkitDropdown || document.expandedAuroFloater;
     if (existedVisibleFloatingUI && existedVisibleFloatingUI !== this &&
       existedVisibleFloatingUI.isPopoverVisible &&
       document.expandedAuroFloater.eventPrefix === this.eventPrefix) {
@@ -494,31 +495,14 @@ export default class AuroFloatingUI {
    *
    * @param {*} eventPrefix
    */
-  setupAria() {
+  regenerateBibId() {
     this.id = this.element.getAttribute('id');
     if (!this.id) {
       this.id = window.crypto.randomUUID();
       this.element.setAttribute('id', this.id);
     }
-
+    
     this.element.bib.setAttribute("id", `${this.id}-floater-bib`);
-
-    switch (this.behavior) {
-      case 'tooltip':
-        this.element.setAttribute("aria-describedby", this.element.bib.getAttribute("id"));
-        this.element.bib.setAttribute('role', 'tooltip');
-        break;
-      case 'drawer':
-      case 'dialog':
-        this.element.trigger?.setAttribute('aria-haspopup', 'dialog');
-        this.element.bib.setAttribute('role', 'dialog');
-        if (this.element.modal) {
-          this.element.bib.setAttribute('aria-modal', 'true');
-        }
-        break;
-      default:
-        break;
-    }
   }
 
   configure(elem, eventPrefix) {
@@ -546,7 +530,7 @@ export default class AuroFloatingUI {
 
     document.body.append(this.element.bib);
 
-    this.setupAria();
+    this.regenerateBibId();
     this.handleTriggerTabIndex();
 
     this.handleEvent = this.handleEvent.bind(this);
