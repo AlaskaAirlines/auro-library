@@ -497,8 +497,7 @@ export default class AuroFloatingUI {
   setupAria() {
     this.id = this.element.getAttribute('id');
     if (!this.id) {
-      this.id = Math.random().toString(16).
-        replace(".", '');
+      this.id = window.crypto.randomUUID();
       this.element.setAttribute('id', this.id);
     }
 
