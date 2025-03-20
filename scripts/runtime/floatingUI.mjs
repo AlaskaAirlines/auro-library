@@ -2,17 +2,43 @@
 
 import { autoUpdate, computePosition, offset, autoPlacement, flip } from '@floating-ui/dom';
 
+
+const MAX_CONFIGURATION_COUNT = 10;
+
 export default class AuroFloatingUI {
-  constructor() {
+  constructor(element, behavior) {
+    this.element = element;
+    this.behavior = behavior;
+
     // Store event listener references for cleanup
     this.focusHandler = null;
     this.clickHandler = null;
     this.keyDownHandler = null;
-    
+
+    /**
+     * @private
+     */
+    this.configureTrial = 0;
+
     /**
      * @private
      */
     this.eventPrefix = undefined;
+
+    /**
+     * @private
+     */
+    this.id = undefined;
+
+    /**
+     * @private
+     */
+    this.showing = false;
+
+    /**
+     * @private
+     */
+    this.strategy = undefined;
   }
 
   /**
@@ -40,29 +66,48 @@ export default class AuroFloatingUI {
    * @private
    * Determines the positioning strategy based on the current viewport size and mobile breakpoint.
    *
-   * This method checks if the current viewport width is less than or equal to the specified mobile fullscreen breakpoint 
+   * This method checks if the current viewport width is less than or equal to the specified mobile fullscreen breakpoint
    * defined in the bib element. If it is, the strategy is set to 'fullscreen'; otherwise, it defaults to 'floating'.
    *
-   * @returns {String} The positioning strategy, either 'fullscreen' or 'floating'.
+   * @returns {String} The positioning strategy, one of 'fullscreen', 'floating', 'cover'.
    */
   getPositioningStrategy() {
-    let strategy = 'floating';
-    if (this.element.bib.mobileFullscreenBreakpoint) {
-      const smallerThanBreakpoint = window.matchMedia(`(max-width: ${this.element.bib.mobileFullscreenBreakpoint})`).matches;
-      if (smallerThanBreakpoint) {
-        strategy = 'fullscreen';
-      }
-    }
+    const breakpoint = this.element.bib.mobileFullscreenBreakpoint || this.element.floaterConfig?.fullscreenBreakpoint;
+    switch (this.behavior) {
+      case "tooltip":
+        return "floating";
+      case "dialog":
+      case "drawer":
+        if (breakpoint) {
+          const smallerThanBreakpoint = window.matchMedia(`(max-width: ${breakpoint})`).matches;
 
-    return strategy;
+          this.element.expanded = smallerThanBreakpoint;
+        }
+        if (this.element.nested) {
+          return "cover";
+        }
+        return 'fullscreen';
+      case "dropdown":
+      case undefined:
+      case null:
+        if (breakpoint) {
+          const smallerThanBreakpoint = window.matchMedia(`(max-width: ${breakpoint})`).matches;
+          if (smallerThanBreakpoint) {
+            return 'fullscreen';
+          }
+        }
+        return "floating";
+      default:
+        return this.behavior;
+    }
   }
 
   /**
    * @private
    * Positions the bib element based on the current configuration and positioning strategy.
    *
-   * This method determines the appropriate positioning strategy (fullscreen or not) and configures the bib accordingly. 
-   * It also sets up middleware for the floater configuration, computes the position of the bib relative to the trigger element, 
+   * This method determines the appropriate positioning strategy (fullscreen or not) and configures the bib accordingly.
+   * It also sets up middleware for the floater configuration, computes the position of the bib relative to the trigger element,
    * and applies the calculated position to the bib's style.
    */
   position() {
@@ -73,19 +118,31 @@ export default class AuroFloatingUI {
       this.mirrorSize();
       // Define the middlware for the floater configuration
       const middleware = [
-        offset(this.element.floaterConfig.offset || 0),
-        ...(this.element.floaterConfig.flip ? [flip()] : []), // Add flip middleware if flip is enabled
-        ...(this.element.floaterConfig.autoPlacement ? [autoPlacement()] : []), // Add autoPlacement middleware if autoPlacement is enabled
+        offset(this.element.floaterConfig?.offset || 0),
+        ...this.element.floaterConfig?.flip ? [flip()] : [], // Add flip middleware if flip is enabled.
+        ...this.element.floaterConfig?.autoPlacement ? [autoPlacement()] : [], // Add autoPlacement middleware if autoPlacement is enabled.
       ];
 
       // Compute the position of the bib
       computePosition(this.element.trigger, this.element.bib, {
-        placement: this.element.floaterConfig.placement || 'bottom',
+        placement: this.element.floaterConfig?.placement,
         middleware: middleware || []
-      }).then(({x, y}) => { // eslint-disable-line id-length
+      }).then(({ x, y }) => { // eslint-disable-line id-length
         Object.assign(this.element.bib.style, {
           left: `${x}px`,
           top: `${y}px`,
+        });
+      });
+    } else if (strategy === 'cover') {
+      // Compute the position of the bib
+      computePosition(this.element.parentNode, this.element.bib, {
+        placement: 'bottom-start'
+      }).then(({ x, y }) => { // eslint-disable-line id-length
+        Object.assign(this.element.bib.style, {
+          left: `${x}px`,
+          top: `${y - this.element.parentNode.offsetHeight}px`,
+          width: `${this.element.parentNode.offsetWidth}px`,
+          height: `${this.element.parentNode.offsetHeight}px`
         });
       });
     }
@@ -116,34 +173,48 @@ export default class AuroFloatingUI {
    *
    * @param {string} strategy - The positioning strategy ('fullscreen' or 'floating').
    */
-  configureBibStrategy(strategy) {
-    const prevStrategy = this.element.isBibFullscreen ? 'fullscreen' : 'floating';
-    if (strategy === 'fullscreen') {
+  configureBibStrategy(value) {
+    if (value === 'fullscreen') {
       this.element.isBibFullscreen = true;
       // reset the prev position
+      this.element.bib.setAttribute('isfullscreen', "");
+      this.element.bib.style.position = 'fixed';
       this.element.bib.style.top = "0px";
       this.element.bib.style.left = "0px";
+      this.element.bib.style.width = '';
+      this.element.bib.style.height = '';
 
       // reset the size that was mirroring `size` css-part
       const bibContent = this.element.bib.shadowRoot.querySelector(".container");
-      bibContent.style.width = '';
-      bibContent.style.height = '';
-      bibContent.style.maxWidth = '';
-      bibContent.style.maxHeight = `${window.visualViewport.height}px`;
+      if (bibContent) {
+        bibContent.style.width = '';
+        bibContent.style.height = '';
+        bibContent.style.maxWidth = '';
+        bibContent.style.maxHeight = `${window.visualViewport.height}px`;
+        this.configureTrial = 0;
+      } else if (this.configureTrial < MAX_CONFIGURATION_COUNT) {
+        this.configureTrial += 1;
+
+        setTimeout(() => {
+          this.configureBibStrategy(value);
+        });
+      }
 
       if (this.element.isPopoverVisible) {
         this.lockScroll(true);
       }
     } else {
+      this.element.bib.style.position = '';
+      this.element.bib.removeAttribute('isfullscreen');
       this.element.isBibFullscreen = false;
-
-      this.lockScroll(false);
     }
 
-    if (prevStrategy !== strategy) {
+    const isChanged = this.strategy && this.strategy !== value;
+    this.strategy = value;
+    if (isChanged) {
       const event = new CustomEvent(this.eventPrefix ? `${this.eventPrefix}-strategy-change` : 'strategy-change', {
         detail: {
-          strategy,
+          value,
         },
         composed: true
       });
@@ -154,18 +225,6 @@ export default class AuroFloatingUI {
 
   updateState() {
     const isVisible = this.element.isPopoverVisible;
-
-    // Refactor this to apply attribute to correct focusable element
-    // Reference Issue: https://github.com/AlaskaAirlines/auro-library/issues/105
-    //
-    // this.element.trigger.setAttribute('aria-expanded', isVisible);
-
-    if (isVisible) {
-      this.element.bib.setAttribute('data-show', true);
-    } else {
-      this.element.bib.removeAttribute('data-show');
-    }
-
     if (!isVisible) {
       this.cleanupHideHandlers();
       try {
@@ -177,15 +236,15 @@ export default class AuroFloatingUI {
   }
 
   handleFocusLoss() {
-    if (this.element.noHideOnThisFocusLoss || 
-        this.element.hasAttribute('noHideOnThisFocusLoss')) {
+    if (this.element.noHideOnThisFocusLoss ||
+      this.element.hasAttribute('noHideOnThisFocusLoss')) {
       return;
     }
 
-    const {activeElement} = document;
+    const { activeElement } = document;
     if (activeElement === document.querySelector('body') ||
-        this.element.contains(activeElement) ||
-        this.element.bibContent?.contains(activeElement)) {
+      this.element.contains(activeElement) ||
+      this.element.bib?.contains(activeElement)) {
       return;
     }
 
@@ -197,23 +256,45 @@ export default class AuroFloatingUI {
     this.focusHandler = () => this.handleFocusLoss();
 
     this.clickHandler = (evt) => {
-      if (!evt.composedPath().includes(this.element.trigger) && 
-          !evt.composedPath().includes(this.element.bibContent)) {
-        this.hideBib();
+      if ((!evt.composedPath().includes(this.element.trigger) &&
+        !evt.composedPath().includes(this.element.bib)) ||
+        (this.element.bib.backdrop && evt.composedPath().includes(this.element.bib.backdrop))) {
+        const existedVisibleFloatingUI = document.expandedAuroDropdown || document.expandedAuroFormkitDropdown || document.expandedAuroFloater;
+
+        if (existedVisibleFloatingUI && existedVisibleFloatingUI.element.isPopoverVisible) {
+          // if something else is open, clost that
+          existedVisibleFloatingUI.hideBib();
+          document.expandedAuroDropdown = null;
+          document.expandedAuroFormkitDropdown = null;
+          document.expandedAuroFloater = this;
+        } else {
+          this.hideBib();
+        }
       }
     };
 
     // ESC key handler
     this.keyDownHandler = (evt) => {
       if (evt.key === 'Escape' && this.element.isPopoverVisible) {
+        const existedVisibleFloatingUI = document.expandedAuroDropdown || document.expandedAuroFormkitDropdown || document.expandedAuroFloater;
+        if (existedVisibleFloatingUI && existedVisibleFloatingUI !== this && existedVisibleFloatingUI.element.isPopoverVisible) {
+          // if something else is open, let it handle itself
+          return;
+        }
         this.hideBib();
       }
     };
 
     // Add event listeners using the stored references
     document.addEventListener('focusin', this.focusHandler);
-    window.addEventListener('click', this.clickHandler);
+
     document.addEventListener('keydown', this.keyDownHandler);
+
+    // send this task to the end of queue to prevent conflicting
+    // it conflicts if showBib gets call from a button that's not this.element.trigger
+    setTimeout(() => {
+      window.addEventListener('click', this.clickHandler);
+    });
   }
 
   cleanupHideHandlers() {
@@ -242,40 +323,54 @@ export default class AuroFloatingUI {
 
   updateCurrentExpandedDropdown() {
     // Close any other dropdown that is already open
-    if (document.expandedAuroFormkitDropdown) {
-      document.expandedAuroFormkitDropdown.hide;
+    const existedVisibleFloatingUI = document.expandedAuroDropdown || document.expandedAuroFormkitDropdown || document.expandedAuroFloater;
+    if (existedVisibleFloatingUI && existedVisibleFloatingUI !== this &&
+      existedVisibleFloatingUI.isPopoverVisible &&
+      document.expandedAuroFloater.eventPrefix === this.eventPrefix) {
+      document.expandedAuroFloater.hideBib();
     }
 
-    document.expandedAuroFormkitDropdown = this;
+    document.expandedAuroFloater = this;
   }
 
   showBib() {
-    if (!this.element.disabled && !this.element.isPopoverVisible) {
+    if (!this.element.disabled && !this.showing) {
       this.updateCurrentExpandedDropdown();
-      this.element.isPopoverVisible = true;
       this.element.triggerChevron?.setAttribute('data-expanded', true);
-      
-      this.dispatchEventDropdownToggle();
-      this.position();
-      
-      // Clean up any existing handlers before setting up new ones
-      this.cleanupHideHandlers();
-      this.setupHideHandlers();
+
+      // prevent double showing: isPopovervisible gets first and showBib gets called later
+      if (!this.showing) {
+        if (!this.element.modal) {
+          this.setupHideHandlers();
+        }
+        this.showing = true;
+        this.element.isPopoverVisible = true;
+        this.position();
+        this.dispatchEventDropdownToggle();
+      }
 
       // Setup auto update to handle resize and scroll
-      this.element.cleanup = autoUpdate(this.element.trigger, this.element.bib, () => {
+      this.element.cleanup = autoUpdate(this.element.trigger || this.element.parentNode, this.element.bib, () => {
         this.position();
       });
     }
   }
 
   hideBib() {
-    if (this.element.isPopoverVisible && !this.element.disabled && !this.element.noToggle) {
-      this.element.isPopoverVisible = false;
+    if (!this.element.disabled && !this.element.noToggle) {
       this.lockScroll(false);
       this.element.triggerChevron?.removeAttribute('data-expanded');
-      this.dispatchEventDropdownToggle();
+
+      if (this.element.isPopoverVisible) {
+        this.element.isPopoverVisible = false;
+      }
+      if (this.showing) {
+        this.cleanupHideHandlers();
+        this.showing = false;
+        this.dispatchEventDropdownToggle();
+      }
     }
+    document.expandedAuroFloater = null;
   }
 
   /**
@@ -285,7 +380,7 @@ export default class AuroFloatingUI {
   dispatchEventDropdownToggle() {
     const event = new CustomEvent(this.eventPrefix ? `${this.eventPrefix}-toggled` : 'toggled', {
       detail: {
-        expanded: this.element.isPopoverVisible,
+        expanded: this.showing,
       },
       composed: true
     });
@@ -333,9 +428,10 @@ export default class AuroFloatingUI {
           break;
         case 'focus':
           if (this.element.focusShow) {
+
             /*
-              This needs to better handle clicking that gives focus - 
-              currently it shows and then immediately hides the bib 
+              This needs to better handle clicking that gives focus -
+              currently it shows and then immediately hides the bib
             */
             this.showBib();
           }
@@ -350,7 +446,7 @@ export default class AuroFloatingUI {
           this.handleClick();
           break;
         default:
-          // Do nothing
+        // Do nothing
       }
     }
   }
@@ -394,31 +490,81 @@ export default class AuroFloatingUI {
     });
   }
 
+  /**
+   *
+   * @param {*} eventPrefix
+   */
+  setupAria() {
+    this.id = this.element.getAttribute('id');
+    if (!this.id) {
+      this.id = Math.random().toString(16).
+        replace(".", '');
+      this.element.setAttribute('id', this.id);
+    }
+
+    this.element.bib.setAttribute("id", `${this.id}-floater-bib`);
+
+    switch (this.behavior) {
+      case 'tooltip':
+        this.element.setAttribute("aria-describedby", this.element.bib.getAttribute("id"));
+        this.element.bib.setAttribute('role', 'tooltip');
+        break;
+      case 'drawer':
+      case 'dialog':
+        this.element.trigger?.setAttribute('aria-haspopup', 'dialog');
+        this.element.bib.setAttribute('role', 'dialog');
+        if (this.element.modal) {
+          this.element.bib.setAttribute('aria-modal', 'true');
+        }
+        break;
+      default:
+        break;
+    }
+  }
+
   configure(elem, eventPrefix) {
     this.eventPrefix = eventPrefix;
-    this.element = elem;
-    this.element.trigger = this.element.shadowRoot.querySelector('#trigger');
-    this.element.bib = this.element.shadowRoot.querySelector('#bib');
+    if (this.element !== elem) {
+      this.element = elem;
+    }
+
+    if (this.behavior !== this.element.behavior) {
+      this.behavior = this.element.behavior;
+    }
+
+    if (this.element.trigger) {
+      this.disconnect();
+    }
+    this.element.trigger = this.element.triggerElement || this.element.shadowRoot.querySelector('#trigger') || this.element.trigger;
+    this.element.bib = this.element.shadowRoot.querySelector('#bib') || this.element.bib;
     this.element.bibSizer = this.element.shadowRoot.querySelector('#bibSizer');
     this.element.triggerChevron = this.element.shadowRoot.querySelector('#showStateIcon');
 
+
+    if (this.element.floaterConfig) {
+      this.element.hoverToggle = this.element.floaterConfig.hoverToggle;
+    }
+
     document.body.append(this.element.bib);
 
+    this.setupAria();
     this.handleTriggerTabIndex();
 
     this.handleEvent = this.handleEvent.bind(this);
-    this.element.trigger.addEventListener('keydown', this.handleEvent);
-    this.element.trigger.addEventListener('click', this.handleEvent);
-    this.element.trigger.addEventListener('mouseenter', this.handleEvent);
-    this.element.trigger.addEventListener('mouseleave', this.handleEvent);
-    this.element.trigger.addEventListener('focus', this.handleEvent);
-    this.element.trigger.addEventListener('blur', this.handleEvent);
+    if (this.element.trigger) {
+      this.element.trigger.addEventListener('keydown', this.handleEvent);
+      this.element.trigger.addEventListener('click', this.handleEvent);
+      this.element.trigger.addEventListener('mouseenter', this.handleEvent);
+      this.element.trigger.addEventListener('mouseleave', this.handleEvent);
+      this.element.trigger.addEventListener('focus', this.handleEvent);
+      this.element.trigger.addEventListener('blur', this.handleEvent);
+    }
   }
 
   disconnect() {
     this.cleanupHideHandlers();
     this.element.cleanup?.();
-    
+
     // Remove event & keyboard listeners
     if (this.element?.trigger) {
       this.element.trigger.removeEventListener('keydown', this.handleEvent);
