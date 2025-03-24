@@ -1,5 +1,22 @@
 # Semantic Release Automated Changelog
 
+# [4.0.0](https://github.com/AlaskaAirlines/auro-library/compare/v3.0.13...v4.0.0) (2025-03-24)
+
+
+### Features
+
+* add drawer behavior to floatingUI ([55e6d30](https://github.com/AlaskaAirlines/auro-library/commit/55e6d30df013193174af6b865e023bb14eaa6dd5))
+
+
+### Performance Improvements
+
+* update randomize id logic to use crypto ([0ac1a85](https://github.com/AlaskaAirlines/auro-library/commit/0ac1a85a6ecdc90b68d2bc79238a9410bd00613d))
+
+
+### BREAKING CHANGES
+
+* `data-show` attribute on bib won't be set by floatingUI
+
 ## [3.0.13](https://github.com/AlaskaAirlines/auro-library/compare/v3.0.12...v3.0.13) (2025-03-19)
 
 
