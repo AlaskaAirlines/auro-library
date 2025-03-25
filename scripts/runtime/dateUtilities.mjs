@@ -19,11 +19,7 @@ export class AuroDateUtilities {
      * @param {Object} date2 - Second date to compare.
      * @returns {Boolean} Returns true if the dates match.
      */
-    this.datesMatch = (date1, date2) => {
-      const match = new Date(date1).getTime() === new Date(date2).getTime();
-
-      return match;
-    };
+    this.datesMatch = (date1, date2) => new Date(date1).getTime() === new Date(date2).getTime();
 
     /**
      * Returns true if value passed in is a valid date.
@@ -119,9 +115,11 @@ export class AuroDateUtilities {
      * Parses a date string into its components.
      * @param {string} dateStr - Date string to parse.
      * @param {string} format - Date format to parse.
-     * @returns {void}
+     * @returns {Object|undefined}
      */
     this.parseDate = (dateStr, format) => {
+
+      // Guard Clause: Date string is defined
       if (!dateStr) {
         return undefined;
       }
