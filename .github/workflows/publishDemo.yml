@@ -19,19 +19,17 @@ jobs:
       - name: Build Demo
         run: |
           npm ci
+          npm run test
           npm run build
-
       - name: Update HTML Scripts
         run: |
           curl https://raw.githubusercontent.com/AlaskaAirlines/auro-library/main/scripts/config/useBundles.js -o useBundles.js
           node useBundles.js
-
       - name: Create Surge Domain
         run: |
           repo_name=$(echo ${{github.repository}} | tr "/#" -)
           branch_domain_name=$(echo ${{github.head_ref}} | tr "/#" -)
           echo "domain_name=$repo_name-$branch_domain_name.surge.sh" >> $GITHUB_ENV
-
       - name: Deploy to Surge
         run: |
           npm install -g surge@0.23;
@@ -47,13 +45,11 @@ jobs:
           npm install -g urls-md@5;
           deployment_message=$(echo "${{env.deployment_output}}/demo/" | urls-md)
           echo "deployment_result=$deployment_message" >> $GITHUB_ENV
-
       - name: Comment Success to PR
         uses: thollander/actions-comment-pull-request@v2.4.3
         with:
           message: |
             Surge demo deployment succeeded! 🚀🚀🚀
-
             ${{env.deployment_result}}
           comment_tag: demo_comment
 
@@ -64,4 +60,3 @@ jobs:
           message: |
             Surge demo deployment failed! 😭
           comment_tag: demo_comment
-

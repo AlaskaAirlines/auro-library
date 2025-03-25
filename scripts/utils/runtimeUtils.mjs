@@ -8,6 +8,19 @@
 export default class AuroLibraryRuntimeUtils {
 
   /* eslint-disable jsdoc/require-param */
+
+  /**
+   * This will register a new custom element with the browser.
+   * @param {String} name - The name of the custom element.
+   * @param {Object} componentClass - The class to register as a custom element.
+   * @returns {void}
+   */
+  registerComponent(name, componentClass) {
+    if (!customElements.get(name)) {
+      customElements.define(name, class extends componentClass {});
+    }
+  }
+
   /**
    * Finds and returns the closest HTML Element based on a selector.
    * @returns {void}

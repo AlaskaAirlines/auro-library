@@ -1,5 +1,7 @@
 // Script used by `Deploy Demo` workflow to replace component scripts in demos with their bundled versions
 
+/* eslint-disable no-undef */
+
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'fs';
 
 const currDir = process.cwd();

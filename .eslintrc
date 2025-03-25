@@ -1,8 +1,0 @@
-{
-  "extends": [
-    "@aurodesignsystem/eslint-config"
-  ],
-  "env":{
-    "node": true
-  }
-}

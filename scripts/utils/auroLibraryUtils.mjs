@@ -8,8 +8,25 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import chalk from 'chalk';
+import { fileURLToPath } from 'url';
+
+import {Logger} from "./logger.mjs";
 
 export default class AuroLibraryUtils {
+  getDirname() {
+    return fileURLToPath(import.meta.url);
+  }
+
+  get getProjectRootPath() {
+    const currentDir = this.getDirname();
+
+    if (!currentDir.includes('node_modules')) {
+      Logger.warn(`Unable to determine best project root as node_modules \nis not in the directory path.\n\nAssuming - "${currentDir}"`, true);
+      return currentDir;
+    }
+
+    return currentDir.split('node_modules')[0];
+  }
 
   /**
    * Copies and pastes all files in a source directory into a destination directory.
@@ -73,7 +90,7 @@ export default class AuroLibraryUtils {
   /**
    * Logs out messages in a readable format.
    * @param {String} message - Message to be logged.
-   * @param {String} status - Status that determines the color of the logged message.
+   * @param {"info" | "success" | "error"} status - Status that determines the color of the logged message.
    * @param {Boolean} section - If true, adds a box around the message for readability.
    */
   auroLogger(message, status, section) {
@@ -119,32 +136,32 @@ export default class AuroLibraryUtils {
    * @returns {Object} result - Object containing data from package.json.
    */
   nameExtraction() {
-    const packageJson = fs.readFileSync('package.json', 'utf8', function(err) {
+    let packageJson = fs.readFileSync('package.json', 'utf8', function(err) {
       if (err) {
         console.log('ERROR: Unable to read package.json file', err);
       }
     });
 
-    const pName = JSON.parse(packageJson).name;
+    packageJson = JSON.parse(packageJson);
 
+    const pName = packageJson.name;
     const npmStart = pName.indexOf('@');
     const namespaceStart = pName.indexOf('/');
     const nameStart = pName.indexOf('-');
 
-    const result = {
-      'abstractNodeVersion': JSON.parse(packageJson).engines.node.substring(2),
-      'branchName': JSON.parse(packageJson).release.branch,
+    return {
+      'abstractNodeVersion': packageJson.engines.node.substring(2),
+      'branchName': packageJson.release.branch,
       'npm': pName.substring(npmStart, namespaceStart),
       'namespace': pName.substring(namespaceStart + 1, nameStart),
       'namespaceCap': pName.substring(namespaceStart + 1)[0].toUpperCase() + pName.substring(namespaceStart + 2, nameStart),
       'name': pName.substring(nameStart + 1),
       'nameCap': pName.substring(nameStart + 1)[0].toUpperCase() + pName.substring(nameStart + 2),
-      'version': pVersion,
-      'tokensVersion': pdtVersion,
-      'wcssVersion': wcssVersion
-    };
+      'version': packageJson.version,
+      'tokensVersion': packageJson.peerDependencies['@aurodesignsystem/design-tokens'].substring(1),
+      'wcssVersion': packageJson.peerDependencies['@aurodesignsystem/webcorestylesheets'].substring(1)
 
-    return result;
+    };
   }
 
   /**

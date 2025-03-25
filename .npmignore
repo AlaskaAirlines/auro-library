@@ -4,6 +4,7 @@
 *conf*
 LICENSE
 NOTICE
+tests/
 
 .github/
 .gitignore
@@ -12,4 +13,5 @@ NOTICE
 
 docs/
 docTemplates/
-
+tmp/
+**/__tests__/
