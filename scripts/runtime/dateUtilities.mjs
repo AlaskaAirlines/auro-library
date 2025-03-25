@@ -117,14 +117,12 @@ export class AuroDateUtilities {
      * @param {string} format - Date format to parse.
      * @returns {Object|undefined}
      */
-    this.parseDate = (dateStr, format) => {
+    this.parseDate = (dateStr, format = 'mm/dd/yyyy') => {
 
       // Guard Clause: Date string is defined
       if (!dateStr) {
         return undefined;
       }
-
-      const dateFormat = format || 'mm/dd/yyyy';
 
       // Define mappings for date components with named capture groups
       const formatPatterns = {
@@ -134,7 +132,7 @@ export class AuroDateUtilities {
       };
 
       // Escape slashes and replace format components with regex patterns
-      let regexPattern = dateFormat.replace(/(?:yyyy|mm|dd)/gu, (match) => formatPatterns[match]);
+      let regexPattern = format.replace(/(?:yyyy|mm|dd)/gu, (match) => formatPatterns[match]);
       regexPattern = `^${regexPattern}$`;
 
       const regex = new RegExp(regexPattern, 'u');
