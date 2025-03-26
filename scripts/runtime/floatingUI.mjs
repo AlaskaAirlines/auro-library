@@ -235,6 +235,14 @@ export default class AuroFloatingUI {
     }
   }
 
+  /**
+   * @private
+   * getting called on 'blur' in trigger or `focusin` in document
+   *  
+   * Hides the bib if focus moves outside of the trigger or bib, unless a 'noHideOnThisFocusLoss' flag is set.
+   * This method checks if the currently active element is still within the trigger or bib.
+   * If not, and if the bib isn't in fullscreen mode with focus lost, it hides the bib.
+   */
   handleFocusLoss() {
     if (this.element.noHideOnThisFocusLoss ||
       this.element.hasAttribute('noHideOnThisFocusLoss')) {
@@ -242,8 +250,12 @@ export default class AuroFloatingUI {
     }
 
     const { activeElement } = document;
-    if (this.element.contains(activeElement) ||
-      this.element.bib?.contains(activeElement)) {
+    // if focus is still inside of trigger or bib, do not close
+    if (this.element.contains(activeElement) || this.element.bib?.contains(activeElement)) {
+      return;
+    }
+    // if fullscreen bib is still open and the focus is missing, do not close
+    if (this.element.bib.hasAttribute('isfullscreen') && activeElement === document.body) {
       return;
     }
 
@@ -251,6 +263,12 @@ export default class AuroFloatingUI {
   }
 
   setupHideHandlers() {
+    this.preventFocusLoseOnBibClick = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+    };
+    this.element.bib.addEventListener('mousedown', this.preventFocusLoseOnBibClick);
+
     // Define handlers & store references
     this.focusHandler = () => this.handleFocusLoss();
 
@@ -299,6 +317,12 @@ export default class AuroFloatingUI {
 
   cleanupHideHandlers() {
     // Remove event listeners if they exist
+
+    if (this.preventFocusLoseOnBibClick) {
+      this.element.bib.removeEventListener('mousedown', this.preventFocusLoseOnBibClick);
+      delete this.preventFocusLoseOnBibClick;
+    }
+
     if (this.focusHandler) {
       document.removeEventListener('focusin', this.focusHandler);
       this.focusHandler = null;
@@ -437,7 +461,8 @@ export default class AuroFloatingUI {
           }
           break;
         case 'blur':
-          this.handleFocusLoss();
+          // send this task to end of the queue to wait a frame in case focus moves within the floating element/bib
+          setTimeout(() => this.handleFocusLoss());
           break;
         case 'click':
           if (document.activeElement === document.body) {
