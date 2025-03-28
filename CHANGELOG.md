@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+# [4.1.0-beta.1](https://github.com/AlaskaAirlines/auro-library/compare/v4.0.0...v4.1.0-beta.1) (2025-03-28)
+
+
+### Features
+
+* create date utilities library ([2241546](https://github.com/AlaskaAirlines/auro-library/commit/22415464a01fcf9a53e8b3b32787f068272b7eaf))
+
 # [4.0.0](https://github.com/AlaskaAirlines/auro-library/compare/v3.0.13...v4.0.0) (2025-03-24)
 
 
