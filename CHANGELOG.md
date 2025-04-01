@@ -1,5 +1,13 @@
 # Semantic Release Automated Changelog
 
+# [4.1.0-beta.2](https://github.com/AlaskaAirlines/auro-library/compare/v4.1.0-beta.1...v4.1.0-beta.2) (2025-04-01)
+
+
+### Bug Fixes
+
+* hide bib correctly when losing focus on trigger ([226ed07](https://github.com/AlaskaAirlines/auro-library/commit/226ed07a6200d733649f6a9f6e651b88e6ce0d64))
+* prevent clicking background of bib resetting `document.activeElement` ([b8c64d4](https://github.com/AlaskaAirlines/auro-library/commit/b8c64d494e42917c7aabbbc64addf3d7076c62c6))
+
 # [4.1.0-beta.1](https://github.com/AlaskaAirlines/auro-library/compare/v4.0.0...v4.1.0-beta.1) (2025-03-28)
 
 
