@@ -572,6 +572,10 @@ export default class AuroFloatingUI {
     this.cleanupHideHandlers();
     this.element.cleanup?.();
 
+    if (this.element.bib) {
+      this.element.shadowRoot.append(this.element.bib);
+    }
+
     // Remove event & keyboard listeners
     if (this.element?.trigger) {
       this.element.trigger.removeEventListener('keydown', this.handleEvent);
