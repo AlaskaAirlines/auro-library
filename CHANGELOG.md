@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+# [4.1.0-beta.3](https://github.com/AlaskaAirlines/auro-library/compare/v4.1.0-beta.2...v4.1.0-beta.3) (2025-04-09)
+
+
+### Bug Fixes
+
+* remove bib on disconnect in floatingUI ([b5a2935](https://github.com/AlaskaAirlines/auro-library/commit/b5a29358910199589422067ad30767c99bb16daa))
+
 # [4.1.0-beta.2](https://github.com/AlaskaAirlines/auro-library/compare/v4.1.0-beta.1...v4.1.0-beta.2) (2025-04-01)
 
 
