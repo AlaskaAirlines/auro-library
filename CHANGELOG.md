@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [4.1.1](https://github.com/AlaskaAirlines/auro-library/compare/v4.1.0...v4.1.1) (2025-04-09)
+
+
+### Bug Fixes
+
+* update wca writing script not to write lines with [@tags](https://github.com/tags) ([8ff5eab](https://github.com/AlaskaAirlines/auro-library/commit/8ff5eab39a656bcf2eac1d4439cb0d44d3208d48))
+
 # [4.1.0](https://github.com/AlaskaAirlines/auro-library/compare/v4.0.0...v4.1.0) (2025-04-02)
 
 
