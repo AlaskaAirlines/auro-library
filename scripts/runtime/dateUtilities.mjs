@@ -194,15 +194,23 @@ export class AuroDateUtilities {
       const maxYear = 9999;
 
       // Validator for day
-      const dayIsValid = (day) => {
+      const dayValueIsValid = (day) => {
 
         // Guard clause: ensure day exists.
         if (!day) {
           return false;
         }
 
+        // Convert day to number
+        const numDay = parseInt(day, 10);
+
+        // Guard clause: ensure day is a valid integer
+        if (isNaN(numDay)) {
+          throw new Error('AuroDatepickerUtilities | dayValueIsValid: Unable to parse day value integer');
+        }
+
         // Guard clause: ensure day is within the valid range
-        if (day < 1 || day > maxDay) {
+        if (numDay < 1 || numDay > maxDay) {
           return false;
         }
 
@@ -211,15 +219,23 @@ export class AuroDateUtilities {
       };
 
       // Validator for month
-      const monthIsValid = (month) => {
+      const monthValueIsValid = (month) => {
 
         // Guard clause: ensure month exists.
         if (!month) {
           return false;
         }
 
+        // Convert month to number
+        const numMonth = parseInt(month, 10);
+
+        // Guard clause: ensure month is a valid integer
+        if (isNaN(numMonth)) {
+          throw new Error('AuroDatepickerUtilities | monthValueIsValid: Unable to parse month value integer');
+        }
+
         // Guard clause: ensure month is within the valid range
-        if (month < 1 || month > maxMonth) {
+        if (numMonth < 1 || numMonth > maxMonth) {
           return false;
         }
 
@@ -235,8 +251,16 @@ export class AuroDateUtilities {
           return false;
         }
 
+        // Convert year to number
+        const numYear = parseInt(year, 10);
+
+        // Guard clause: ensure year is a valid integer
+        if (isNaN(numYear)) {
+          throw new Error('AuroDatepickerUtilities | yearValueIsValid: Unable to parse year value integer');
+        }
+
         // Guard clause: ensure year is within the valid range
-        if (year < minYear || year > maxYear) {
+        if (numYear < minYear || numYear > maxYear) {
           return false;
         }
 
@@ -246,8 +270,8 @@ export class AuroDateUtilities {
 
       // Self-contained checks for month, day, and year
       const checks = [
-        monthIsValid(dateParts.month),
-        dayIsValid(dateParts.day),
+        monthValueIsValid(dateParts.month),
+        dayValueIsValid(dateParts.day),
         yearIsValid(dateParts.year)
       ];
 
