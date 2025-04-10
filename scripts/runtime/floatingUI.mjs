@@ -4,6 +4,14 @@ import { autoUpdate, computePosition, offset, autoPlacement, flip } from '@float
 
 
 const MAX_CONFIGURATION_COUNT = 10;
+let isMousePressed = false;
+
+function mouseEventGlobalHandler(event) {
+  isMousePressed = event.type === 'mousedown';
+}
+
+window.addEventListener('mousedown', mouseEventGlobalHandler);
+window.addEventListener('mouseup', mouseEventGlobalHandler);
 
 export default class AuroFloatingUI {
   constructor(element, behavior) {
@@ -197,7 +205,7 @@ export default class AuroFloatingUI {
 
         setTimeout(() => {
           this.configureBibStrategy(value);
-        });
+        }, 0);
       }
 
       if (this.element.isPopoverVisible) {
@@ -244,6 +252,11 @@ export default class AuroFloatingUI {
    * If not, and if the bib isn't in fullscreen mode with focus lost, it hides the bib.
    */
   handleFocusLoss() {
+    // if moused is being pressed, skip and let click event to handle the action
+    if (isMousePressed) {
+      return;
+    }
+
     if (this.element.noHideOnThisFocusLoss ||
       this.element.hasAttribute('noHideOnThisFocusLoss')) {
       return;
@@ -312,7 +325,7 @@ export default class AuroFloatingUI {
     // it conflicts if showBib gets call from a button that's not this.element.trigger
     setTimeout(() => {
       window.addEventListener('click', this.clickHandler);
-    });
+    }, 0);
   }
 
   cleanupHideHandlers() {
@@ -461,8 +474,9 @@ export default class AuroFloatingUI {
           }
           break;
         case 'blur':
-          // send this task to end of the queue to wait a frame in case focus moves within the floating element/bib
-          setTimeout(() => this.handleFocusLoss());
+          // send this task 100ms later queue to
+          // wait a frame in case focus moves within the floating element/bib
+          setTimeout(() => this.handleFocusLoss(), 0);
           break;
         case 'click':
           if (document.activeElement === document.body) {
@@ -570,20 +584,18 @@ export default class AuroFloatingUI {
 
   disconnect() {
     this.cleanupHideHandlers();
-    this.element.cleanup?.();
+    if (this.element) {
+      this.element.cleanup?.();
 
-    if (this.element.bib) {
-      this.element.shadowRoot.append(this.element.bib);
-    }
-
-    // Remove event & keyboard listeners
-    if (this.element?.trigger) {
-      this.element.trigger.removeEventListener('keydown', this.handleEvent);
-      this.element.trigger.removeEventListener('click', this.handleEvent);
-      this.element.trigger.removeEventListener('mouseenter', this.handleEvent);
-      this.element.trigger.removeEventListener('mouseleave', this.handleEvent);
-      this.element.trigger.removeEventListener('focus', this.handleEvent);
-      this.element.trigger.removeEventListener('blur', this.handleEvent);
+      // Remove event & keyboard listeners
+      if (this.element?.trigger) {
+        this.element.trigger.removeEventListener('keydown', this.handleEvent);
+        this.element.trigger.removeEventListener('click', this.handleEvent);
+        this.element.trigger.removeEventListener('mouseenter', this.handleEvent);
+        this.element.trigger.removeEventListener('mouseleave', this.handleEvent);
+        this.element.trigger.removeEventListener('focus', this.handleEvent);
+        this.element.trigger.removeEventListener('blur', this.handleEvent);
+      }
     }
   }
 }
