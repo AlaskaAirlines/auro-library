@@ -133,7 +133,7 @@ export class AuroDateUtilities {
 
       // Check if the value and format have the correct number of parts
       if (valueParts.length !== formatParts.length) {
-        return false;
+        throw new Error('AuroDatepickerUtilities | parseDate: Date string and format length do not match');
       }
 
       // Holds the result to be returned
@@ -187,58 +187,68 @@ export class AuroDateUtilities {
       // Get the parts of the date
       const dateParts = this.parseDate(value, format);
 
+      // Range definitions
       const maxDay = 31;
       const maxMonth = 12;
       const minYear = 1000;
       const maxYear = 9999;
 
+      // Validator for day
+      const dayIsValid = (day) => {
+
+        // Guard clause: ensure day exists.
+        if (!day) {
+          return false;
+        }
+
+        // Guard clause: ensure day is within the valid range
+        if (day < 1 || day > maxDay) {
+          return false;
+        }
+
+        // Default return
+        return true;
+      };
+
+      // Validator for month
+      const monthIsValid = (month) => {
+
+        // Guard clause: ensure month exists.
+        if (!month) {
+          return false;
+        }
+
+        // Guard clause: ensure month is within the valid range
+        if (month < 1 || month > maxMonth) {
+          return false;
+        }
+
+        // Default return
+        return true;
+      };
+
+      // Validator for year
+      const yearIsValid = (year) => {
+
+        // Guard clause: ensure year exists.
+        if (!year) {
+          return false;
+        }
+
+        // Guard clause: ensure year is within the valid range
+        if (year < minYear || year > maxYear) {
+          return false;
+        }
+
+        // Default return
+        return true;
+      };
+
       // Self-contained checks for month, day, and year
       const checks = [
-
-        // Validate Day
-        (() => {
-          const { day } = dateParts;
-
-          if (!day) {
-            return false;
-          }
-
-          if (day < 1 || day > maxDay) {
-            return false;
-          }
-
-          return true;
-        })(),
-
-        // Validate Month
-        (() => {
-          const { month } = dateParts;
-
-          if (!month) {
-            return false;
-          }
-
-          if (month < 1 || month > maxMonth) {
-            return false;
-          }
-
-          return true;
-        })(),
-
-        // Validate Year
-        (() => {
-          const { year } = dateParts;
-
-          if (!year) {
-            return false;
-          }
-
-          if (year < minYear || year > maxYear) {
-            return false;
-          }
-
-          return true;
-        })()
+        monthIsValid(dateParts.month),
+        dayIsValid(dateParts.day),
+        yearIsValid(dateParts.year)
       ];
 
       // If any of the checks failed, the date format does not match and the result is invalid
