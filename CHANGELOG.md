@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+# [4.2.0](https://github.com/AlaskaAirlines/auro-library/compare/v4.1.1...v4.2.0) (2025-04-10)
+
+
+### Features
+
+* add dateAndFormatMatch to date utilities ([4ce4779](https://github.com/AlaskaAirlines/auro-library/commit/4ce47799514a528d351ec829b8fc8f3f093868cf))
+
 ## [4.1.1](https://github.com/AlaskaAirlines/auro-library/compare/v4.1.0...v4.1.1) (2025-04-09)
 
 
