@@ -10,8 +10,10 @@ function mouseEventGlobalHandler(event) {
   isMousePressed = event.type === 'mousedown';
 }
 
-window.addEventListener('mousedown', mouseEventGlobalHandler);
-window.addEventListener('mouseup', mouseEventGlobalHandler);
+if (window && window.addEventListener) {
+  window.addEventListener('mousedown', mouseEventGlobalHandler);
+  window.addEventListener('mouseup', mouseEventGlobalHandler);
+}
 
 export default class AuroFloatingUI {
   constructor(element, behavior) {
