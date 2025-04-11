@@ -4,18 +4,25 @@ import { autoUpdate, computePosition, offset, autoPlacement, flip } from '@float
 
 
 const MAX_CONFIGURATION_COUNT = 10;
-let isMousePressed = false;
-
-function mouseEventGlobalHandler(event) {
-  isMousePressed = event.type === 'mousedown';
-}
-
-if (window && window.addEventListener) {
-  window.addEventListener('mousedown', mouseEventGlobalHandler);
-  window.addEventListener('mouseup', mouseEventGlobalHandler);
-}
 
 export default class AuroFloatingUI {
+
+  static isMousePressed = false;
+
+  static issetupMousePressChecker = false;
+
+  static setupMousePressChecker() {
+    if (!AuroFloatingUI.issetupMousePressChecker && window && window.addEventListener) {
+      AuroFloatingUI.issetupMousePressChecker = true;
+      function mouseEventGlobalHandler(event) {
+        AuroFloatingUI.isMousePressed = event.type === 'mousedown';
+      }
+
+      window.addEventListener('mousedown', mouseEventGlobalHandler);
+      window.addEventListener('mouseup', mouseEventGlobalHandler);
+    }
+  }
+
   constructor(element, behavior) {
     this.element = element;
     this.behavior = behavior;
@@ -255,7 +262,7 @@ export default class AuroFloatingUI {
    */
   handleFocusLoss() {
     // if moused is being pressed, skip and let click event to handle the action
-    if (isMousePressed) {
+    if (AuroFloatingUI.isMousePressed) {
       return;
     }
 
@@ -546,6 +553,8 @@ export default class AuroFloatingUI {
   }
 
   configure(elem, eventPrefix) {
+    AuroFloatingUI.setupMousePressChecker();
+
     this.eventPrefix = eventPrefix;
     if (this.element !== elem) {
       this.element = elem;
@@ -589,6 +598,10 @@ export default class AuroFloatingUI {
     if (this.element) {
       this.element.cleanup?.();
 
+      if (this.element.bib) {
+        this.element.shadowRoot.append(this.element.bib);
+      }
+  
       // Remove event & keyboard listeners
       if (this.element?.trigger) {
         this.element.trigger.removeEventListener('keydown', this.handleEvent);
