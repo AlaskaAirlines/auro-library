@@ -1,5 +1,14 @@
 # Semantic Release Automated Changelog
 
+# [4.1.0-beta.4](https://github.com/AlaskaAirlines/auro-library/compare/v4.1.0-beta.3...v4.1.0-beta.4) (2025-04-11)
+
+
+### Bug Fixes
+
+* add SSR env condition check in floatingUI ([c71a77e](https://github.com/AlaskaAirlines/auro-library/commit/c71a77ed805dc2e61593dd0c483a01c9f19e2a01))
+* not to hide bib on blur event with mouse being pressed ([8808ee6](https://github.com/AlaskaAirlines/auro-library/commit/8808ee6911ccfb81c0e9a0ed23762852983e1239))
+* setup mousePressChecker in floatingUI's configure function ([6136d36](https://github.com/AlaskaAirlines/auro-library/commit/6136d36a980802dc56a0bea9d9aa12b7bf3e6621))
+
 # [4.1.0-beta.3](https://github.com/AlaskaAirlines/auro-library/compare/v4.1.0-beta.2...v4.1.0-beta.3) (2025-04-09)
 
 
