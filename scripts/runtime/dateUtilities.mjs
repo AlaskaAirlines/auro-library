@@ -90,7 +90,7 @@ export class AuroDateUtilities {
       const parsedDate = this.parseDate(dateStr, format);
 
       if (!parsedDate) {
-        return parsedDate;
+        throw new Error('AuroDatepickerUtilities | toNorthAmericanFormat: Unable to parse date string');
       }
 
       const { month, day, year } = parsedDate;
@@ -124,32 +124,169 @@ export class AuroDateUtilities {
         return undefined;
       }
 
-      // Define mappings for date components with named capture groups
-      const formatPatterns = {
-        'yyyy': '(?<year>\\d{4})',
-        'mm': '(?<month>\\d{2})',
-        'dd': '(?<day>\\d{2})'
-      };
+      // Assume the separator is a "/" a defined in our code base
+      const separator = '/';
 
-      // Escape slashes and replace format components with regex patterns
-      let regexPattern = format.replace(/(?:yyyy|mm|dd)/gu, (match) => formatPatterns[match]);
-      regexPattern = `^${regexPattern}$`;
+      // Get the parts of the date and format
+      const valueParts = dateStr.split(separator);
+      const formatParts = format.split(separator);
 
-      const regex = new RegExp(regexPattern, 'u');
-      const match = dateStr.match(regex);
-
-      if (match && match.groups) {
-        return {
-          year: match.groups.year,
-          month: match.groups.month,
-          day: match.groups.day
-        };
+      // Check if the value and format have the correct number of parts
+      if (valueParts.length !== formatParts.length) {
+        throw new Error('AuroDatepickerUtilities | parseDate: Date string and format length do not match');
       }
 
-      return undefined;
+      // Holds the result to be returned
+      const result = {
+        day: undefined,
+        month: undefined,
+        year: undefined
+      };
+
+      // Iterate over the format and value parts and assign them to the result
+      formatParts.forEach((formatPart, index) => {
+
+        const valuePart = valueParts[index];
+
+        if (formatPart.toLowerCase().match("m")) {
+          result.month = valuePart;
+        } else if (formatPart.toLowerCase().match("d")) {
+          result.day = valuePart;
+        } else if (formatPart.toLowerCase().match("y")) {
+          result.year = valuePart;
+        }
+      });
+
+      // If we found all the parts, return the result
+      if (result.day && result.month && result.year) {
+        return result;
+      }
+
+      // Throw an error to let the dev know we were unable to parse the date string
+      throw new Error('AuroDatepickerUtilities | parseDate: Unable to parse date string');
+    };
+
+    /**
+     * Determines if a string date value matches the format provided.
+     * @param {string} value = The date string value.
+     * @param { string} format = The date format to match against.
+     * @returns {boolean}
+     */
+    this.dateAndFormatMatch = (value, format) => {
+
+      // Ensure we have both values we need to do the comparison
+      if (!value || !format) {
+        throw new Error('AuroFormValidation | dateFormatMatches: value and format are required');
+      }
+
+      // If the lengths are different, they cannot match
+      if (value.length !== format.length) {
+        return false;
+      }
+
+      // Get the parts of the date
+      const dateParts = this.parseDate(value, format);
+
+      // Range definitions
+      const maxDay = 31;
+      const maxMonth = 12;
+      const minYear = 1000;
+      const maxYear = 9999;
+
+      // Validator for day
+      const dayValueIsValid = (day) => {
+
+        // Guard clause: ensure day exists.
+        if (!day) {
+          return false;
+        }
+
+        // Convert day to number
+        const numDay = parseInt(day, 10);
+
+        // Guard clause: ensure day is a valid integer
+        if (isNaN(numDay)) {
+          throw new Error('AuroDatepickerUtilities | dayValueIsValid: Unable to parse day value integer');
+        }
+
+        // Guard clause: ensure day is within the valid range
+        if (numDay < 1 || numDay > maxDay) {
+          return false;
+        }
+
+        // Default return
+        return true;
+      };
+
+      // Validator for month
+      const monthValueIsValid = (month) => {
+
+        // Guard clause: ensure month exists.
+        if (!month) {
+          return false;
+        }
+
+        // Convert month to number
+        const numMonth = parseInt(month, 10);
+
+        // Guard clause: ensure month is a valid integer
+        if (isNaN(numMonth)) {
+          throw new Error('AuroDatepickerUtilities | monthValueIsValid: Unable to parse month value integer');
+        }
+
+        // Guard clause: ensure month is within the valid range
+        if (numMonth < 1 || numMonth > maxMonth) {
+          return false;
+        }
+
+        // Default return
+        return true;
+      };
+
+      // Validator for year
+      const yearIsValid = (year) => {
+
+        // Guard clause: ensure year exists.
+        if (!year) {
+          return false;
+        }
+
+        // Convert year to number
+        const numYear = parseInt(year, 10);
+
+        // Guard clause: ensure year is a valid integer
+        if (isNaN(numYear)) {
+          throw new Error('AuroDatepickerUtilities | yearValueIsValid: Unable to parse year value integer');
+        }
+
+        // Guard clause: ensure year is within the valid range
+        if (numYear < minYear || numYear > maxYear) {
+          return false;
+        }
+
+        // Default return
+        return true;
+      };
+
+      // Self-contained checks for month, day, and year
+      const checks = [
+        monthValueIsValid(dateParts.month),
+        dayValueIsValid(dateParts.day),
+        yearIsValid(dateParts.year)
+      ];
+
+      // If any of the checks failed, the date format does not match and the result is invalid
+      const isInvalid = checks.includes(false);
+
+      //  If the check is invalid, return false
+      if (isInvalid) {
+        return false;
+      }
+
+      // Default case
+      return true;
     };
   }
-
 }
 
 // Export a class instance
@@ -162,4 +299,5 @@ export const {
   validDateStr,
   toNorthAmericanFormat,
   parseDate,
+  dateAndFormatMatch
 } = dateUtilities;

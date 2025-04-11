@@ -1,20 +1,31 @@
 # Semantic Release Automated Changelog
 
-# [4.1.0-beta.4](https://github.com/AlaskaAirlines/auro-library/compare/v4.1.0-beta.3...v4.1.0-beta.4) (2025-04-11)
+# [4.2.0](https://github.com/AlaskaAirlines/auro-library/compare/v4.1.1...v4.2.0) (2025-04-10)
+
+
+### Features
+
+* add dateAndFormatMatch to date utilities ([4ce4779](https://github.com/AlaskaAirlines/auro-library/commit/4ce47799514a528d351ec829b8fc8f3f093868cf))
+
+## [4.1.1](https://github.com/AlaskaAirlines/auro-library/compare/v4.1.0...v4.1.1) (2025-04-09)
 
 
 ### Bug Fixes
 
-* add SSR env condition check in floatingUI ([c71a77e](https://github.com/AlaskaAirlines/auro-library/commit/c71a77ed805dc2e61593dd0c483a01c9f19e2a01))
-* not to hide bib on blur event with mouse being pressed ([8808ee6](https://github.com/AlaskaAirlines/auro-library/commit/8808ee6911ccfb81c0e9a0ed23762852983e1239))
-* setup mousePressChecker in floatingUI's configure function ([6136d36](https://github.com/AlaskaAirlines/auro-library/commit/6136d36a980802dc56a0bea9d9aa12b7bf3e6621))
+* update wca writing script not to write lines with [@tags](https://github.com/tags) ([8ff5eab](https://github.com/AlaskaAirlines/auro-library/commit/8ff5eab39a656bcf2eac1d4439cb0d44d3208d48))
 
-# [4.1.0-beta.3](https://github.com/AlaskaAirlines/auro-library/compare/v4.1.0-beta.2...v4.1.0-beta.3) (2025-04-09)
+# [4.1.0](https://github.com/AlaskaAirlines/auro-library/compare/v4.0.0...v4.1.0) (2025-04-02)
 
 
 ### Bug Fixes
 
-* remove bib on disconnect in floatingUI ([b5a2935](https://github.com/AlaskaAirlines/auro-library/commit/b5a29358910199589422067ad30767c99bb16daa))
+* hide bib correctly when losing focus on trigger ([226ed07](https://github.com/AlaskaAirlines/auro-library/commit/226ed07a6200d733649f6a9f6e651b88e6ce0d64))
+* prevent clicking background of bib resetting `document.activeElement` ([b8c64d4](https://github.com/AlaskaAirlines/auro-library/commit/b8c64d494e42917c7aabbbc64addf3d7076c62c6))
+
+
+### Features
+
+* create date utilities library ([2241546](https://github.com/AlaskaAirlines/auro-library/commit/22415464a01fcf9a53e8b3b32787f068272b7eaf))
 
 # [4.1.0-beta.2](https://github.com/AlaskaAirlines/auro-library/compare/v4.1.0-beta.1...v4.1.0-beta.2) (2025-04-01)
 
