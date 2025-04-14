@@ -7,16 +7,26 @@ const MAX_CONFIGURATION_COUNT = 10;
 
 export default class AuroFloatingUI {
 
+  /**
+   * @private
+   */
   static isMousePressed = false;
 
-  static issetupMousePressChecker = false;
+  /**
+   * @private
+   */
+  static isMousePressHandlerInitialized = false;
 
+  /**
+   * @private
+   */
   static setupMousePressChecker() {
-    if (!AuroFloatingUI.issetupMousePressChecker && window && window.addEventListener) {
-      AuroFloatingUI.issetupMousePressChecker = true;
-      function mouseEventGlobalHandler(event) {
+    if (!AuroFloatingUI.isMousePressHandlerInitialized && window && window.addEventListener) {
+      AuroFloatingUI.isMousePressHandlerInitialized = true;
+
+      const mouseEventGlobalHandler = (event) => {
         AuroFloatingUI.isMousePressed = event.type === 'mousedown';
-      }
+      };
 
       window.addEventListener('mousedown', mouseEventGlobalHandler);
       window.addEventListener('mouseup', mouseEventGlobalHandler);
@@ -261,7 +271,7 @@ export default class AuroFloatingUI {
    * If not, and if the bib isn't in fullscreen mode with focus lost, it hides the bib.
    */
   handleFocusLoss() {
-    // if moused is being pressed, skip and let click event to handle the action
+    // if mouse is being pressed, skip and let click event to handle the action
     if (AuroFloatingUI.isMousePressed) {
       return;
     }
