@@ -19,7 +19,20 @@ export class AuroDateUtilities {
      * @param {Object} date2 - Second date to compare.
      * @returns {Boolean} Returns true if the dates match.
      */
-    this.datesMatch = (date1, date2) => new Date(date1).getTime() === new Date(date2).getTime();
+    this.datesMatch = (date1, date2) => {
+      const dDate1 = new Date(date1);
+      const dDate2 = new Date(date2);
+
+      const match = dDate1.getTime() === dDate2.getTime();
+      if (match) {
+        return true;
+      }
+
+      // double check, since match can be false even there are same dates but when date's year is less than 1000.
+      return dDate1.getFullYear() === dDate2.getFullYear() &&
+        dDate1.getMonth() === dDate2.getMonth() &&
+        dDate1.getDate() === dDate2.getDate();
+    };
 
     /**
      * Returns true if value passed in is a valid date.
