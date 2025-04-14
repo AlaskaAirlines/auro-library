@@ -1,5 +1,16 @@
 # Semantic Release Automated Changelog
 
+## [4.2.1](https://github.com/AlaskaAirlines/auro-library/compare/v4.2.0...v4.2.1) (2025-04-14)
+
+
+### Bug Fixes
+
+* add SSR env condition check in floatingUI ([c71a77e](https://github.com/AlaskaAirlines/auro-library/commit/c71a77ed805dc2e61593dd0c483a01c9f19e2a01))
+* correct method call to hide dropdown in AuroFloatingUI class ([44e30fc](https://github.com/AlaskaAirlines/auro-library/commit/44e30fc384be9adbcd3f493faba4c2f652c019f3))
+* not to hide bib on blur event with mouse being pressed ([8808ee6](https://github.com/AlaskaAirlines/auro-library/commit/8808ee6911ccfb81c0e9a0ed23762852983e1239))
+* remove bib on disconnect in floatingUI ([b5a2935](https://github.com/AlaskaAirlines/auro-library/commit/b5a29358910199589422067ad30767c99bb16daa))
+* setup mousePressChecker in floatingUI's configure function ([6136d36](https://github.com/AlaskaAirlines/auro-library/commit/6136d36a980802dc56a0bea9d9aa12b7bf3e6621))
+
 # [4.2.0](https://github.com/AlaskaAirlines/auro-library/compare/v4.1.1...v4.2.0) (2025-04-10)
 
 
