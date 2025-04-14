@@ -6,6 +6,33 @@ import { autoUpdate, computePosition, offset, autoPlacement, flip } from '@float
 const MAX_CONFIGURATION_COUNT = 10;
 
 export default class AuroFloatingUI {
+
+  /**
+   * @private
+   */
+  static isMousePressed = false;
+
+  /**
+   * @private
+   */
+  static isMousePressHandlerInitialized = false;
+
+  /**
+   * @private
+   */
+  static setupMousePressChecker() {
+    if (!AuroFloatingUI.isMousePressHandlerInitialized && window && window.addEventListener) {
+      AuroFloatingUI.isMousePressHandlerInitialized = true;
+
+      const mouseEventGlobalHandler = (event) => {
+        AuroFloatingUI.isMousePressed = event.type === 'mousedown';
+      };
+
+      window.addEventListener('mousedown', mouseEventGlobalHandler);
+      window.addEventListener('mouseup', mouseEventGlobalHandler);
+    }
+  }
+
   constructor(element, behavior) {
     this.element = element;
     this.behavior = behavior;
@@ -197,7 +224,7 @@ export default class AuroFloatingUI {
 
         setTimeout(() => {
           this.configureBibStrategy(value);
-        });
+        }, 0);
       }
 
       if (this.element.isPopoverVisible) {
@@ -244,6 +271,11 @@ export default class AuroFloatingUI {
    * If not, and if the bib isn't in fullscreen mode with focus lost, it hides the bib.
    */
   handleFocusLoss() {
+    // if mouse is being pressed, skip and let click event to handle the action
+    if (AuroFloatingUI.isMousePressed) {
+      return;
+    }
+
     if (this.element.noHideOnThisFocusLoss ||
       this.element.hasAttribute('noHideOnThisFocusLoss')) {
       return;
@@ -312,7 +344,7 @@ export default class AuroFloatingUI {
     // it conflicts if showBib gets call from a button that's not this.element.trigger
     setTimeout(() => {
       window.addEventListener('click', this.clickHandler);
-    });
+    }, 0);
   }
 
   cleanupHideHandlers() {
@@ -461,8 +493,9 @@ export default class AuroFloatingUI {
           }
           break;
         case 'blur':
-          // send this task to end of the queue to wait a frame in case focus moves within the floating element/bib
-          setTimeout(() => this.handleFocusLoss());
+          // send this task 100ms later queue to
+          // wait a frame in case focus moves within the floating element/bib
+          setTimeout(() => this.handleFocusLoss(), 0);
           break;
         case 'click':
           if (document.activeElement === document.body) {
@@ -530,6 +563,8 @@ export default class AuroFloatingUI {
   }
 
   configure(elem, eventPrefix) {
+    AuroFloatingUI.setupMousePressChecker();
+
     this.eventPrefix = eventPrefix;
     if (this.element !== elem) {
       this.element = elem;
@@ -570,16 +605,22 @@ export default class AuroFloatingUI {
 
   disconnect() {
     this.cleanupHideHandlers();
-    this.element.cleanup?.();
+    if (this.element) {
+      this.element.cleanup?.();
 
-    // Remove event & keyboard listeners
-    if (this.element?.trigger) {
-      this.element.trigger.removeEventListener('keydown', this.handleEvent);
-      this.element.trigger.removeEventListener('click', this.handleEvent);
-      this.element.trigger.removeEventListener('mouseenter', this.handleEvent);
-      this.element.trigger.removeEventListener('mouseleave', this.handleEvent);
-      this.element.trigger.removeEventListener('focus', this.handleEvent);
-      this.element.trigger.removeEventListener('blur', this.handleEvent);
+      if (this.element.bib) {
+        this.element.shadowRoot.append(this.element.bib);
+      }
+  
+      // Remove event & keyboard listeners
+      if (this.element?.trigger) {
+        this.element.trigger.removeEventListener('keydown', this.handleEvent);
+        this.element.trigger.removeEventListener('click', this.handleEvent);
+        this.element.trigger.removeEventListener('mouseenter', this.handleEvent);
+        this.element.trigger.removeEventListener('mouseleave', this.handleEvent);
+        this.element.trigger.removeEventListener('focus', this.handleEvent);
+        this.element.trigger.removeEventListener('blur', this.handleEvent);
+      }
     }
   }
 }
