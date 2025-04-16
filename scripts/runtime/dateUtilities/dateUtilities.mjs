@@ -1,5 +1,5 @@
 import { AuroDateUtilitiesBase } from "./baseDateUtilities.mjs";
-import { dateFormatter } from "./dateFormatters.mjs";
+import { dateFormatter } from "./dateFormatter.mjs";
 
 export class AuroDateUtilities extends AuroDateUtilitiesBase {
 

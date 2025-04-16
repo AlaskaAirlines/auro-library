@@ -1,5 +1,6 @@
-import { dateFormatter } from './dateFormatters.mjs';
+import { dateFormatter } from './dateFormatter.mjs';
 import { AuroDateUtilities } from './dateUtilities.mjs';
+
 export { AuroDateUtilities } from './dateUtilities.mjs';
 
 // Export a class instance

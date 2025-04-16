@@ -1,4 +1,4 @@
-class dateFormatter {
+class DateFormatter {
 
   constructor() {
 
@@ -100,4 +100,4 @@ class dateFormatter {
   }
 };
 
-export { dateFormatter };
+export const dateFormatter = new DateFormatter();
