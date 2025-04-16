@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [4.2.2-beta.1](https://github.com/AlaskaAirlines/auro-library/compare/v4.2.1...v4.2.2-beta.1) (2025-04-16)
+
+
+### Bug Fixes
+
+* update `matchDate` function to correctly check older dates than year 1000 ([81852fc](https://github.com/AlaskaAirlines/auro-library/commit/81852fc18b6cabc5a4f009c9ddda4a2c10119a67))
+
 ## [4.2.1](https://github.com/AlaskaAirlines/auro-library/compare/v4.2.0...v4.2.1) (2025-04-14)
 
 
