@@ -1,17 +1,11 @@
-export class AuroDateUtilities {
+import { AuroDateUtilitiesBase } from "./baseDateUtilities.mjs";
+import { dateFormatter } from "./dateFormatters.mjs";
+
+export class AuroDateUtilities extends AuroDateUtilitiesBase {
 
   constructor() {
 
-    /**
-     * Convert a date object to string format.
-     * @param {Object} date - Date to convert to string.
-     * @returns {Object} Returns the date as a string.
-     */
-    this.getDateAsString = (date) => date.toLocaleDateString(undefined, {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    });
+    super();
 
     /**
      * Compares two dates to see if they match.
@@ -53,7 +47,7 @@ export class AuroDateUtilities {
       };
 
       // Get a formatted date string and parse it
-      const formattedDate = this.toNorthAmericanFormat(date, format);
+      const formattedDate = dateFormatter.toNorthAmericanFormat(date, format);
       const parsedDate = Date.parse(formattedDate);
 
       // Guard Clause: Date parse succeeded
@@ -63,9 +57,9 @@ export class AuroDateUtilities {
 
       // Generate a date object for the parsed date and the expected date
       const dateObj = new Date(parsedDate);
-      const dateStrings = this.parseDate(date, format);
+      const dateStrings = dateFormatter.parseDate(date, format);
       const expectedDateStr = `${dateStrings.month}/${dateStrings.day}/${dateStrings.year}`;
-      const actualDateStr = this.getDateAsString(dateObj);
+      const actualDateStr = dateFormatter.getDateAsString(dateObj);
 
       // Guard Clause: Generated date matches date string input
       if (expectedDateStr !== actualDateStr) {
@@ -74,96 +68,6 @@ export class AuroDateUtilities {
 
       // If we passed all other checks, we can assume the date is valid
       return true;
-    };
-
-    /**
-     * Converts a date string to a North American date format.
-     * @param {String} dateStr - Date to validate.
-     * @param {String} format - Date format to validate against.
-     * @returns {Boolean}
-     */
-    this.toNorthAmericanFormat = (dateStr, format) => {
-      if (format === 'mm/dd/yyyy') {
-        return dateStr;
-      }
-
-      const parsedDate = this.parseDate(dateStr, format);
-
-      if (!parsedDate) {
-        throw new Error('AuroDatepickerUtilities | toNorthAmericanFormat: Unable to parse date string');
-      }
-
-      const { month, day, year } = parsedDate;
-
-      const dateParts = [];
-      if (month) {
-        dateParts.push(month);
-      }
-
-      if (day) {
-        dateParts.push(day);
-      }
-
-      if (year) {
-        dateParts.push(year);
-      }
-
-      return dateParts.join('/');
-    };
-
-    /**
-     * Parses a date string into its components.
-     * @param {string} dateStr - Date string to parse.
-     * @param {string} format - Date format to parse.
-     * @returns {Object|undefined}
-     */
-    this.parseDate = (dateStr, format = 'mm/dd/yyyy') => {
-
-      // Guard Clause: Date string is defined
-      if (!dateStr) {
-        return undefined;
-      }
-
-      // Assume the separator is a "/" a defined in our code base
-      const separator = '/';
-
-      // Get the parts of the date and format
-      const valueParts = dateStr.split(separator);
-      const formatParts = format.split(separator);
-
-      // Check if the value and format have the correct number of parts
-      if (valueParts.length !== formatParts.length) {
-        throw new Error('AuroDatepickerUtilities | parseDate: Date string and format length do not match');
-      }
-
-      // Holds the result to be returned
-      const result = {
-        day: undefined,
-        month: undefined,
-        year: undefined
-      };
-
-      // Iterate over the format and value parts and assign them to the result
-      formatParts.forEach((formatPart, index) => {
-
-        const valuePart = valueParts[index];
-
-        if (formatPart.toLowerCase().match("m")) {
-          result.month = valuePart;
-        } else if (formatPart.toLowerCase().match("d")) {
-          result.day = valuePart;
-        } else if (formatPart.toLowerCase().match("y")) {
-          result.year = valuePart;
-        }
-      });
-
-      // If we found all the parts, return the result
-      if (result.day && result.month && result.year) {
-        return result;
-      }
-
-      // Throw an error to let the dev know we were unable to parse the date string
-      throw new Error('AuroDatepickerUtilities | parseDate: Unable to parse date string');
     };
 
     /**
@@ -176,7 +80,7 @@ export class AuroDateUtilities {
 
       // Ensure we have both values we need to do the comparison
       if (!value || !format) {
-        throw new Error('AuroFormValidation | dateFormatMatches: value and format are required');
+        throw new Error('AuroFormValidation | dateFormatMatch: value and format are required');
       }
 
       // If the lengths are different, they cannot match
@@ -185,13 +89,7 @@ export class AuroDateUtilities {
       }
 
       // Get the parts of the date
-      const dateParts = this.parseDate(value, format);
-
-      // Range definitions
-      const maxDay = 31;
-      const maxMonth = 12;
-      const minYear = 1000;
-      const maxYear = 9999;
+      const dateParts = dateFormatter.parseDate(value, format);
 
       // Validator for day
       const dayValueIsValid = (day) => {
@@ -210,7 +108,7 @@ export class AuroDateUtilities {
         }
 
         // Guard clause: ensure day is within the valid range
-        if (numDay < 1 || numDay > maxDay) {
+        if (numDay < this.minDay || numDay > this.maxDay) {
           return false;
         }
 
@@ -235,7 +133,7 @@ export class AuroDateUtilities {
         }
 
         // Guard clause: ensure month is within the valid range
-        if (numMonth < 1 || numMonth > maxMonth) {
+        if (numMonth < this.minMonth || numMonth > this.maxMonth) {
           return false;
         }
 
@@ -260,7 +158,7 @@ export class AuroDateUtilities {
         }
 
         // Guard clause: ensure year is within the valid range
-        if (numYear < minYear || numYear > maxYear) {
+        if (numYear < this.minYear || numYear > this.maxYear) {
           return false;
         }
 
@@ -276,10 +174,10 @@ export class AuroDateUtilities {
       ];
 
       // If any of the checks failed, the date format does not match and the result is invalid
-      const isInvalid = checks.includes(false);
+      const isValid = checks.every((check) => check === true);
 
       //  If the check is invalid, return false
-      if (isInvalid) {
+      if (!isValid) {
         return false;
       }
 
@@ -288,16 +186,3 @@ export class AuroDateUtilities {
     };
   }
 }
-
-// Export a class instance
-export const dateUtilities = new AuroDateUtilities();
-
-// Export the class instance methods individually
-export const {
-  getDateAsString,
-  datesMatch,
-  validDateStr,
-  toNorthAmericanFormat,
-  parseDate,
-  dateAndFormatMatch
-} = dateUtilities;
