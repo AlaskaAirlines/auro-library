@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+# [4.3.0-beta.1](https://github.com/AlaskaAirlines/auro-library/compare/v4.2.2-beta.1...v4.3.0-beta.1) (2025-04-16)
+
+
+### Features
+
+* add exported date constraints to dateUtilities for external reference by consumers and allow for barrel imports ([d796e96](https://github.com/AlaskaAirlines/auro-library/commit/d796e963ab5a1db778c78b2b15e45cd28ea1100d))
+
 ## [4.2.2-beta.1](https://github.com/AlaskaAirlines/auro-library/compare/v4.2.1...v4.2.2-beta.1) (2025-04-16)
 
 
