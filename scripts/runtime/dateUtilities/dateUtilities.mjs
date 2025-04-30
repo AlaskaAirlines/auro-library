@@ -1,7 +1,27 @@
+/* eslint-disable no-magic-numbers */
 import { AuroDateUtilitiesBase } from "./baseDateUtilities.mjs";
 import { dateFormatter } from "./dateFormatter.mjs";
 
 export class AuroDateUtilities extends AuroDateUtilitiesBase {
+
+  /**
+   * Returns the current century.
+   * @returns {String} The current century.
+   */
+  getCentury () {
+    return String(new Date().getFullYear()).slice(0, 2);
+  }
+
+  /**
+   * Returns a four digit year.
+   * @param {String} year - The year to convert to four digits.
+   * @returns {String} The four digit year.
+   */
+  getFourDigitYear (year) {
+
+    const strYear = String(year).trim();
+    return strYear.length <= 2 ? this.getCentury() + strYear : strYear;
+  }
 
   constructor() {
 
@@ -47,18 +67,20 @@ export class AuroDateUtilities extends AuroDateUtilitiesBase {
       };
 
       // Get a formatted date string and parse it
-      const formattedDate = dateFormatter.toNorthAmericanFormat(date, format);
-      const parsedDate = Date.parse(formattedDate);
+      const dateParts = dateFormatter.parseDate(date, format);
 
       // Guard Clause: Date parse succeeded
-      if (!parsedDate) {
+      if (!dateParts) {
         return false;
       }
 
-      // Generate a date object for the parsed date and the expected date
-      const dateObj = new Date(parsedDate);
-      const dateStrings = dateFormatter.parseDate(date, format);
-      const expectedDateStr = `${dateStrings.month}/${dateStrings.day}/${dateStrings.year}`;
+      // Create the expected date string based on the date parts
+      const expectedDateStr = `${dateParts.month}/${dateParts.day || "01"}/${this.getFourDigitYear(dateParts.year)}`;
+
+      // Generate a date object that we will extract a string date from to compare to the passed in date string
+      const dateObj = new Date(this.getFourDigitYear(dateParts.year), dateParts.month - 1, dateParts.day || 1);
+
+      // Get the date string of the date object we created from the string date
       const actualDateStr = dateFormatter.getDateAsString(dateObj);
 
       // Guard Clause: Generated date matches date string input
@@ -94,16 +116,21 @@ export class AuroDateUtilities extends AuroDateUtilitiesBase {
       // Validator for day
       const dayValueIsValid = (day) => {
 
+        // Guard clause: if there is no day in the dateParts, we can ignore this check.
+        if (!dateParts.day) {
+          return true;
+        }
+
         // Guard clause: ensure day exists.
         if (!day) {
           return false;
         }
 
         // Convert day to number
-        const numDay = parseInt(day, 10);
+        const numDay = Number.parseInt(day, 10);
 
         // Guard clause: ensure day is a valid integer
-        if (isNaN(numDay)) {
+        if (Number.isNaN(numDay)) {
           throw new Error('AuroDatepickerUtilities | dayValueIsValid: Unable to parse day value integer');
         }
 
@@ -125,10 +152,10 @@ export class AuroDateUtilities extends AuroDateUtilitiesBase {
         }
 
         // Convert month to number
-        const numMonth = parseInt(month, 10);
+        const numMonth = Number.parseInt(month, 10);
 
         // Guard clause: ensure month is a valid integer
-        if (isNaN(numMonth)) {
+        if (Number.isNaN(numMonth)) {
           throw new Error('AuroDatepickerUtilities | monthValueIsValid: Unable to parse month value integer');
         }
 
@@ -142,18 +169,21 @@ export class AuroDateUtilities extends AuroDateUtilitiesBase {
       };
 
       // Validator for year
-      const yearIsValid = (year) => {
+      const yearIsValid = (_year) => {
 
         // Guard clause: ensure year exists.
-        if (!year) {
+        if (!_year) {
           return false;
         }
 
+        // Get the full year
+        const year = this.getFourDigitYear(_year);
+
         // Convert year to number
-        const numYear = parseInt(year, 10);
+        const numYear = Number.parseInt(year, 10);
 
         // Guard clause: ensure year is a valid integer
-        if (isNaN(numYear)) {
+        if (Number.isNaN(numYear)) {
           throw new Error('AuroDatepickerUtilities | yearValueIsValid: Unable to parse year value integer');
         }
 
