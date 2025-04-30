@@ -1,11 +1,23 @@
 # Semantic Release Automated Changelog
 
-# [4.3.0-beta.2](https://github.com/AlaskaAirlines/auro-library/compare/v4.3.0-beta.1...v4.3.0-beta.2) (2025-04-29)
+## [4.3.1-beta.1](https://github.com/AlaskaAirlines/auro-library/compare/v4.3.0...v4.3.1-beta.1) (2025-04-30)
 
 
 ### Bug Fixes
 
 * add .element to fix undefined value on isPopoverVisible ([69f4223](https://github.com/AlaskaAirlines/auro-library/commit/69f4223e35a6f180d932e669c2514a03369a47a3))
+
+# [4.3.0](https://github.com/AlaskaAirlines/auro-library/compare/v4.2.1...v4.3.0) (2025-04-18)
+
+
+### Bug Fixes
+
+* update `matchDate` function to correctly check older dates than year 1000 ([81852fc](https://github.com/AlaskaAirlines/auro-library/commit/81852fc18b6cabc5a4f009c9ddda4a2c10119a67))
+
+
+### Features
+
+* add exported date constraints to dateUtilities for external reference by consumers and allow for barrel imports ([d796e96](https://github.com/AlaskaAirlines/auro-library/commit/d796e963ab5a1db778c78b2b15e45cd28ea1100d))
 
 # [4.3.0-beta.1](https://github.com/AlaskaAirlines/auro-library/compare/v4.2.2-beta.1...v4.3.0-beta.1) (2025-04-16)
 
