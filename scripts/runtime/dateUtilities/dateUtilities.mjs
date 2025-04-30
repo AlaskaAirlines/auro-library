@@ -1,15 +1,26 @@
+/* eslint-disable no-magic-numbers */
 import { AuroDateUtilitiesBase } from "./baseDateUtilities.mjs";
 import { dateFormatter } from "./dateFormatter.mjs";
 
 export class AuroDateUtilities extends AuroDateUtilitiesBase {
 
+  /**
+   * Returns the current century.
+   * @returns {String} The current century.
+   */
   getCentury () {
     return String(new Date().getFullYear()).slice(0, 2);
   }
 
+  /**
+   * Returns a four digit year.
+   * @param {String} year - The year to convert to four digits.
+   * @returns {String} The four digit year.
+   */
   getFourDigitYear (year) {
-    // If the year is two digits, prepend the current century
-    return year.length <= 2 ? this.getCentury() + year : year;
+
+    const strYear = String(year).trim();
+    return year.length <= 2 ? this.getCentury() + strYear : strYear;
   }
 
   constructor() {
