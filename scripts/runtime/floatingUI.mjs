@@ -265,7 +265,7 @@ export default class AuroFloatingUI {
   /**
    * @private
    * getting called on 'blur' in trigger or `focusin` in document
-   *  
+   *
    * Hides the bib if focus moves outside of the trigger or bib, unless a 'noHideOnThisFocusLoss' flag is set.
    * This method checks if the currently active element is still within the trigger or bib.
    * If not, and if the bib isn't in fullscreen mode with focus lost, it hides the bib.
@@ -381,7 +381,7 @@ export default class AuroFloatingUI {
     // Close any other dropdown that is already open
     const existedVisibleFloatingUI = document.expandedAuroFormkitDropdown || document.expandedAuroFloater;
     if (existedVisibleFloatingUI && existedVisibleFloatingUI !== this &&
-      existedVisibleFloatingUI.isPopoverVisible &&
+      existedVisibleFloatingUI.element.isPopoverVisible &&
       document.expandedAuroFloater.eventPrefix === this.eventPrefix) {
       document.expandedAuroFloater.hideBib();
     }
@@ -558,7 +558,7 @@ export default class AuroFloatingUI {
       this.id = window.crypto.randomUUID();
       this.element.setAttribute('id', this.id);
     }
-    
+
     this.element.bib.setAttribute("id", `${this.id}-floater-bib`);
   }
 
@@ -611,7 +611,7 @@ export default class AuroFloatingUI {
       if (this.element.bib) {
         this.element.shadowRoot.append(this.element.bib);
       }
-  
+
       // Remove event & keyboard listeners
       if (this.element?.trigger) {
         this.element.trigger.removeEventListener('keydown', this.handleEvent);
