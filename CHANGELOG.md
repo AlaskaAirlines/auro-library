@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+# [4.4.0](https://github.com/AlaskaAirlines/auro-library/compare/v4.3.1...v4.4.0) (2025-04-30)
+
+
+### Features
+
+* add support for dayless (e.g. 10/1999) and two-digit year (e.g. 10/99) date formats ([50b730b](https://github.com/AlaskaAirlines/auro-library/commit/50b730bd5ed9a5de7f3c3b44cb0826d96dfed982))
+
 ## [4.3.1](https://github.com/AlaskaAirlines/auro-library/compare/v4.3.0...v4.3.1) (2025-04-30)
 
 
