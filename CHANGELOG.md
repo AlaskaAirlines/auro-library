@@ -1,11 +1,11 @@
 # Semantic Release Automated Changelog
 
-# [4.4.0-beta.1](https://github.com/AlaskaAirlines/auro-library/compare/v4.3.1-beta.1...v4.4.0-beta.1) (2025-04-30)
+## [4.3.1](https://github.com/AlaskaAirlines/auro-library/compare/v4.3.0...v4.3.1) (2025-04-30)
 
 
-### Features
+### Bug Fixes
 
-* add support for dayless (e.g. 10/1999) and two-digit year (e.g. 10/99) date formats ([50b730b](https://github.com/AlaskaAirlines/auro-library/commit/50b730bd5ed9a5de7f3c3b44cb0826d96dfed982))
+* add .element to fix undefined value on isPopoverVisible ([69f4223](https://github.com/AlaskaAirlines/auro-library/commit/69f4223e35a6f180d932e669c2514a03369a47a3))
 
 ## [4.3.1-beta.1](https://github.com/AlaskaAirlines/auro-library/compare/v4.3.0...v4.3.1-beta.1) (2025-04-30)
 
