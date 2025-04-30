@@ -20,7 +20,7 @@ export class AuroDateUtilities extends AuroDateUtilitiesBase {
   getFourDigitYear (year) {
 
     const strYear = String(year).trim();
-    return year.length <= 2 ? this.getCentury() + strYear : strYear;
+    return strYear.length <= 2 ? this.getCentury() + strYear : strYear;
   }
 
   constructor() {
@@ -74,10 +74,13 @@ export class AuroDateUtilities extends AuroDateUtilitiesBase {
         return false;
       }
 
-      // Generate a date object for the parsed date and the expected date
+      // Create the expected date string based on the date parts
+      const expectedDateStr = `${dateParts.month}/${dateParts.day || "01"}/${this.getFourDigitYear(dateParts.year)}`;
+
+      // Generate a date object that we will extract a string date from to compare to the passed in date string
       const dateObj = new Date(this.getFourDigitYear(dateParts.year), dateParts.month - 1, dateParts.day || 1);
-      const dateStrings = dateFormatter.parseDate(date, format);
-      const expectedDateStr = `${dateStrings.month}/${dateStrings.day || "01"}/${this.getFourDigitYear(dateStrings.year)}`;
+
+      // Get the date string of the date object we created from the string date
       const actualDateStr = dateFormatter.getDateAsString(dateObj);
 
       // Guard Clause: Generated date matches date string input
