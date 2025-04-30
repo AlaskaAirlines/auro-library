@@ -43,7 +43,7 @@ class DateFormatter {
       }, {});
 
       // If we found all the parts, return the result
-      if (result.day && result.month && result.year) {
+      if (result.month && result.year) {
         return result;
       }
 

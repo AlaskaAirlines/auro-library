@@ -3,6 +3,15 @@ import { dateFormatter } from "./dateFormatter.mjs";
 
 export class AuroDateUtilities extends AuroDateUtilitiesBase {
 
+  getCentury () {
+    return String(new Date().getFullYear()).slice(0, 2);
+  }
+
+  getFourDigitYear (year) {
+    // If the year is two digits, prepend the current century
+    return year.length <= 2 ? this.getCentury() + year : year;
+  }
+
   constructor() {
 
     super();
@@ -47,18 +56,17 @@ export class AuroDateUtilities extends AuroDateUtilitiesBase {
       };
 
       // Get a formatted date string and parse it
-      const formattedDate = dateFormatter.toNorthAmericanFormat(date, format);
-      const parsedDate = Date.parse(formattedDate);
+      const dateParts = dateFormatter.parseDate(date, format);
 
       // Guard Clause: Date parse succeeded
-      if (!parsedDate) {
+      if (!dateParts) {
         return false;
       }
 
       // Generate a date object for the parsed date and the expected date
-      const dateObj = new Date(parsedDate);
+      const dateObj = new Date(this.getFourDigitYear(dateParts.year), dateParts.month - 1, dateParts.day || 1);
       const dateStrings = dateFormatter.parseDate(date, format);
-      const expectedDateStr = `${dateStrings.month}/${dateStrings.day}/${dateStrings.year}`;
+      const expectedDateStr = `${dateStrings.month}/${dateStrings.day || "01"}/${this.getFourDigitYear(dateStrings.year)}`;
       const actualDateStr = dateFormatter.getDateAsString(dateObj);
 
       // Guard Clause: Generated date matches date string input
@@ -94,16 +102,21 @@ export class AuroDateUtilities extends AuroDateUtilitiesBase {
       // Validator for day
       const dayValueIsValid = (day) => {
 
+        // Guard clause: if there is no day in the dateParts, we can ignore this check.
+        if (!dateParts.day) {
+          return true;
+        }
+
         // Guard clause: ensure day exists.
         if (!day) {
           return false;
         }
 
         // Convert day to number
-        const numDay = parseInt(day, 10);
+        const numDay = Number.parseInt(day, 10);
 
         // Guard clause: ensure day is a valid integer
-        if (isNaN(numDay)) {
+        if (Number.isNaN(numDay)) {
           throw new Error('AuroDatepickerUtilities | dayValueIsValid: Unable to parse day value integer');
         }
 
@@ -125,10 +138,10 @@ export class AuroDateUtilities extends AuroDateUtilitiesBase {
         }
 
         // Convert month to number
-        const numMonth = parseInt(month, 10);
+        const numMonth = Number.parseInt(month, 10);
 
         // Guard clause: ensure month is a valid integer
-        if (isNaN(numMonth)) {
+        if (Number.isNaN(numMonth)) {
           throw new Error('AuroDatepickerUtilities | monthValueIsValid: Unable to parse month value integer');
         }
 
@@ -142,18 +155,21 @@ export class AuroDateUtilities extends AuroDateUtilitiesBase {
       };
 
       // Validator for year
-      const yearIsValid = (year) => {
+      const yearIsValid = (_year) => {
 
         // Guard clause: ensure year exists.
-        if (!year) {
+        if (!_year) {
           return false;
         }
 
+        // Get the full year
+        const year = this.getFourDigitYear(_year);
+
         // Convert year to number
-        const numYear = parseInt(year, 10);
+        const numYear = Number.parseInt(year, 10);
 
         // Guard clause: ensure year is a valid integer
-        if (isNaN(numYear)) {
+        if (Number.isNaN(numYear)) {
           throw new Error('AuroDatepickerUtilities | yearValueIsValid: Unable to parse year value integer');
         }
 
