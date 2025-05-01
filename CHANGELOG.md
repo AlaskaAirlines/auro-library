@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [4.4.1](https://github.com/AlaskaAirlines/auro-library/compare/v4.4.0...v4.4.1) (2025-05-01)
+
+
+### Bug Fixes
+
+* allow typing in space on Input Element ([7d0e250](https://github.com/AlaskaAirlines/auro-library/commit/7d0e25053bbfe52f5038224f82e60054facfef81))
+
 # [4.4.0](https://github.com/AlaskaAirlines/auro-library/compare/v4.3.1...v4.4.0) (2025-04-30)
 
 
