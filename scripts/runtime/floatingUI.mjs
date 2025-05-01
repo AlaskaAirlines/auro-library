@@ -467,7 +467,9 @@ export default class AuroFloatingUI {
         case 'keydown':
           // Support both Enter and Space keys for accessibility
           // Space is included as it's expected behavior for interactive elements
-          if (event.key === 'Enter' || event.key === ' ') {
+
+          const origin = event.composedPath()[0];
+          if (event.key === 'Enter' || ((!origin || origin.tagName !== "INPUT") && event.key === ' ')) {
             event.preventDefault(); // Prevent page scroll on space
             this.handleClick();
           }
