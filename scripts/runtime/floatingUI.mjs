@@ -471,6 +471,7 @@ export default class AuroFloatingUI {
           const origin = event.composedPath()[0];
           if (event.key === 'Enter' || ((!origin || origin.tagName !== "INPUT") && event.key === ' ')) {
             event.preventDefault(); // Prevent page scroll on space
+            event.stopPropagation(); // Prevent selecting an item at the same time of opening with Enter
             this.handleClick();
           }
           break;
