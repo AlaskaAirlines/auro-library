@@ -15,17 +15,19 @@
     "generateDocs": "./bin/generateDocs.mjs"
   },
   "devDependencies": {
-    "@aurodesignsystem/eslint-config": "1.3.4",
     "@commitlint/cli": "^18.5.0",
     "@commitlint/config-conventional": "^18.5.0",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
     "@semantic-release/npm": "^11.0.2",
-    "eslint": "^9.8.0",
-    "eslint-plugin-jsdoc": "^48.0.2",
+    "@biomejs/biome": "1.9.4",
+    "lint-staged": "^15.5.1",
     "husky": "^8.0.3",
     "semantic-release": "^23.0.0",
     "vitest": "^2.1.2"
+  },
+  "lint-staged": {
+    "*": ["biome check --fix"]
   },
   "release": {
     "branches": [
@@ -67,8 +69,8 @@
   },
   "scripts": {
     "prepare": "husky install",
-    "esLint": "eslint ./scripts/**/*.js",
-    "linters": "npm-run-all esLint",
+    "lint": "biome check --fix",
+    "linters": "npm-run-all lint",
     "build:docs": "node scripts/build/generateReadme.mjs",
     "test": "vitest --run",
     "test:watch": "vitest"
