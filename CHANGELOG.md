@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+# [4.5.0](https://github.com/AlaskaAirlines/auro-library/compare/v4.4.1...v4.5.0) (2025-05-15)
+
+
+### Features
+
+* add an advanced `iterate()` to test the given action AND a11y [#159](https://github.com/AlaskaAirlines/auro-library/issues/159) ([0d1734c](https://github.com/AlaskaAirlines/auro-library/commit/0d1734ca3403b51962412444f8264b088482af21))
+
 ## [4.4.1](https://github.com/AlaskaAirlines/auro-library/compare/v4.4.0...v4.4.1) (2025-05-01)
 
 
