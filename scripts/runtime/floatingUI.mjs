@@ -152,6 +152,7 @@ export default class AuroFloatingUI {
 
       // Compute the position of the bib
       computePosition(this.element.trigger, this.element.bib, {
+        strategy: this.element.floaterConfig?.strategy || 'fixed',
         placement: this.element.floaterConfig?.placement,
         middleware: middleware || []
       }).then(({ x, y }) => { // eslint-disable-line id-length
@@ -588,8 +589,6 @@ export default class AuroFloatingUI {
     if (this.element.floaterConfig) {
       this.element.hoverToggle = this.element.floaterConfig.hoverToggle;
     }
-
-    document.body.append(this.element.bib);
 
     this.regenerateBibId();
     this.handleTriggerTabIndex();
