@@ -1,5 +1,17 @@
 # Semantic Release Automated Changelog
 
+# [5.0.0](https://github.com/AlaskaAirlines/auro-library/compare/v4.5.0...v5.0.0) (2025-05-29)
+
+
+### Bug Fixes
+
+* update positioning strategy and remove dom node transportation from FloatingUI ([3e01ab2](https://github.com/AlaskaAirlines/auro-library/commit/3e01ab2e8cadfa76d7d057abc6626b7b09ef568f))
+
+
+### BREAKING CHANGES
+
+* this changes the fundamental strategy for implementing FloatingUI and will require accommodating changes in consuming code to work correctly
+
 # [4.5.0](https://github.com/AlaskaAirlines/auro-library/compare/v4.4.1...v4.5.0) (2025-05-15)
 
 
