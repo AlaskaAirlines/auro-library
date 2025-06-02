@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [5.0.2](https://github.com/AlaskaAirlines/auro-library/compare/v5.0.1...v5.0.2) (2025-06-02)
+
+
+### Bug Fixes
+
+* add optional locale to get date string from a specific locale instead of the users locale ([dc188c1](https://github.com/AlaskaAirlines/auro-library/commit/dc188c15c10bcde4bec30284838b4f2866c78b01))
+
 ## [5.0.1](https://github.com/AlaskaAirlines/auro-library/compare/v5.0.0...v5.0.1) (2025-06-02)
 
 
