@@ -54,9 +54,10 @@ class DateFormatter {
     /**
      * Convert a date object to string format.
      * @param {Object} date - Date to convert to string.
-     * @returns {Object} Returns the date as a string.
+     * @param {String} locale - Optional locale to use for the date string. Defaults to user's locale.
+     * @returns {String} Returns the date as a string.
      */
-    this.getDateAsString = (date) => date.toLocaleDateString(undefined, {
+    this.getDateAsString = (date, locale = undefined) => date.toLocaleDateString(locale, {
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
