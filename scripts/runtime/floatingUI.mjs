@@ -24,8 +24,28 @@ export default class AuroFloatingUI {
     if (!AuroFloatingUI.isMousePressHandlerInitialized && window && window.addEventListener) {
       AuroFloatingUI.isMousePressHandlerInitialized = true;
 
+      // Track timeout for isMousePressed reset to avoid race conditions
+      if (!AuroFloatingUI._mousePressedTimeout) {
+        AuroFloatingUI._mousePressedTimeout = null;
+      }
       const mouseEventGlobalHandler = (event) => {
-        AuroFloatingUI.isMousePressed = event.type === 'mousedown';
+        const isPressed = event.type === 'mousedown';
+        if (isPressed) {
+          // Clear any pending timeout to prevent race condition
+          if (AuroFloatingUI._mousePressedTimeout !== null) {
+            clearTimeout(AuroFloatingUI._mousePressedTimeout);
+            AuroFloatingUI._mousePressedTimeout = null;
+          }
+          if (!AuroFloatingUI.isMousePressed) {
+            AuroFloatingUI.isMousePressed = true;
+          }
+        } else if (AuroFloatingUI.isMousePressed && !isPressed) {
+          // Schedule reset and track timeout ID
+          AuroFloatingUI._mousePressedTimeout = setTimeout(() => {
+            AuroFloatingUI.isMousePressed = false;
+            AuroFloatingUI._mousePressedTimeout = null;
+          }, 0);
+        }
       };
 
       window.addEventListener('mousedown', mouseEventGlobalHandler);
@@ -287,8 +307,9 @@ export default class AuroFloatingUI {
     if (this.element.contains(activeElement) || this.element.bib?.contains(activeElement)) {
       return;
     }
-    // if fullscreen bib is still open and the focus is missing, do not close
-    if (this.element.bib.hasAttribute('isfullscreen') && activeElement === document.body) {
+    
+    // if fullscreen bib is in fullscreen mode, do not close
+    if (this.element.bib.hasAttribute('isfullscreen')) {
       return;
     }
 
