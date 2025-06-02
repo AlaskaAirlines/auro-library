@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [5.0.1](https://github.com/AlaskaAirlines/auro-library/compare/v5.0.0...v5.0.1) (2025-06-02)
+
+
+### Bug Fixes
+
+* resolve issues with isMousePressed and keeping bibs open on focus loss ([3ae2c38](https://github.com/AlaskaAirlines/auro-library/commit/3ae2c38003eda3c58f1278924844bfd9f57e349f))
+
 # [5.0.0](https://github.com/AlaskaAirlines/auro-library/compare/v4.5.0...v5.0.0) (2025-05-29)
 
 
