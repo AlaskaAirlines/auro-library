@@ -81,7 +81,7 @@ export class AuroDateUtilities extends AuroDateUtilitiesBase {
       const dateObj = new Date(this.getFourDigitYear(dateParts.year), dateParts.month - 1, dateParts.day || 1);
 
       // Get the date string of the date object we created from the string date
-      const actualDateStr = dateFormatter.getDateAsString(dateObj);
+      const actualDateStr = dateFormatter.getDateAsString(dateObj, "en-US");
 
       // Guard Clause: Generated date matches date string input
       if (expectedDateStr !== actualDateStr) {
