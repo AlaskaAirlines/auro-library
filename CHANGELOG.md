@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+# [5.1.0](https://github.com/AlaskaAirlines/auro-library/compare/v5.0.2...v5.1.0) (2025-06-18)
+
+
+### Features
+
+* add focus trap ([1ec8290](https://github.com/AlaskaAirlines/auro-library/commit/1ec82905e5fc27aa0e4769df683462ebbce08bcd))
+
 ## [5.0.2](https://github.com/AlaskaAirlines/auro-library/compare/v5.0.1...v5.0.2) (2025-06-02)
 
 
