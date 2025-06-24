@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+# [5.2.0](https://github.com/AlaskaAirlines/auro-library/compare/v5.1.0...v5.2.0) (2025-06-24)
+
+
+### Features
+
+* add support for component tag name attributes when detecting focusable components ([3a10af3](https://github.com/AlaskaAirlines/auro-library/commit/3a10af334c24bdc52404e7ecf85effb2a1afd574))
+
 # [5.1.0](https://github.com/AlaskaAirlines/auro-library/compare/v5.0.2...v5.1.0) (2025-06-18)
 
 
