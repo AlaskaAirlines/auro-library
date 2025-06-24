@@ -39,7 +39,7 @@ export function isFocusableComponent(element) {
   const componentName = element.tagName.toLowerCase();
 
   // Guard Clause: Element is a focusable component
-  if (!FOCUSABLE_COMPONENTS.includes(componentName)) return false;
+  if (!FOCUSABLE_COMPONENTS.some((name) => element.hasAttribute(name) || componentName === name)) return false;
 
   // Guard Clause: Element is not disabled
   if (element.hasAttribute('disabled')) return false;
