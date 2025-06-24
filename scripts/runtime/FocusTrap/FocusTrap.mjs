@@ -58,10 +58,12 @@ export class FocusTrap {
       // Get the active element(s) in the document and shadow root
       // This will include the active element in the shadow DOM if it exists
       // Active element may be inside the shadow DOM depending on delegatesFocus, so we need to check both
-      const actives =  [
-        document.activeElement,
-        ...document.activeElement.shadowRoot && [document.activeElement.shadowRoot.activeElement] || []
-      ]
+      let activeElement = document.activeElement;
+      const actives =  [activeElement];
+      while (activeElement?.shadowRoot?.activeElement) {
+        actives.push(activeElement.shadowRoot.activeElement);
+        activeElement = activeElement.shadowRoot.activeElement;
+      }
 
       // Update the focusable elements
       const focusables = this._getFocusableElements();
