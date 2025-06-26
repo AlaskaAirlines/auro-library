@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [5.2.1](https://github.com/AlaskaAirlines/auro-library/compare/v5.2.0...v5.2.1) (2025-06-26)
+
+
+### Performance Improvements
+
+* add deep nested focusable elements support in focustrap ([68b0262](https://github.com/AlaskaAirlines/auro-library/commit/68b0262157f0a2cad24d603e67c59e2b2ea0f76f))
+
 # [5.2.0](https://github.com/AlaskaAirlines/auro-library/compare/v5.1.0...v5.2.0) (2025-06-24)
 
 
