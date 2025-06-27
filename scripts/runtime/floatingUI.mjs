@@ -491,10 +491,11 @@ export default class AuroFloatingUI {
           // Space is included as it's expected behavior for interactive elements
 
           const origin = event.composedPath()[0];
-          if (event.key === 'Enter' || ((!origin || origin.tagName !== "INPUT") && event.key === ' ')) {
-            event.preventDefault(); // Prevent page scroll on space
+          if (event.key === 'Enter' || event.key === ' ' && (!origin || origin.tagName !== "INPUT")) {
+
+            event.preventDefault();
             this.handleClick();
-          }
+          } 
           break;
         case 'mouseenter':
           if (this.element.hoverToggle) {
