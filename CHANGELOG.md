@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [5.2.2](https://github.com/AlaskaAirlines/auro-library/compare/v5.2.1...v5.2.2) (2025-06-27)
+
+
+### Bug Fixes
+
+* correct logic for key handling when enter is pressed in the trigger of a floatingui element ([f310866](https://github.com/AlaskaAirlines/auro-library/commit/f310866d6137aa2e8a2a2a62c95bbe00867bf09d))
+
 ## [5.2.1](https://github.com/AlaskaAirlines/auro-library/compare/v5.2.0...v5.2.1) (2025-06-26)
 
 
