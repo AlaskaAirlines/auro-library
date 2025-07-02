@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [5.2.3](https://github.com/AlaskaAirlines/auro-library/compare/v5.2.2...v5.2.3) (2025-07-02)
+
+
+### Bug Fixes
+
+* check for matchWidth before forcing dropdown width ([706f7ee](https://github.com/AlaskaAirlines/auro-library/commit/706f7eefe15d2ab5f5e208a14fe6e337d5b4e1c5))
+
 ## [5.2.2](https://github.com/AlaskaAirlines/auro-library/compare/v5.2.1...v5.2.2) (2025-06-27)
 
 
