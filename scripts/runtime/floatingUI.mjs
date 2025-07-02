@@ -95,7 +95,7 @@ export default class AuroFloatingUI {
    */
   mirrorSize() {
     // mirror the boxsize from bibSizer
-    if (this.element.bibSizer) {
+    if (this.element.bibSizer && this.element.matchWidth) {
       const sizerStyle = window.getComputedStyle(this.element.bibSizer);
       const bibContent = this.element.bib.shadowRoot.querySelector(".container");
       if (sizerStyle.width !== '0px') {
@@ -307,7 +307,7 @@ export default class AuroFloatingUI {
     if (this.element.contains(activeElement) || this.element.bib?.contains(activeElement)) {
       return;
     }
-    
+
     // if fullscreen bib is in fullscreen mode, do not close
     if (this.element.bib.hasAttribute('isfullscreen')) {
       return;
@@ -495,7 +495,7 @@ export default class AuroFloatingUI {
 
             event.preventDefault();
             this.handleClick();
-          } 
+          }
           break;
         case 'mouseenter':
           if (this.element.hoverToggle) {
