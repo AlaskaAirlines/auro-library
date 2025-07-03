@@ -313,7 +313,7 @@ export default class AuroFloatingUI {
       return;
     }
 
-    this.hideBib();
+    this.hideBib("keydown");
   }
 
   setupHideHandlers() {
@@ -338,7 +338,7 @@ export default class AuroFloatingUI {
           document.expandedAuroFormkitDropdown = null;
           document.expandedAuroFloater = this;
         } else {
-          this.hideBib();
+          this.hideBib("click");
         }
       }
     };
@@ -351,7 +351,7 @@ export default class AuroFloatingUI {
           // if something else is open, let it handle itself
           return;
         }
-        this.hideBib();
+        this.hideBib("keydown");
       }
     };
 
@@ -434,7 +434,11 @@ export default class AuroFloatingUI {
     }
   }
 
-  hideBib() {
+  /**
+   * Hides the floating UI element.
+   * @param {String} eventType - The event type that triggered the hiding action.
+   */
+  hideBib(eventType = "unknown") {
     if (!this.element.disabled && !this.element.noToggle) {
       this.lockScroll(false);
       this.element.triggerChevron?.removeAttribute('data-expanded');
@@ -445,7 +449,7 @@ export default class AuroFloatingUI {
       if (this.showing) {
         this.cleanupHideHandlers();
         this.showing = false;
-        this.dispatchEventDropdownToggle();
+        this.dispatchEventDropdownToggle(eventType);
       }
     }
     document.expandedAuroFloater = null;
@@ -454,11 +458,13 @@ export default class AuroFloatingUI {
   /**
    * @private
    * @returns {void} Dispatches event with an object showing the state of the dropdown.
+   * @param {String} eventType - The event type that triggered the toggle action.
    */
-  dispatchEventDropdownToggle() {
+  dispatchEventDropdownToggle(eventType) {
     const event = new CustomEvent(this.eventPrefix ? `${this.eventPrefix}-toggled` : 'toggled', {
       detail: {
         expanded: this.showing,
+        eventType: eventType || "unknown",
       },
       composed: true
     });
@@ -468,7 +474,7 @@ export default class AuroFloatingUI {
 
   handleClick() {
     if (this.element.isPopoverVisible) {
-      this.hideBib();
+      this.hideBib("click");
     } else {
       this.showBib();
     }
@@ -504,7 +510,7 @@ export default class AuroFloatingUI {
           break;
         case 'mouseleave':
           if (this.element.hoverToggle) {
-            this.hideBib();
+            this.hideBib("mouseleave");
           }
           break;
         case 'focus':
