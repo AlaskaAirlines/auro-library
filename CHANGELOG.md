@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+# [5.3.0](https://github.com/AlaskaAirlines/auro-library/compare/v5.2.3...v5.3.0) (2025-07-04)
+
+
+### Features
+
+* add event type to auroDropdown-toggled for keyboard detection ([d7ec5b7](https://github.com/AlaskaAirlines/auro-library/commit/d7ec5b755cee75d0371bf3202d5a382ce20cd47c))
+
 ## [5.2.3](https://github.com/AlaskaAirlines/auro-library/compare/v5.2.2...v5.2.3) (2025-07-02)
 
 
