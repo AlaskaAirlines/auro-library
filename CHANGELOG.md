@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [5.3.1](https://github.com/AlaskaAirlines/auro-library/compare/v5.3.0...v5.3.1) (2025-07-11)
+
+
+### Bug Fixes
+
+* add contain: layout as needed to resolve issues with positioning in projects that use tailwindcss ([ad8474d](https://github.com/AlaskaAirlines/auro-library/commit/ad8474d958bcf088be880f494f0505e873819490))
+
 # [5.3.0](https://github.com/AlaskaAirlines/auro-library/compare/v5.2.3...v5.3.0) (2025-07-04)
 
 
