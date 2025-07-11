@@ -231,6 +231,7 @@ export default class AuroFloatingUI {
       this.element.bib.style.left = "0px";
       this.element.bib.style.width = '';
       this.element.bib.style.height = '';
+      this.element.style.contain = '';
 
       // reset the size that was mirroring `size` css-part
       const bibContent = this.element.bib.shadowRoot.querySelector(".container");
@@ -255,6 +256,7 @@ export default class AuroFloatingUI {
       this.element.bib.style.position = '';
       this.element.bib.removeAttribute('isfullscreen');
       this.element.isBibFullscreen = false;
+      this.element.style.contain = 'layout';
     }
 
     const isChanged = this.strategy && this.strategy !== value;
