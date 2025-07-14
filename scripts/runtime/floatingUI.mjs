@@ -186,14 +186,38 @@ export default class AuroFloatingUI {
          * @returns {Element|undefined}
          */
         const findNearestContextParent = (element) => {
-          let parent = element.parentElement;
-          while (parent) {
-            if (hasPositioningContext(parent)) {
-              return parent;
+          const visited = new Set();
+          let current = element;
+          let depth = 0;
+          const MAX_DEPTH = 100; // safeguard against infinite loops
+          while (current && depth < MAX_DEPTH) {
+            if (visited.has(current)) break;
+            visited.add(current);
+            // Check parent element
+            let parent = current.parentElement;
+            if (parent) {
+              if (hasPositioningContext(parent)) return parent;
+              current = parent;
+              depth++;
+              continue;
             }
-            // Traverse shadow DOM if necessary
-            const rootNode = parent.getRootNode();
-            parent = parent.parentElement ?? (rootNode instanceof ShadowRoot ? rootNode.host : null);
+            // Check for assigned slot (slotted content)
+            if (current.assignedSlot) {
+              if (hasPositioningContext(current.assignedSlot)) return current.assignedSlot;
+              current = current.assignedSlot;
+              depth++;
+              continue;
+            }
+            // Traverse shadow DOM host if inside shadow root
+            const rootNode = current.getRootNode();
+            if (rootNode instanceof ShadowRoot) {
+              if (rootNode.host && hasPositioningContext(rootNode.host)) return rootNode.host;
+              current = rootNode.host;
+              depth++;
+              continue;
+            }
+            // No more parents to check
+            break;
           }
           return undefined;
         };
