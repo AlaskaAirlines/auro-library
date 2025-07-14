@@ -161,6 +161,74 @@ export default class AuroFloatingUI {
     const strategy = this.getPositioningStrategy();
     this.configureBibStrategy(strategy);
 
+    // Custom FloatingUI middleware to handle positioning contexts from various CSS properties
+    const computePositioningContext = {
+      name: 'computePositioningContext',
+      fn: ({ elements, x, y }) => {
+        const { reference } = elements;
+
+        /**
+         * Checks if the element creates a positioning context via container or contain properties.
+         * @param {Element} element
+         * @returns {boolean}
+         */
+        const hasPositioningContext = (element) => {
+          const style = getComputedStyle(element);
+          return (
+            (style.containerType !== 'normal' && style.containerType !== '') ||
+            ['paint', 'layout', 'strict', 'content'].includes(style.contain)
+          );
+        };
+
+        /**
+         * Finds the nearest parent element that creates a positioning context.
+         * @param {Element} element
+         * @returns {Element|undefined}
+         */
+        const findNearestContextParent = (element) => {
+          let parent = element.parentElement;
+          while (parent) {
+            if (hasPositioningContext(parent)) {
+              return parent;
+            }
+            // Traverse shadow DOM if necessary
+            const rootNode = parent.getRootNode();
+            parent = parent.parentElement ?? (rootNode instanceof ShadowRoot ? rootNode.host : null);
+          }
+          return undefined;
+        };
+
+        /**
+         * Calculates the offset from the given parent element.
+         * @param {Element} parentEl
+         * @returns {{x: number, y: number}|undefined}
+         */
+        const calculateOffsetFromParent = (parentEl) => {
+          if (!parentEl) return undefined;
+          const rect = parentEl.getBoundingClientRect();
+          return {
+            x: rect.left + parentEl.clientLeft,
+            y: rect.top + parentEl.clientTop
+          };
+        };
+
+        const contextParent = findNearestContextParent(reference);
+
+        if (contextParent) {
+          const offset = calculateOffsetFromParent(contextParent);
+          if (offset) {
+            return {
+              x: x + offset.x,
+              y: y + offset.y,
+              data: { offset }
+            };
+          }
+        }
+
+        return { x, y };
+      }
+    };
+
     if (strategy === 'floating') {
       this.mirrorSize();
       // Define the middlware for the floater configuration
@@ -168,6 +236,12 @@ export default class AuroFloatingUI {
         offset(this.element.floaterConfig?.offset || 0),
         ...this.element.floaterConfig?.flip ? [flip()] : [], // Add flip middleware if flip is enabled.
         ...this.element.floaterConfig?.autoPlacement ? [autoPlacement()] : [], // Add autoPlacement middleware if autoPlacement is enabled.
+
+        /** !! IMPORTANT !!
+         * This middleware is a TEMPORARY solution to handle container queries.
+         * It should go last in the array of middleware.
+         */
+        computePositioningContext
       ];
 
       // Compute the position of the bib
@@ -231,7 +305,6 @@ export default class AuroFloatingUI {
       this.element.bib.style.left = "0px";
       this.element.bib.style.width = '';
       this.element.bib.style.height = '';
-      this.element.style.contain = '';
 
       // reset the size that was mirroring `size` css-part
       const bibContent = this.element.bib.shadowRoot.querySelector(".container");
@@ -256,7 +329,6 @@ export default class AuroFloatingUI {
       this.element.bib.style.position = '';
       this.element.bib.removeAttribute('isfullscreen');
       this.element.isBibFullscreen = false;
-      this.element.style.contain = 'layout';
     }
 
     const isChanged = this.strategy && this.strategy !== value;
