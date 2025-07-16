@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [5.3.2](https://github.com/AlaskaAirlines/auro-library/compare/v5.3.1...v5.3.2) (2025-07-16)
+
+
+### Bug Fixes
+
+* remove mousedown `preventDefault` on bib ([0f92a2f](https://github.com/AlaskaAirlines/auro-library/commit/0f92a2fd3c10cbe0c2d978aa6b3bf2404fae0761))
+
 ## [5.3.1](https://github.com/AlaskaAirlines/auro-library/compare/v5.3.0...v5.3.1) (2025-07-11)
 
 
