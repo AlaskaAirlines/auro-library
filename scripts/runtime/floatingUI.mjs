@@ -319,12 +319,6 @@ export default class AuroFloatingUI {
   }
 
   setupHideHandlers() {
-    this.preventFocusLoseOnBibClick = (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-    };
-    this.element.bib.addEventListener('mousedown', this.preventFocusLoseOnBibClick);
-
     // Define handlers & store references
     this.focusHandler = () => this.handleFocusLoss();
 
@@ -373,11 +367,6 @@ export default class AuroFloatingUI {
 
   cleanupHideHandlers() {
     // Remove event listeners if they exist
-
-    if (this.preventFocusLoseOnBibClick) {
-      this.element.bib.removeEventListener('mousedown', this.preventFocusLoseOnBibClick);
-      delete this.preventFocusLoseOnBibClick;
-    }
 
     if (this.focusHandler) {
       document.removeEventListener('focusin', this.focusHandler);
