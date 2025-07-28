@@ -85,42 +85,48 @@ export class FocusTrap {
   }
 
   /**
-   * Handles keydown events to manage tab navigation within the container.
-   * Ensures that focus wraps around when reaching the first or last focusable element.
-   *
+   * Handles the Tab key press event to manage focus within the container.
+   * @param {KeyboardEvent} e The keyboard event triggered by the user.
+   * @returns {void}
+   */
+  _handleTabKey(e) {
+
+    // Update the focusable elements
+    const focusables = this._getFocusableElements();
+
+    if (!focusables.length) return;
+
+    // Set the tab direction based on the key pressed
+    this.tabDirection = e.shiftKey ? 'backward' : 'forward';
+
+    // Get the active elements that are currently focused
+    const actives = this._getActiveElements();
+
+    // If we're at either end of the focusable elements, wrap around to the other end
+    let focusIndex = focusables.findIndex((el) => actives.includes(el));
+
+    // Fallback if we have no focused element
+    if (focusIndex === -1) focusIndex = 0;
+
+    // Get the next focus index based on the current focus index, tab direction, and controlTabOrder setting
+    let newFocusIndex = this._getNextFocusIndex(focusIndex, focusables);
+
+    // If we have a new focus index, set focus to that element
+    if (newFocusIndex !== null) {
+      e.preventDefault();
+      focusables[newFocusIndex].focus();
+    }
+  }
+
+  /**
+   * Catches the keydown event
    * @param {KeyboardEvent} e The keyboard event triggered by user interaction.
    * @private
    */
   _onKeydown = (e) => {
-    
-    if (e.key === 'Tab') {
 
-      // Update the focusable elements
-      const focusables = this._getFocusableElements();
-
-      if (!focusables.length) return;
-
-      // Set the tab direction based on the key pressed
-      this.tabDirection = e.shiftKey ? 'backward' : 'forward';
-
-      // Get the active elements that are currently focused
-      const actives = this._getActiveElements();
-
-      // If we're at either end of the focusable elements, wrap around to the other end
-      let focusIndex = focusables.findIndex((el) => actives.includes(el));
-
-      // Fallback if we have no focused element
-      if (focusIndex === -1) focusIndex = 0;
-
-      // Get the next focus index based on the current focus index, tab direction, and controlTabOrder setting
-      let newFocusIndex = this._getNextFocusIndex(focusIndex, focusables);
-
-      // If we have a new focus index, set focus to that element
-      if (newFocusIndex !== null) {
-        e.preventDefault();
-        focusables[newFocusIndex].focus();
-      }
-    }
+    // Handle tab
+    if (e.key === 'Tab') this._handleTabKey(e);
   };
 
   /**
