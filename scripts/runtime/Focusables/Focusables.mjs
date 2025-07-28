@@ -138,7 +138,14 @@ export function getFocusableElements(container) {
   });
 
   // Elements without tabindex (preserving their original order)
-  const elementsWithoutTabindex = uniqueElements.filter(el => !el.hasAttribute('tabindex'));
+  const elementsWithoutTabindex = uniqueElements.filter(el => 
+
+    // Elements without tabindex
+    !el.hasAttribute('tabindex') || 
+
+    // Preserve tab order of elements with tabindex of 0
+    (parseInt(el.getAttribute('tabindex')) ?? -1) === 0
+  );
 
   // Combine both arrays with tabindex elements first
   const tabIndexedUniqueElements = [
