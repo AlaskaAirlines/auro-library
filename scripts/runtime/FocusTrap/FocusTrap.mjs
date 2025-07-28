@@ -10,6 +10,7 @@ export class FocusTrap {
    * Initializes event listeners and prepares the container for focus management.
    *
    * @param {HTMLElement} container The DOM element to trap focus within.
+   * @param {boolean} [controlTabOrder=false] If true enables manual control of the tab order by the FocusTrap.
    * @throws {Error} If the provided container is not a valid HTMLElement.
    */
   constructor(container, controlTabOrder = false) {
