@@ -68,32 +68,33 @@ export class FocusTrap {
    * @returns {number|null} The next focus index or null if not determined.
    */
   _getNextFocusIndex(currentIndex, focusables, actives) {
+    
+    // Determine if we need to wrap
+    const atFirst = actives.includes(focusables[0]) || actives.includes(this.container);
+    const atLast = actives.includes(focusables[focusables.length - 1]);
 
-    let newFocusIndex = null;
-
-    // If controlTabOrder is true, we will manually control the tab order
     if (this.controlTabOrder) {
+      // Calculate the new index based on the current index and tab direction
+      let newFocusIndex = currentIndex + (this.tabDirection === 'forward' ? 1 : -1);
 
-      // Adjust to new index
-      newFocusIndex = currentIndex + (this.tabDirection === 'forward' ? 1 : -1);
+      // Wrap-around logic
+      if (newFocusIndex < 0) newFocusIndex = focusables.length - 1;
+      if (newFocusIndex >= focusables.length) newFocusIndex = 0;
 
-      // Wrap if necessary
-      if (newFocusIndex < 0 && this.tabDirection === 'backward') newFocusIndex = focusables.length - 1;
-      if (newFocusIndex >= focusables.length && this.tabDirection === 'forward') newFocusIndex = 0;
-    } else {
-
-      // Wrap backwards
-      if ((actives.includes(focusables[0]) || actives.includes(this.container)) && this.tabDirection === 'backward') {
-        newFocusIndex = focusables.length - 1;
-      }
-
-      // Wrap forwards
-      if (actives.includes(focusables[focusables.length - 1]) && this.tabDirection === 'forward') {
-        newFocusIndex = 0;
-      }
+      return newFocusIndex;
     }
 
-    return newFocusIndex;
+    // Only wrap if at the ends
+    if (this.tabDirection === 'backward' && atFirst) {
+      return focusables.length - 1;
+    }
+
+    if (this.tabDirection === 'forward' && atLast) {
+      return 0;
+    }
+
+    // No wrap, so don't change focus, return early
+    return null;
   }
 
   /**
