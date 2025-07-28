@@ -12,13 +12,14 @@ export class FocusTrap {
    * @param {HTMLElement} container The DOM element to trap focus within.
    * @throws {Error} If the provided container is not a valid HTMLElement.
    */
-  constructor(container) {
+  constructor(container, controlTabOrder = false) {
     if (!container || !(container instanceof HTMLElement)) {
       throw new Error("FocusTrap requires a valid HTMLElement.");
     }
 
     this.container = container;
-    this.tabDirection = 'forward'; // or 'backward'
+    this.tabDirection = 'forward'; // or 'backward';
+    this.controlTabOrder = controlTabOrder;
 
     this._init();
   }
@@ -41,6 +42,19 @@ export class FocusTrap {
     this.container.addEventListener('keydown', this._onKeydown);
   }
 
+  _getActiveElements() {
+    // Get the active element(s) in the document and shadow root
+    // This will include the active element in the shadow DOM if it exists
+    // Active element may be inside the shadow DOM depending on delegatesFocus, so we need to check both
+    let activeElement = document.activeElement;
+    const actives =  [activeElement];
+    while (activeElement?.shadowRoot?.activeElement) {
+      actives.push(activeElement.shadowRoot.activeElement);
+      activeElement = activeElement.shadowRoot.activeElement;
+    }
+    return actives;
+  }
+
   /**
    * Handles keydown events to manage tab navigation within the container.
    * Ensures that focus wraps around when reaching the first or last focusable element.
@@ -52,34 +66,54 @@ export class FocusTrap {
     
     if (e.key === 'Tab') {
 
-      // Set the tab direction based on the key pressed
-      this.tabDirection = e.shiftKey ? 'backward' : 'forward';
-
-      // Get the active element(s) in the document and shadow root
-      // This will include the active element in the shadow DOM if it exists
-      // Active element may be inside the shadow DOM depending on delegatesFocus, so we need to check both
-      let activeElement = document.activeElement;
-      const actives =  [activeElement];
-      while (activeElement?.shadowRoot?.activeElement) {
-        actives.push(activeElement.shadowRoot.activeElement);
-        activeElement = activeElement.shadowRoot.activeElement;
-      }
-
       // Update the focusable elements
       const focusables = this._getFocusableElements();
 
-      // If we're at either end of the focusable elements, wrap around to the other end
-      const focusIndex =
-        (actives.includes(focusables[0]) || actives.includes(this.container)) && this.tabDirection === 'backward'
-          ? focusables.length - 1
-          : actives.includes(focusables[focusables.length - 1]) && this.tabDirection === 'forward'
-            ? 0
-            : null;
+      if (!focusables.length) return;
 
-      if (focusIndex !== null) {
-        focusables[focusIndex].focus();
-        e.preventDefault(); // Prevent default tab behavior
-        e.stopPropagation(); // Stop the event from bubbling up
+      // Set the tab direction based on the key pressed
+      this.tabDirection = e.shiftKey ? 'backward' : 'forward';
+
+      // Get the active elements that are currently focused
+      const actives = this._getActiveElements();
+
+      // If we're at either end of the focusable elements, wrap around to the other end
+      let focusIndex = focusables.findIndex((el) => actives.includes(el));
+
+      // Fallback if we have no focused element
+      if (focusIndex === -1) focusIndex = 0;
+
+      let newFocusIndex;
+
+      // If controlTabOrder is true, we will manually control the tab order
+      if (this.controlTabOrder) {
+
+        // Don't let the browser handle the tabbing
+        e.preventDefault();
+
+        // Adjust to new index
+        newFocusIndex = focusIndex + (this.tabDirection === 'forward' ? 1 : -1);
+
+        // Wrap if necessary
+        if (newFocusIndex < 0 && this.tabDirection === 'backward') newFocusIndex = focusables.length - 1;
+        if (newFocusIndex >= focusables.length && this.tabDirection === 'forward') newFocusIndex = 0;
+      } else {
+
+        // Wrap backwards
+        if ((actives.includes(focusables[0]) || actives.includes(this.container)) && this.tabDirection === 'backward') {
+          e.preventDefault();
+          newFocusIndex = focusables.length - 1;
+        }
+
+        // Wrap forwards
+        if (actives.includes(focusables[focusables.length - 1]) && this.tabDirection === 'forward') {
+          e.preventDefault();
+          newFocusIndex = 0;
+        }
+      }
+
+      if (newFocusIndex !== null) {
+        focusables[newFocusIndex].focus();
       }
     }
   };
