@@ -42,11 +42,16 @@ export class FocusTrap {
     this.container.addEventListener('keydown', this._onKeydown);
   }
 
+  /**
+   * Gets an array of currently active (focused) elements in the document and shadow DOM.
+   * @returns {Array<HTMLElement>} An array of focusable elements within the container.
+   * @private
+   */
   _getActiveElements() {
     // Get the active element(s) in the document and shadow root
     // This will include the active element in the shadow DOM if it exists
     // Active element may be inside the shadow DOM depending on delegatesFocus, so we need to check both
-    let activeElement = document.activeElement;
+    let {activeElement} = document;
     const actives =  [activeElement];
     while (activeElement?.shadowRoot?.activeElement) {
       actives.push(activeElement.shadowRoot.activeElement);
@@ -55,6 +60,12 @@ export class FocusTrap {
     return actives;
   }
 
+  /**
+   * Gets the next focus index based on the current index and focusable elements.
+   * @param {number} currentIndex The current index of the focused element.
+   * @param {Array<HTMLElement>} focusables The array of focusable elements.
+   * @returns {number|null} The next focus index or null if not determined.
+   */
   _getNextFocusIndex(currentIndex, focusables) {
 
     let newFocusIndex = null;
@@ -109,6 +120,7 @@ export class FocusTrap {
     if (focusIndex === -1) focusIndex = 0;
 
     // Get the next focus index based on the current focus index, tab direction, and controlTabOrder setting
+    // Is null if no new focus index is determined
     let newFocusIndex = this._getNextFocusIndex(focusIndex, focusables);
 
     // If we have a new focus index, set focus to that element
@@ -140,7 +152,7 @@ export class FocusTrap {
     // Use the imported utility function to get focusable elements
     const elements = getFocusableElements(this.container);
     
-    // Filter out any elements with the 'focus-bookend' class
+    // Return the elements found
     return elements;
   }
 

@@ -130,7 +130,7 @@ export function getFocusableElements(container) {
   // This ensures that elements with tabindex are prioritized in the focus order
 
   // First extract elements with tabindex
-  const elementsWithTabindex = uniqueElements.filter(el => el.hasAttribute('tabindex'));
+  const elementsWithTabindex = uniqueElements.filter(el => el.hasAttribute('tabindex') && (parseInt(el.getAttribute('tabindex')) ?? -1) > 0);
 
   // Sort these elements by their tabindex value
   elementsWithTabindex.sort((a, b) => {
