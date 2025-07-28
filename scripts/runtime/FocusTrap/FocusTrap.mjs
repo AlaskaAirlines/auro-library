@@ -106,7 +106,10 @@ export class FocusTrap {
     // Update the focusable elements
     const focusables = this._getFocusableElements();
 
-    if (!focusables.length) return;
+    if (!focusables.length) {
+      console.warn('FocusTrap: No focusable elements found in the container.');
+      return;
+    }
 
     // Set the tab direction based on the key pressed
     this.tabDirection = e.shiftKey ? 'backward' : 'forward';
