@@ -21,7 +21,7 @@ export const FOCUSABLE_COMPONENTS = [
   'auro-combobox',
   'auro-input',
   'auro-counter',
-  'auro-menu',
+  // 'auro-menu', // Auro menu is not focusable by default, it uses a different interaction model
   'auro-select',
   'auro-datepicker',
   'auro-hyperlink',
@@ -54,6 +54,7 @@ export function isFocusableComponent(element) {
 /**
  * Retrieves all focusable elements within the container in DOM order, including those in shadow DOM and slots.
  * Returns a unique, ordered array of elements that can receive focus.
+ * Also sorts elements with tabindex first, preserving their order.
  *
  * @param {HTMLElement} container The container to search within
  * @returns {Array<HTMLElement>} An array of focusable elements within the container.
@@ -125,5 +126,25 @@ export function getFocusableElements(container) {
     }
   }
 
-  return uniqueElements;
+  // Move tab-indexed elements to the front while preserving their order
+  // This ensures that elements with tabindex are prioritized in the focus order
+
+  // First extract elements with tabindex
+  const elementsWithTabindex = uniqueElements.filter(el => el.hasAttribute('tabindex'));
+
+  // Sort these elements by their tabindex value
+  elementsWithTabindex.sort((a, b) => {
+    return parseInt(a.getAttribute('tabindex'), 10) - parseInt(b.getAttribute('tabindex'), 10);
+  });
+
+  // Elements without tabindex (preserving their original order)
+  const elementsWithoutTabindex = uniqueElements.filter(el => !el.hasAttribute('tabindex'));
+
+  // Combine both arrays with tabindex elements first
+  const tabIndexedUniqueElements = [
+    ...elementsWithTabindex,
+    ...elementsWithoutTabindex
+  ];
+
+  return tabIndexedUniqueElements;
 }
