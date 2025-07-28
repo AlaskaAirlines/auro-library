@@ -55,6 +55,35 @@ export class FocusTrap {
     return actives;
   }
 
+  _getNextFocusIndex(currentIndex, focusables) {
+
+    let newFocusIndex = null;
+
+    // If controlTabOrder is true, we will manually control the tab order
+    if (this.controlTabOrder) {
+
+      // Adjust to new index
+      newFocusIndex = currentIndex + (this.tabDirection === 'forward' ? 1 : -1);
+
+      // Wrap if necessary
+      if (newFocusIndex < 0 && this.tabDirection === 'backward') newFocusIndex = focusables.length - 1;
+      if (newFocusIndex >= focusables.length && this.tabDirection === 'forward') newFocusIndex = 0;
+    } else {
+
+      // Wrap backwards
+      if ((actives.includes(focusables[0]) || actives.includes(this.container)) && this.tabDirection === 'backward') {
+        newFocusIndex = focusables.length - 1;
+      }
+
+      // Wrap forwards
+      if (actives.includes(focusables[focusables.length - 1]) && this.tabDirection === 'forward') {
+        newFocusIndex = 0;
+      }
+    }
+
+    return newFocusIndex;
+  }
+
   /**
    * Handles keydown events to manage tab navigation within the container.
    * Ensures that focus wraps around when reaching the first or last focusable element.
@@ -83,36 +112,12 @@ export class FocusTrap {
       // Fallback if we have no focused element
       if (focusIndex === -1) focusIndex = 0;
 
-      let newFocusIndex;
+      // Get the next focus index based on the current focus index, tab direction, and controlTabOrder setting
+      let newFocusIndex = this._getNextFocusIndex(focusIndex, focusables);
 
-      // If controlTabOrder is true, we will manually control the tab order
-      if (this.controlTabOrder) {
-
-        // Don't let the browser handle the tabbing
-        e.preventDefault();
-
-        // Adjust to new index
-        newFocusIndex = focusIndex + (this.tabDirection === 'forward' ? 1 : -1);
-
-        // Wrap if necessary
-        if (newFocusIndex < 0 && this.tabDirection === 'backward') newFocusIndex = focusables.length - 1;
-        if (newFocusIndex >= focusables.length && this.tabDirection === 'forward') newFocusIndex = 0;
-      } else {
-
-        // Wrap backwards
-        if ((actives.includes(focusables[0]) || actives.includes(this.container)) && this.tabDirection === 'backward') {
-          e.preventDefault();
-          newFocusIndex = focusables.length - 1;
-        }
-
-        // Wrap forwards
-        if (actives.includes(focusables[focusables.length - 1]) && this.tabDirection === 'forward') {
-          e.preventDefault();
-          newFocusIndex = 0;
-        }
-      }
-
+      // If we have a new focus index, set focus to that element
       if (newFocusIndex !== null) {
+        e.preventDefault();
         focusables[newFocusIndex].focus();
       }
     }
