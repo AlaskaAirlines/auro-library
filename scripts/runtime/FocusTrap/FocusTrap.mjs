@@ -66,7 +66,7 @@ export class FocusTrap {
    * @param {Array<HTMLElement>} focusables The array of focusable elements.
    * @returns {number|null} The next focus index or null if not determined.
    */
-  _getNextFocusIndex(currentIndex, focusables) {
+  _getNextFocusIndex(currentIndex, focusables, actives) {
 
     let newFocusIndex = null;
 
@@ -121,7 +121,7 @@ export class FocusTrap {
 
     // Get the next focus index based on the current focus index, tab direction, and controlTabOrder setting
     // Is null if no new focus index is determined
-    let newFocusIndex = this._getNextFocusIndex(focusIndex, focusables);
+    let newFocusIndex = this._getNextFocusIndex(focusIndex, focusables, actives);
 
     // If we have a new focus index, set focus to that element
     if (newFocusIndex !== null) {
