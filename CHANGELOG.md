@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [5.3.3](https://github.com/AlaskaAirlines/auro-library/compare/v5.3.2...v5.3.3) (2025-08-08)
+
+
+### Bug Fixes
+
+* move test related dependencies to devDependencies ([3d877f8](https://github.com/AlaskaAirlines/auro-library/commit/3d877f86c8a98b9ecdb44d83329fe391a8379483))
+
 ## [5.3.2](https://github.com/AlaskaAirlines/auro-library/compare/v5.3.1...v5.3.2) (2025-07-16)
 
 
