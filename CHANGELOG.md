@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+# [5.4.0](https://github.com/AlaskaAirlines/auro-library/compare/v5.3.3...v5.4.0) (2025-08-14)
+
+
+### Features
+
+* add a11yTransporter util ([817bb3a](https://github.com/AlaskaAirlines/auro-library/commit/817bb3acb9d20e99bc25a89f17db3a8f2ac91ab5))
+
 ## [5.3.3](https://github.com/AlaskaAirlines/auro-library/compare/v5.3.2...v5.3.3) (2025-08-08)
 
 
