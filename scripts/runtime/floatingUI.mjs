@@ -1,6 +1,6 @@
 /* eslint-disable line-comment-position, no-inline-comments */
 
-import { autoUpdate, computePosition, offset, autoPlacement, flip } from '@floating-ui/dom';
+import { autoUpdate, computePosition, offset, autoPlacement, flip, shift } from '@floating-ui/dom';
 
 
 const MAX_CONFIGURATION_COUNT = 10;
@@ -166,6 +166,7 @@ export default class AuroFloatingUI {
       // Define the middlware for the floater configuration
       const middleware = [
         offset(this.element.floaterConfig?.offset || 0),
+        ...this.element.floaterConfig?.shift ? [shift()] : [], // Add shift middleware if shift is enabled.
         ...this.element.floaterConfig?.flip ? [flip()] : [], // Add flip middleware if flip is enabled.
         ...this.element.floaterConfig?.autoPlacement ? [autoPlacement()] : [], // Add autoPlacement middleware if autoPlacement is enabled.
       ];
