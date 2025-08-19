@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+# [5.5.0](https://github.com/AlaskaAirlines/auro-library/compare/v5.4.0...v5.5.0) (2025-08-19)
+
+
+### Features
+
+* add shift middleware to AuroFloatingUI configuration [#191](https://github.com/AlaskaAirlines/auro-library/issues/191) ([5f6d291](https://github.com/AlaskaAirlines/auro-library/commit/5f6d29165b0a1473f1e6085c0de3f3ba9b79f966))
+
 # [5.4.0](https://github.com/AlaskaAirlines/auro-library/compare/v5.3.3...v5.4.0) (2025-08-14)
 
 
