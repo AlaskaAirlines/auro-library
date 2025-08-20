@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [5.5.2](https://github.com/AlaskaAirlines/auro-library/compare/v5.5.1...v5.5.2) (2025-08-20)
+
+
+### Bug Fixes
+
+* rename import to .mjs for transportAttributes in a11yTransporter ([650f3e7](https://github.com/AlaskaAirlines/auro-library/commit/650f3e7544083915501d3a9685377ed212f7093a))
+
 ## [5.5.1](https://github.com/AlaskaAirlines/auro-library/compare/v5.5.0...v5.5.1) (2025-08-20)
 
 
