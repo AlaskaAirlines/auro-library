@@ -1,4 +1,4 @@
-import { transportAttributes } from "./transportAttributes.js";
+import { transportAttributes } from "./transportAttributes.mjs";
 
 const _matchers = {
   'aria-': attr => attr.startsWith('aria-'),
