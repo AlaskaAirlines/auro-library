@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [5.5.1](https://github.com/AlaskaAirlines/auro-library/compare/v5.5.0...v5.5.1) (2025-08-20)
+
+
+### Bug Fixes
+
+* convert a11ytransporter to be a module (.mjs) and add barrel file support ([846f5ab](https://github.com/AlaskaAirlines/auro-library/commit/846f5aba4586f3cca922ce363196e764936ea3ca))
+
 # [5.5.0](https://github.com/AlaskaAirlines/auro-library/compare/v5.4.0...v5.5.0) (2025-08-19)
 
 
