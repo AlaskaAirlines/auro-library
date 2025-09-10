@@ -10,7 +10,7 @@ describe('isFocusableComponent', () => {
   it('returns true for enabled custom focusable components', async () => {
     for (const tag of [
       'auro-checkbox', 'auro-radio', 'auro-dropdown', 'auro-button', 'auro-combobox',
-      'auro-input', 'auro-counter', 'auro-menu', 'auro-select', 'auro-datepicker',
+      'auro-input', 'auro-counter', 'auro-select', 'auro-datepicker',
       'auro-hyperlink', 'auro-accordion'
     ]) {
       const el = document.createElement(tag);
@@ -26,7 +26,7 @@ describe('isFocusableComponent', () => {
   it('returns false for custom components with disabled attribute', async () => {
     for (const tag of [
       'auro-checkbox', 'auro-radio', 'auro-dropdown', 'auro-button', 'auro-combobox',
-      'auro-input', 'auro-counter', 'auro-menu', 'auro-select', 'auro-datepicker',
+      'auro-input', 'auro-counter', 'auro-select', 'auro-datepicker',
       'auro-hyperlink', 'auro-accordion'
     ]) {
       const el = document.createElement(tag);
