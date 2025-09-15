@@ -207,7 +207,7 @@ export default class AuroFloatingUI {
       document.body.style.overflow = 'hidden'; // hide body's scrollbar
 
       // Move `bib` by the amount the viewport is shifted to stay aligned in fullscreen.
-      this.element.bib.style.transform = `translateY(${visualViewport.offsetTop}px)`;
+      this.element.bib.style.transform = `translateY(${window?.visualViewport?.offsetTop}px)`;
     } else {
       document.body.style.overflow = '';
     }
@@ -240,7 +240,7 @@ export default class AuroFloatingUI {
         bibContent.style.width = '';
         bibContent.style.height = '';
         bibContent.style.maxWidth = '';
-        bibContent.style.maxHeight = `${window.visualViewport.height}px`;
+        bibContent.style.maxHeight = `${window?.visualViewport?.height}px`;
         this.configureTrial = 0;
       } else if (this.configureTrial < MAX_CONFIGURATION_COUNT) {
         this.configureTrial += 1;
