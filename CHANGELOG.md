@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [5.5.3](https://github.com/AlaskaAirlines/auro-library/compare/v5.5.2...v5.5.3) (2025-09-15)
+
+
+### Bug Fixes
+
+* null check on `window.visualViewport` in floatingUI ([f5af11e](https://github.com/AlaskaAirlines/auro-library/commit/f5af11e2b95e2490dccd5cf1ea095b1fa347c4c5))
+
 ## [5.5.2](https://github.com/AlaskaAirlines/auro-library/compare/v5.5.1...v5.5.2) (2025-08-20)
 
 
