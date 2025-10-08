@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [5.5.4](https://github.com/AlaskaAirlines/auro-library/compare/v5.5.3...v5.5.4) (2025-10-08)
+
+
+### Performance Improvements
+
+* add slot text grabber function [#201](https://github.com/AlaskaAirlines/auro-library/issues/201) ([382afe7](https://github.com/AlaskaAirlines/auro-library/commit/382afe7ca8eb85988b109020c4cd55d4df66c7da))
+
 ## [5.5.3](https://github.com/AlaskaAirlines/auro-library/compare/v5.5.2...v5.5.3) (2025-09-15)
 
 
