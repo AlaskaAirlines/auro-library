@@ -29,11 +29,11 @@
     "@commitlint/config-conventional": "^18.5.0",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
-    "@semantic-release/npm": "^11.0.2",
+    "@semantic-release/npm": "^13.1.2",
     "eslint": "^9.8.0",
     "eslint-plugin-jsdoc": "^48.0.2",
     "husky": "^8.0.3",
-    "semantic-release": "^23.0.0",
+    "semantic-release": "^25.0.2",
     "vitest": "^2.1.2"
   },
   "release": {
