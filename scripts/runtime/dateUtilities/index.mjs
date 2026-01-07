@@ -1,26 +1,4 @@
-import { dateFormatter } from './dateFormatter.mjs';
-import { AuroDateUtilities } from './dateUtilities.mjs';
-
-export { AuroDateUtilities } from './dateUtilities.mjs';
-
-// Export a class instance
-export const dateUtilities = new AuroDateUtilities();
-
-// Export the class instance methods individually
-export const {
-  datesMatch,
-  validDateStr,
-  dateAndFormatMatch,
-  minDay,
-  minMonth,
-  minYear,
-  maxDay,
-  maxMonth,
-  maxYear
-} = dateUtilities;
-
-export const {
-  toNorthAmericanFormat,
-  parseDate,
-  getDateAsString
-} = dateFormatter;
+export * from "./dateConstraints.mjs";
+export * from "./dateStringUtility.mjs";
+export * from "./dateUtilities.mjs";
+export * from "./formatValidator.mjs";
