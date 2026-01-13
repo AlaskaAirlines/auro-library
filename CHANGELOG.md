@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [5.5.5](https://github.com/AlaskaAirlines/auro-library/compare/v5.5.4...v5.5.5) (2026-01-13)
+
+
+### Bug Fixes
+
+* corrects issue with version writer causing lint issues in repos [#209](https://github.com/AlaskaAirlines/auro-library/issues/209) ([e72266d](https://github.com/AlaskaAirlines/auro-library/commit/e72266dc294cad813a2665fb0c17bcb12628e364))
+
 ## [5.5.4](https://github.com/AlaskaAirlines/auro-library/compare/v5.5.3...v5.5.4) (2025-10-08)
 
 
