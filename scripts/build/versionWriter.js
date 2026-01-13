@@ -19,7 +19,7 @@ function writeDepVersionFile(pkg) {
   const elemSubName = pkg.substring(pkg.indexOf('auro-') + auroSubNameIndex);
   const versionFilePath = `./src/${elemSubName}Version.js`;
 
-  fs.writeFileSync(versionFilePath, `export default '${version}';`);
+  fs.writeFileSync(versionFilePath, `export default "${version}";`);
 }
 
 // add the code below
