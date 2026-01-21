@@ -1,31 +1,31 @@
 // Selectors for focusable elements
 export const FOCUSABLE_SELECTORS = [
-  'a[href]',
-  'button:not([disabled])',
-  'textarea:not([disabled])',
-  'input:not([disabled])',
-  'select:not([disabled])',
+  "a[href]",
+  "button:not([disabled])",
+  "textarea:not([disabled])",
+  "input:not([disabled])",
+  "select:not([disabled])",
   '[role="tab"]:not([disabled])',
   '[role="link"]:not([disabled])',
   '[role="button"]:not([disabled])',
   '[tabindex]:not([tabindex="-1"])',
-  '[contenteditable]:not([contenteditable="false"])'
+  '[contenteditable]:not([contenteditable="false"])',
 ];
 
 // List of custom components that are known to be focusable
 export const FOCUSABLE_COMPONENTS = [
-  'auro-checkbox',
-  'auro-radio',
-  'auro-dropdown',
-  'auro-button',
-  'auro-combobox',
-  'auro-input',
-  'auro-counter',
+  "auro-checkbox",
+  "auro-radio",
+  "auro-dropdown",
+  "auro-button",
+  "auro-combobox",
+  "auro-input",
+  "auro-counter",
   // 'auro-menu', // Auro menu is not focusable by default, it uses a different interaction model
-  'auro-select',
-  'auro-datepicker',
-  'auro-hyperlink',
-  'auro-accordion',
+  "auro-select",
+  "auro-datepicker",
+  "auro-hyperlink",
+  "auro-accordion",
 ];
 
 /**
@@ -39,16 +39,37 @@ export function isFocusableComponent(element) {
   const componentName = element.tagName.toLowerCase();
 
   // Guard Clause: Element is a focusable component
-  if (!FOCUSABLE_COMPONENTS.some((name) => element.hasAttribute(name) || componentName === name)) return false;
+  if (
+    !FOCUSABLE_COMPONENTS.some(
+      (name) => element.hasAttribute(name) || componentName === name,
+    )
+  )
+    return false;
 
   // Guard Clause: Element is not disabled
-  if (element.hasAttribute('disabled')) return false;
+  if (element.hasAttribute("disabled")) return false;
 
   // Guard Clause: The element is a hyperlink and has no href attribute
-  if (componentName.match("hyperlink") && !element.hasAttribute('href')) return false;
+  if (componentName.match("hyperlink") && !element.hasAttribute("href"))
+    return false;
 
   // If all guard clauses pass, the element is a focusable component
   return true;
+}
+
+/**
+ * Safely get a numeric tabindex for an element.
+ * Returns a number if the tabindex is a valid integer, otherwise null.
+ *
+ * @param {HTMLElement} element The element whose tabindex to read.
+ * @returns {?number} The numeric tabindex or null if missing/invalid.
+ */
+function getNumericTabIndex(element) {
+  const raw = element.getAttribute("tabindex");
+  if (raw == null) return null;
+
+  const value = Number.parseInt(raw, 10);
+  return Number.isNaN(value) ? null : value;
 }
 
 /**
@@ -88,14 +109,14 @@ export function getFocusableElements(container) {
       if (root.shadowRoot) {
         // Process shadow DOM children in order
         if (root.shadowRoot.children) {
-          Array.from(root.shadowRoot.children).forEach(child => {
+          Array.from(root.shadowRoot.children).forEach((child) => {
             collectFocusableElements(child);
           });
         }
       }
 
       // Process slots and their assigned nodes in order
-      if (root.tagName === 'SLOT') {
+      if (root.tagName === "SLOT") {
         const assignedNodes = root.assignedNodes({ flatten: true });
         for (const node of assignedNodes) {
           collectFocusableElements(node);
@@ -103,7 +124,7 @@ export function getFocusableElements(container) {
       } else {
         // Process light DOM children in order
         if (root.children) {
-          Array.from(root.children).forEach(child => {
+          Array.from(root.children).forEach((child) => {
             collectFocusableElements(child);
           });
         }
@@ -129,28 +150,31 @@ export function getFocusableElements(container) {
   // Move tab-indexed elements to the front while preserving their order
   // This ensures that elements with tabindex are prioritized in the focus order
 
-  // First extract elements with tabindex
-  const elementsWithTabindex = uniqueElements.filter(el => el.hasAttribute('tabindex') && (parseInt(el.getAttribute('tabindex')) ?? -1) > 0);
+  // First extract elements with valid positive tabindex
+  const elementsWithTabindex = uniqueElements.filter((el) => {
+    const tabindex = getNumericTabIndex(el);
+    return tabindex !== null && tabindex > 0;
+  });
 
   // Sort these elements by their tabindex value
   elementsWithTabindex.sort((a, b) => {
-    return parseInt(a.getAttribute('tabindex'), 10) - parseInt(b.getAttribute('tabindex'), 10);
+    const aIndex = getNumericTabIndex(a) ?? 0;
+    const bIndex = getNumericTabIndex(b) ?? 0;
+    return aIndex - bIndex;
   });
 
   // Elements without tabindex (preserving their original order)
-  const elementsWithoutTabindex = uniqueElements.filter(el => 
+  const elementsWithoutTabindex = uniqueElements.filter((el) => {
+    const tabindex = getNumericTabIndex(el);
 
-    // Elements without tabindex
-    !el.hasAttribute('tabindex') || 
-
-    // Preserve tab order of elements with tabindex of 0
-    (parseInt(el.getAttribute('tabindex')) ?? -1) === 0
-  );
+    // Elements without tabindex or with tabindex of 0 stay in DOM order
+    return tabindex === null || tabindex === 0;
+  });
 
   // Combine both arrays with tabindex elements first
   const tabIndexedUniqueElements = [
     ...elementsWithTabindex,
-    ...elementsWithoutTabindex
+    ...elementsWithoutTabindex,
   ];
 
   return tabIndexedUniqueElements;
