@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+# [5.6.0](https://github.com/AlaskaAirlines/auro-library/compare/v5.5.7...v5.6.0) (2026-01-21)
+
+
+### Features
+
+* add ClickTracker class for tracking clicks inside and outside of a target element [#212](https://github.com/AlaskaAirlines/auro-library/issues/212) ([52cf1a9](https://github.com/AlaskaAirlines/auro-library/commit/52cf1a9627495ed65ff598257308b464653c42e8))
+
 ## [5.5.7](https://github.com/AlaskaAirlines/auro-library/compare/v5.5.6...v5.5.7) (2026-01-21)
 
 
