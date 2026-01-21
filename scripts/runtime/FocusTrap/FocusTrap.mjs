@@ -1,4 +1,4 @@
-import { getFocusableElements } from '../Focusables/Focusables.mjs';
+import { getFocusableElements } from "../Focusables/Focusables.mjs";
 
 /**
  * FocusTrap manages keyboard focus within a specified container element, ensuring that focus does not leave the container when tabbing.
@@ -19,7 +19,7 @@ export class FocusTrap {
     }
 
     this.container = container;
-    this.tabDirection = 'forward'; // or 'backward';
+    this.tabDirection = "forward"; // or 'backward';
     this.controlTabOrder = controlTabOrder;
 
     this._init();
@@ -32,15 +32,14 @@ export class FocusTrap {
    * @private
    */
   _init() {
-
     // Add inert attribute to prevent focusing programmatically as well (if supported)
-    if ('inert' in HTMLElement.prototype) {
+    if ("inert" in HTMLElement.prototype) {
       this.container.inert = false; // Ensure the container isn't inert
-      this.container.setAttribute('data-focus-trap-container', true); // Mark for identification
+      this.container.setAttribute("data-focus-trap-container", true); // Mark for identification
     }
 
     // Track tab direction
-    this.container.addEventListener('keydown', this._onKeydown);
+    this.container.addEventListener("keydown", this._onKeydown);
   }
 
   /**
@@ -52,8 +51,8 @@ export class FocusTrap {
     // Get the active element(s) in the document and shadow root
     // This will include the active element in the shadow DOM if it exists
     // Active element may be inside the shadow DOM depending on delegatesFocus, so we need to check both
-    let {activeElement} = document;
-    const actives =  [activeElement];
+    let { activeElement } = document;
+    const actives = [activeElement];
     while (activeElement?.shadowRoot?.activeElement) {
       actives.push(activeElement.shadowRoot.activeElement);
       activeElement = activeElement.shadowRoot.activeElement;
@@ -68,28 +67,30 @@ export class FocusTrap {
    * @returns {number|null} The next focus index or null if not determined.
    */
   _getNextFocusIndex(currentIndex, focusables, actives) {
-    
-    // Determine if we need to wrap
-    const atFirst = actives.includes(focusables[0]) || actives.includes(this.container);
-    const atLast = actives.includes(focusables[focusables.length - 1]);
-
     if (this.controlTabOrder) {
       // Calculate the new index based on the current index and tab direction
-      let newFocusIndex = currentIndex + (this.tabDirection === 'forward' ? 1 : -1);
+      let newFocusIndex =
+        currentIndex + (this.tabDirection === "forward" ? 1 : -1);
 
       // Wrap-around logic
       if (newFocusIndex < 0) newFocusIndex = focusables.length - 1;
       if (newFocusIndex >= focusables.length) newFocusIndex = 0;
 
+      // Early return with the new index
       return newFocusIndex;
     }
 
+    // Determine if we need to wrap
+    const atFirst =
+      actives.includes(focusables[0]) || actives.includes(this.container);
+    const atLast = actives.includes(focusables[focusables.length - 1]);
+
     // Only wrap if at the ends
-    if (this.tabDirection === 'backward' && atFirst) {
+    if (this.tabDirection === "backward" && atFirst) {
       return focusables.length - 1;
     }
 
-    if (this.tabDirection === 'forward' && atLast) {
+    if (this.tabDirection === "forward" && atLast) {
       return 0;
     }
 
@@ -103,17 +104,14 @@ export class FocusTrap {
    * @returns {void}
    */
   _handleTabKey(e) {
-
     // Update the focusable elements
     const focusables = this._getFocusableElements();
 
-    if (!focusables.length) {
-      console.warn('FocusTrap: No focusable elements found in the container.');
-      return;
-    }
+    // If there are no focusable elements, exit
+    if (!focusables.length) return;
 
     // Set the tab direction based on the key pressed
-    this.tabDirection = e.shiftKey ? 'backward' : 'forward';
+    this.tabDirection = e.shiftKey ? "backward" : "forward";
 
     // Get the active elements that are currently focused
     const actives = this._getActiveElements();
@@ -126,7 +124,11 @@ export class FocusTrap {
 
     // Get the next focus index based on the current focus index, tab direction, and controlTabOrder setting
     // Is null if no new focus index is determined
-    let newFocusIndex = this._getNextFocusIndex(focusIndex, focusables, actives);
+    const newFocusIndex = this._getNextFocusIndex(
+      focusIndex,
+      focusables,
+      actives,
+    );
 
     // If we have a new focus index, set focus to that element
     if (newFocusIndex !== null) {
@@ -141,9 +143,8 @@ export class FocusTrap {
    * @private
    */
   _onKeydown = (e) => {
-
     // Handle tab
-    if (e.key === 'Tab') this._handleTabKey(e);
+    if (e.key === "Tab") this._handleTabKey(e);
   };
 
   /**
@@ -156,7 +157,7 @@ export class FocusTrap {
   _getFocusableElements() {
     // Use the imported utility function to get focusable elements
     const elements = getFocusableElements(this.container);
-    
+
     // Return the elements found
     return elements;
   }
@@ -184,11 +185,10 @@ export class FocusTrap {
    * Call this method to clean up when the focus trap is no longer needed.
    */
   disconnect() {
-
-    if (this.container.hasAttribute('data-focus-trap-container')) {
-      this.container.removeAttribute('data-focus-trap-container');
+    if (this.container.hasAttribute("data-focus-trap-container")) {
+      this.container.removeAttribute("data-focus-trap-container");
     }
 
-    this.container.removeEventListener('keydown', this._onKeydown);
+    this.container.removeEventListener("keydown", this._onKeydown);
   }
 }
