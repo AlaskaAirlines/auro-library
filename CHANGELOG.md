@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [5.5.7](https://github.com/AlaskaAirlines/auro-library/compare/v5.5.6...v5.5.7) (2026-01-21)
+
+
+### Performance Improvements
+
+* switch from eslint to biome ([3b790d0](https://github.com/AlaskaAirlines/auro-library/commit/3b790d0c78dcef9685bbb2ed812860b86760ea87))
+
 ## [5.5.6](https://github.com/AlaskaAirlines/auro-library/compare/v5.5.5...v5.5.6) (2026-01-13)
 
 
