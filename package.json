@@ -15,9 +15,9 @@
     "generateDocs": "./bin/generateDocs.mjs"
   },
   "dependencies": {
-    "@floating-ui/dom": "^1.6.11",
     "handlebars": "^4.7.8",
-    "markdown-magic": "^2.6.1"
+    "markdown-magic": "^2.6.1",
+    "@floating-ui/dom": "^1.7.4"
   },
   "devDependencies": {
     "@aurodesignsystem/auro-cli": "^3.5.1",
