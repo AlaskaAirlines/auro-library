@@ -1,5 +1,17 @@
 # Semantic Release Automated Changelog
 
+# [5.7.0](https://github.com/AlaskaAirlines/auro-library/compare/v5.6.0...v5.7.0) (2026-01-22)
+
+
+### Features
+
+* add support for controlling tab order to FocusTrap ([f46fcfa](https://github.com/AlaskaAirlines/auro-library/commit/f46fcfae7e3f8d9c0633cc992f9cdb3362dcda4c))
+
+
+### Performance Improvements
+
+* improve code pathing, remove console warns, and account for NaN ([f2fb73e](https://github.com/AlaskaAirlines/auro-library/commit/f2fb73e832c1e1c12aa0a57b558b29581fc14d6d))
+
 # [5.6.0](https://github.com/AlaskaAirlines/auro-library/compare/v5.5.7...v5.6.0) (2026-01-21)
 
 
