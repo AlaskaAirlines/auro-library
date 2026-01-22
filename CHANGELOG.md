@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+# [5.8.0](https://github.com/AlaskaAirlines/auro-library/compare/v5.7.0...v5.8.0) (2026-01-22)
+
+
+### Features
+
+* add StringBoolean lit converter for supporting string boolean attributes ([025cde2](https://github.com/AlaskaAirlines/auro-library/commit/025cde2fad3b12fa113c11a123268a816de4c009))
+
 # [5.7.0](https://github.com/AlaskaAirlines/auro-library/compare/v5.6.0...v5.7.0) (2026-01-22)
 
 
