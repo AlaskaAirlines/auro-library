@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+# [5.9.0](https://github.com/AlaskaAirlines/auro-library/compare/v5.8.0...v5.9.0) (2026-01-28)
+
+
+### Features
+
+* move popover positioner to library ([6d69131](https://github.com/AlaskaAirlines/auro-library/commit/6d69131a3ade2922cde25169d2dec6543264d11b))
+
 # [5.8.0](https://github.com/AlaskaAirlines/auro-library/compare/v5.7.0...v5.8.0) (2026-01-22)
 
 
