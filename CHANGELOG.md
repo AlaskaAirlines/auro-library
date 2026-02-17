@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+# [5.10.0](https://github.com/AlaskaAirlines/auro-library/compare/v5.9.0...v5.10.0) (2026-02-17)
+
+
+### Features
+
+* add class for unique ID generation [#220](https://github.com/AlaskaAirlines/auro-library/issues/220) ([8b7318c](https://github.com/AlaskaAirlines/auro-library/commit/8b7318c7e08c5c5cf858352a3801a680fc63204b))
+
 # [5.9.0](https://github.com/AlaskaAirlines/auro-library/compare/v5.8.0...v5.9.0) (2026-01-28)
 
 
