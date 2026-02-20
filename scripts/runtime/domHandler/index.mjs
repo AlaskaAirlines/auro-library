@@ -1,1 +1,1 @@
-export * from "./uniqueHash.mjs";
+export * from "./domHandler.mjs";
