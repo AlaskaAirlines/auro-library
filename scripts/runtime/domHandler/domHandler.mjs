@@ -1,8 +1,5 @@
 /**
- * Class for generating unique hashes based on the current timestamp.
- * This can be used to create unique identifiers for elements or data within an application,
- * ensuring that each identifier is distinct and can be easily generated without the need
- * for external libraries or complex algorithms.
+ * Class for interaction with the DOM.
  */
 export class DomHandler {
   /**
@@ -58,7 +55,9 @@ export class DomHandler {
   getLocale(elem) {
     let locale = "en-US";
 
-    if (!elem.hasAttribute("locale")) {
+    if (elem.hasAttribute("locale")) {
+      locale = elem.getAttribute("locale");
+    } else {
       const closestLocaleElement = this.closestWithAttribute(
         elem,
         "data-locale",
