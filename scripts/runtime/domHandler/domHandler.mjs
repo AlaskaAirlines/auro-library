@@ -55,16 +55,28 @@ export class DomHandler {
   getLocale(elem) {
     let locale = "en-US";
 
-    if (elem.hasAttribute("locale")) {
-      locale = elem.getAttribute("locale");
-    } else {
-      const closestLocaleElement = this.closestWithAttribute(
-        elem,
-        "data-locale",
-      );
+    try {
+      if (elem.hasAttribute("locale")) {
+        locale = elem.getAttribute("locale");
+      } else {
+        const closestLocaleElement = this.closestWithAttribute(
+          elem,
+          "data-locale",
+        );
 
-      if (closestLocaleElement) {
-        locale = closestLocaleElement.getAttribute("data-locale");
+        if (closestLocaleElement) {
+          locale = closestLocaleElement.getAttribute("data-locale");
+        }
+      }
+    } catch (error) {
+      if (!elem) {
+        console.debug(
+          "Auro getLocale: No element provided, defaulting to 'en-US'",
+        );
+      } else {
+        console.debug(
+          "Auro getLocale: Error accessing attributes, defaulting to 'en-US'",
+        );
       }
     }
 
