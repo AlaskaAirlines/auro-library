@@ -49,4 +49,26 @@ export class DomHandler {
 
     return null;
   }
+
+  /**
+   * If the locale wasn't set via attribute on `elem`,
+   * then use the closest `data-locale` attribute crawling up the DOM tree.
+   * If none is found, default to 'en-US'.
+   */
+  getLocale(elem) {
+    let locale = "en-US";
+
+    if (!elem.hasAttribute("locale")) {
+      const closestLocaleElement = this.closestWithAttribute(
+        elem,
+        "data-locale",
+      );
+
+      if (closestLocaleElement) {
+        locale = closestLocaleElement.getAttribute("data-locale");
+      }
+    }
+
+    return locale;
+  }
 }
