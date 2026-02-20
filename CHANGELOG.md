@@ -1,5 +1,13 @@
 # Semantic Release Automated Changelog
 
+# [5.11.0](https://github.com/AlaskaAirlines/auro-library/compare/v5.10.0...v5.11.0) (2026-02-20)
+
+
+### Features
+
+* add function for finding closest elem with defined attr [#222](https://github.com/AlaskaAirlines/auro-library/issues/222) ([e0a311d](https://github.com/AlaskaAirlines/auro-library/commit/e0a311db4b2d112d2bcfcce437e75553b16efe3e))
+* new function to get nearest defined locale [#223](https://github.com/AlaskaAirlines/auro-library/issues/223) ([7562865](https://github.com/AlaskaAirlines/auro-library/commit/756286553b301bc679648f2764d23b4682304a40))
+
 # [5.10.0](https://github.com/AlaskaAirlines/auro-library/compare/v5.9.0...v5.10.0) (2026-02-17)
 
 
