@@ -1,22 +1,19 @@
 class DateFormatter {
-
   constructor() {
-
     /**
      * @description Parses a date string into its components.
      * @param {string} dateStr - Date string to parse.
      * @param {string} format - Date format to parse.
      * @returns {Object<key["month" | "day" | "year"]: number>|undefined}
      */
-    this.parseDate = (dateStr, format = 'mm/dd/yyyy') => {
-
+    this.parseDate = (dateStr, format = "mm/dd/yyyy") => {
       // Guard Clause: Date string is defined
       if (!dateStr) {
         return undefined;
       }
 
       // Assume the separator is a "/" a defined in our code base
-      const separator = '/';
+      const separator = "/";
 
       // Get the parts of the date and format
       const valueParts = dateStr.split(separator);
@@ -24,18 +21,20 @@ class DateFormatter {
 
       // Check if the value and format have the correct number of parts
       if (valueParts.length !== formatParts.length) {
-        throw new Error('AuroDatepickerUtilities | parseDate: Date string and format length do not match');
+        throw new Error(
+          "AuroDatepickerUtilities | parseDate: Date string and format length do not match",
+        );
       }
 
       // Holds the result to be returned
       const result = formatParts.reduce((acc, part, index) => {
         const value = valueParts[index];
 
-        if ((/m/iu).test(part)) {
+        if (/m/iu.test(part)) {
           acc.month = value;
-        } else if ((/d/iu).test(part)) {
+        } else if (/d/iu.test(part)) {
           acc.day = value;
-        } else if ((/y/iu).test(part)) {
+        } else if (/y/iu.test(part)) {
           acc.year = value;
         }
 
@@ -48,7 +47,9 @@ class DateFormatter {
       }
 
       // Throw an error to let the dev know we were unable to parse the date string
-      throw new Error('AuroDatepickerUtilities | parseDate: Unable to parse date string');
+      throw new Error(
+        "AuroDatepickerUtilities | parseDate: Unable to parse date string",
+      );
     };
 
     /**
@@ -57,11 +58,12 @@ class DateFormatter {
      * @param {String} locale - Optional locale to use for the date string. Defaults to user's locale.
      * @returns {String} Returns the date as a string.
      */
-    this.getDateAsString = (date, locale = undefined) => date.toLocaleDateString(locale, {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    });
+    this.getDateAsString = (date, locale = undefined) =>
+      date.toLocaleDateString(locale, {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      });
 
     /**
      * Converts a date string to a North American date format.
@@ -70,15 +72,16 @@ class DateFormatter {
      * @returns {Boolean}
      */
     this.toNorthAmericanFormat = (dateStr, format) => {
-
-      if (format === 'mm/dd/yyyy') {
+      if (format === "mm/dd/yyyy") {
         return dateStr;
       }
 
       const parsedDate = this.parseDate(dateStr, format);
 
       if (!parsedDate) {
-        throw new Error('AuroDatepickerUtilities | toNorthAmericanFormat: Unable to parse date string');
+        throw new Error(
+          "AuroDatepickerUtilities | toNorthAmericanFormat: Unable to parse date string",
+        );
       }
 
       const { month, day, year } = parsedDate;
@@ -96,9 +99,38 @@ class DateFormatter {
         dateParts.push(year);
       }
 
-      return dateParts.join('/');
+      return dateParts.join("/");
     };
   }
-};
+
+  isISOFormat(dateStr) {
+    if (!dateStr || typeof dateStr !== "string") {
+      return false;
+    }
+
+    const isoFormat = /^\d{4}-\d{2}-\d{2}$/;
+    return isoFormat.test(dateStr.trim());
+  }
+
+  stringToDate(dateStr, format = "yyyy-mm-dd") {
+    if (dateFormatter.isISOFormat(dateStr)) {
+      return new Date(dateStr + "T00:00:00"); // Ensure it's treated as local time
+    }
+
+    const parsedDate = dateFormatter.parseDate(dateStr, format);
+
+    if (!parsedDate) {
+      console.debug(
+        "AuroDatepickerUtilities | stringToDate: Unable to parse date string",
+      );
+      return null;
+    }
+
+    const { month, day, year } = parsedDate;
+
+    // Months are 0-indexed in JavaScript Date objects, so we need to subtract 1 from the month value
+    return new Date(year, month - 1, day);
+  }
+}
 
 export const dateFormatter = new DateFormatter();
