@@ -119,7 +119,11 @@ export class AuroDateUtilities extends AuroDateUtilitiesBase {
 
       // Get the parts of the date
       const dateParts = dateFormatter.parseDate(value, format);
-
+      if (!dateParts) {
+        throw new Error(
+          "AuroFormValidation | dateFormatMatch: Unable to parse date string",
+        );
+      }
       // Validator for day
       const dayValueIsValid = (day) => {
         // Guard clause: if there is no day in the dateParts, we can ignore this check.
