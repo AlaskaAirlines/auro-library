@@ -1,229 +1,239 @@
 import { expect } from "@open-wc/testing";
 import { dateFormatter } from "./dateFormatter.mjs";
 
-describe("dateFormatter.isISOFormat", () => {
-  it("returns true for a typical valid ISO date", () => {
-    const result = dateFormatter.isISOFormat("2020-01-01");
+describe("dateFormatter.isValidISODate", () => {
+  describe("valid ISO date strings", () => {
+    const validCases = [
+      { param: "2020-01-01", description: "typical ISO date" },
+      { param: "1999-12-31", description: "end of year ISO date" },
+      { param: "2020-02-29", description: "leap day" },
+      { param: "0000-01-01", description: "earliest 4-digit year" },
+      { param: "2020-01-01 ", description: "trailing whitespace" },
+      { param: " 2020-01-01", description: "leading whitespace" },
+      { param: "9999-12-31", description: "latest 4-digit year" },
+    ];
 
-    expect(result).to.be.true;
+    validCases.forEach(({ param, description }) => {
+      it(`returns true for: ${description}`, () => {
+        const result = dateFormatter.isValidISODate(param);
+        expect(result, `Expected "${String(param)}" to be valid ISO format`).to
+          .be.true;
+      });
+    });
   });
 
-  it("returns true for another valid ISO date with different year and month", () => {
-    const result = dateFormatter.isISOFormat("1999-12-31");
+  describe("non-ISO or invalid ISO date strings and non-string inputs", () => {
+    const invalidCases = [
+      { param: "2020/01/01", description: "slashes" },
+      { param: "2020 01 01", description: "spaces" },
+      { param: "999-01-01", description: "short year" },
+      { param: "02020-01-01", description: "long year" },
+      { param: "2020-1-01", description: "single digit month" },
+      { param: "2020-01-1", description: "single digit day" },
+      { param: "2020-001-01", description: "3 digit month" },
+      { param: "2020-01-001", description: "3 digit day" },
+      { param: "2020-01-01T00:00:00Z", description: "trailing time" },
+      { param: "2020-01- 01", description: "internal whitespace" },
+      { param: "", description: "empty string" },
+      { param: "not-a-date", description: "random string" },
+      { param: "20200101", description: "numeric only, wrong format" },
+      { param: "20a0-01-01", description: "non-digit in year" },
+      { param: "2020-0b-01", description: "non-digit in month" },
+      { param: "2020-01-0c", description: "non-digit in day" },
+      { param: "2020-01-32", description: "invalid day" },
+      { param: null, description: "null input" },
+      { param: undefined, description: "undefined input" },
+      { param: 20200101, description: "number input" },
+      {
+        param: { year: 2020, month: 1, day: 1 },
+        description: "plain object input",
+      },
+      { param: [2020, 1, 1], description: "array input" },
+      { param: () => "2020-01-01", description: "function input" },
+    ];
 
-    expect(result).to.be.true;
-  });
-
-  it("returns true for a leap day formatted as ISO (format only, not actual calendar validation)", () => {
-    const result = dateFormatter.isISOFormat("2020-02-29");
-
-    expect(result).to.be.true;
-  });
-
-  it("returns true for earliest four-digit year edge case", () => {
-    const result = dateFormatter.isISOFormat("0000-01-01");
-
-    expect(result).to.be.true;
-  });
-
-  it("returns true for high year edge case", () => {
-    const result = dateFormatter.isISOFormat("9999-12-31");
-
-    expect(result).to.be.true;
-  });
-
-  it("returns false when using slashes instead of dashes", () => {
-    const result = dateFormatter.isISOFormat("2020/01/01");
-
-    expect(result).to.be.false;
-  });
-
-  it("returns false when using spaces instead of dashes", () => {
-    const result = dateFormatter.isISOFormat("2020 01 01");
-
-    expect(result).to.be.false;
-  });
-
-  it("returns false when year is shorter than four digits", () => {
-    const result = dateFormatter.isISOFormat("999-01-01");
-
-    expect(result).to.be.false;
-  });
-
-  it("returns false when year is longer than four digits", () => {
-    const result = dateFormatter.isISOFormat("02020-01-01");
-
-    expect(result).to.be.false;
-  });
-
-  it("returns false when month has a single digit", () => {
-    const result = dateFormatter.isISOFormat("2020-1-01");
-
-    expect(result).to.be.false;
-  });
-
-  it("returns false when day has a single digit", () => {
-    const result = dateFormatter.isISOFormat("2020-01-1");
-
-    expect(result).to.be.false;
-  });
-
-  it("returns false when month has three digits", () => {
-    const result = dateFormatter.isISOFormat("2020-001-01");
-
-    expect(result).to.be.false;
-  });
-
-  it("returns false when day has three digits", () => {
-    const result = dateFormatter.isISOFormat("2020-01-001");
-
-    expect(result).to.be.false;
-  });
-
-  it("returns false when there is trailing time information appended", () => {
-    const result = dateFormatter.isISOFormat("2020-01-01T00:00:00Z");
-
-    expect(result).to.be.false;
-  });
-
-  it("does not return false when there is trailing whitespace", () => {
-    const result = dateFormatter.isISOFormat("2020-01-01 ");
-
-    expect(result).not.to.be.false;
-  });
-
-  it("does not return false when there is leading whitespace", () => {
-    const result = dateFormatter.isISOFormat(" 2020-01-01");
-
-    expect(result).not.to.be.false;
-  });
-
-  it("returns false when there is internal whitespace", () => {
-    const result = dateFormatter.isISOFormat("2020-01- 01");
-
-    expect(result).to.be.false;
-  });
-
-  it("returns false for an empty string", () => {
-    const result = dateFormatter.isISOFormat("");
-
-    expect(result).to.be.false;
-  });
-
-  it("returns false for a clearly non-date random string", () => {
-    const result = dateFormatter.isISOFormat("not-a-date");
-
-    expect(result).to.be.false;
-  });
-
-  it("returns false for numeric-only string of incorrect length", () => {
-    const result = dateFormatter.isISOFormat("20200101");
-
-    expect(result).to.be.false;
-  });
-
-  it("returns false when year contains non-digit characters", () => {
-    const result = dateFormatter.isISOFormat("20a0-01-01");
-
-    expect(result).to.be.false;
-  });
-
-  it("returns false when month contains non-digit characters", () => {
-    const result = dateFormatter.isISOFormat("2020-0b-01");
-
-    expect(result).to.be.false;
-  });
-
-  it("returns false when day contains non-digit characters", () => {
-    const result = dateFormatter.isISOFormat("2020-01-0c");
-
-    expect(result).to.be.false;
-  });
-
-  it('returns false when input is null (coerced to string "null")', () => {
-    const result = dateFormatter.isISOFormat(null);
-
-    expect(result).to.be.false;
-  });
-
-  it('returns false when input is undefined (coerced to string "undefined")', () => {
-    const result = dateFormatter.isISOFormat(undefined);
-
-    expect(result).to.be.false;
-  });
-
-  it("returns false when input is a number", () => {
-    const result = dateFormatter.isISOFormat(20200101);
-
-    expect(result).to.be.false;
-  });
-
-  it("returns false when input is an object", () => {
-    const result = dateFormatter.isISOFormat({ year: 2020, month: 1, day: 1 });
-
-    expect(result).to.be.false;
-  });
-
-  it("returns false when input is an array", () => {
-    const result = dateFormatter.isISOFormat([2020, 1, 1]);
-
-    expect(result).to.be.false;
-  });
-
-  it("returns false when input is a function", () => {
-    const result = dateFormatter.isISOFormat(() => "2020-01-01");
-
-    expect(result).to.be.false;
+    invalidCases.forEach(({ param, description }) => {
+      it(`returns false for: ${description}`, () => {
+        const result = dateFormatter.isValidISODate(param);
+        expect(result, `Expected "${String(param)}" to be invalid ISO format`)
+          .to.be.false;
+      });
+    });
   });
 });
 
-describe("dateFormatter.stringToDate", () => {
-  it("returns a Date constructed from ISO string when input is ISO format", () => {
-    const isoStr = "2024-01-15";
-    const result = dateFormatter.stringToDate(isoStr);
+describe("dateFormatter.stringToDateInstance", () => {
+  describe("ISO input", () => {
+    const isoCases = [
+      { input: "2024-01-15", description: "typical ISO date" },
+      { input: "1999-12-31", description: "end of year ISO date" },
+    ];
 
-    expect(result).to.be.instanceOf(Date);
-    expect(result.toISOString().slice(0, 10)).to.equal("2024-01-15");
+    isoCases.forEach(({ input, description }) => {
+      it(`creates Date directly from ISO string for: ${description}`, () => {
+        const result = dateFormatter.stringToDateInstance(input);
+
+        expect(result).to.be.instanceOf(Date);
+        expect(result.toISOString().slice(0, 10)).to.equal(input);
+      });
+    });
   });
 
-  it("returns a Date using parseDate result when input is non-ISO format", () => {
-    const inputStr = "15/01/2024";
-    const expectedYear = 2024;
-    const expectedMonth = 1; // January (1-based)
-    const expectedDay = 15;
+  describe("non-ISO input with explicit format", () => {
+    it("returns a Date using parseDate result for dd/mm/yyyy format", () => {
+      const inputStr = "15/01/2024";
+      const expectedYear = 2024;
+      const expectedMonth = 1; // January (1-based)
+      const expectedDay = 15;
 
-    const result = dateFormatter.stringToDate(inputStr, "dd/mm/yyyy");
+      const result = dateFormatter.stringToDateInstance(inputStr, "dd/mm/yyyy");
 
-    expect(result).to.be.instanceOf(Date);
-    expect(result.getFullYear()).to.equal(expectedYear);
-    expect(result.getMonth()).to.equal(expectedMonth - 1); // JS months are 0-based
-    expect(result.getDate()).to.equal(expectedDay);
+      expect(result).to.be.instanceOf(Date);
+      expect(result.getFullYear()).to.equal(expectedYear);
+      expect(result.getMonth()).to.equal(expectedMonth - 1);
+      expect(result.getDate()).to.equal(expectedDay);
+    });
   });
 
-  it("uses default format parameter when format is not provided", () => {
-    const inputStr = "2024-02-29";
-    const result = dateFormatter.stringToDate(inputStr);
+  describe("default format behaviour", () => {
+    it("uses default format parameter when format is not provided", () => {
+      const inputStr = "2024-02-29";
 
-    expect(result).to.be.instanceOf(Date);
-    expect(result.getUTCFullYear()).to.equal(2024);
-    expect(result.getUTCMonth()).to.equal(1); // 2 - 1
-    expect(result.getUTCDate()).to.equal(29);
+      const result = dateFormatter.stringToDateInstance(inputStr);
+
+      expect(result).to.be.instanceOf(Date);
+      expect(result.getFullYear()).to.equal(2024);
+      expect(result.getMonth()).to.equal(1);
+      expect(result.getDate()).to.equal(29);
+    });
   });
 
-  it("correctly adjusts month from 1-based to 0-based when creating Date", () => {
-    const inputStr = "2024-12-31";
-    const result = dateFormatter.stringToDate(inputStr);
+  describe("month adjustment", () => {
+    it("correctly adjusts month from 1-based to 0-based when creating Date", () => {
+      const inputStr = "2024-12-31";
 
-    expect(result.getUTCFullYear()).to.equal(2024);
-    expect(result.getUTCMonth()).to.equal(11); // 12 - 1
-    expect(result.getUTCDate()).to.equal(31);
+      const result = dateFormatter.stringToDateInstance(inputStr);
+
+      expect(result.getFullYear()).to.equal(2024);
+      expect(result.getMonth()).to.equal(11);
+      expect(result.getDate()).to.equal(31);
+    });
+  });
+});
+
+describe("dateFormatter.isValidDate", () => {
+  describe("valid date inputs", () => {
+    const validCases = [
+      {
+        args: ["2024-02-29"],
+        description: "valid leap day ISO (default format)",
+      },
+      {
+        args: ["1999-12-31", "yyyy-mm-dd"],
+        description: "valid ISO with explicit format",
+      },
+      {
+        args: ["12/31/1999", "mm/dd/yyyy"],
+        description: "valid mm/dd/yyyy",
+      },
+      {
+        args: ["31-01-2020", "dd-mm-yyyy"],
+        description: "valid dd-mm-yyyy",
+      },
+    ];
+
+    validCases.forEach(({ args, description }) => {
+      it(`returns true for: ${description}`, () => {
+        const result = dateFormatter.isValidDate(...args);
+        expect(result, `Expected ${JSON.stringify(args)} to be a valid date`).to
+          .be.true;
+      });
+    });
   });
 
-  it("creates Date directly from ISO string for another valid date (coverage for different values)", () => {
-    const isoStr = "1999-12-31";
-    const result = dateFormatter.stringToDate(isoStr);
+  describe("invalid date inputs", () => {
+    const invalidCases = [
+      {
+        args: ["02/2024", "mm/yyyy"],
+        description: "short format mm/yyyy",
+      },
+      {
+        args: ["2024/02", "yyyy/mm"],
+        description: "short format yyyy/mm",
+      },
+      {
+        args: ["2024", "yyyy"],
+        description: "short format yyyy",
+      },
+      { args: ["2024-02-30"], description: "invalid ISO day" },
+      {
+        args: ["12/31/1999", "yyyy-mm-dd"],
+        description: "non-ISO string with yyyy-mm-dd format",
+      },
+      {
+        args: ["02/30/2024", "mm/dd/yyyy"],
+        description: "invalid mm/dd/yyyy with impossible day",
+      },
+      {
+        args: [null, "mm/dd/yyyy"],
+        description: "non-string date value",
+      },
+      {
+        args: ["13/2024", "mm/yyyy"],
+        description: "invalid mm/yyyy with month out of range",
+      },
+      {
+        args: ["00/24", "mm/yy"],
+        description: "invalid mm/yy with month below range",
+      },
+      {
+        args: ["02/24", "mm/yy"],
+        description: "invalid mm/yy",
+      },
+      {
+        args: ["2024/13", "yyyy/mm"],
+        description: "invalid yyyy/mm with month out of range",
+      },
+      {
+        args: ["ab24", "yyyy"],
+        description: "invalid yyyy with non-numeric value",
+      },
+      {
+        args: ["2a", "yy"],
+        description: "invalid yy with non-numeric value",
+      },
+      {
+        args: ["24", "yy"],
+        description: "invalid yy",
+      },
+      {
+        args: ["00", "mm"],
+        description: "invalid mm below range",
+      },
+      {
+        args: ["12", "mm"],
+        description: "invalid mm",
+      },
+      {
+        args: ["00", "dd"],
+        description: "invalid dd below range",
+      },
+      {
+        args: ["31", "dd"],
+        description: "invalid dd",
+      },
+      {
+        args: ["32", "dd"],
+        description: "invalid dd above range",
+      },
+    ];
 
-    expect(result).to.be.instanceOf(Date);
-    expect(result.toISOString().slice(0, 10)).to.equal("1999-12-31");
+    invalidCases.forEach(({ args, description }) => {
+      it(`returns false for: ${description}`, () => {
+        const result = dateFormatter.isValidDate(...args);
+        expect(result, `Expected ${JSON.stringify(args)} to be an invalid date`)
+          .to.be.false;
+      });
+    });
   });
 });
