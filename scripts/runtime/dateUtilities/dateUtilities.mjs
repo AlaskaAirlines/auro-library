@@ -69,33 +69,12 @@ export class AuroDateUtilities extends AuroDateUtilitiesBase {
         return false;
       }
 
-      // Get a formatted date string and parse it
-      const dateParts = dateFormatter.parseDate(date, format);
-
-      // Guard Clause: Date parse succeeded
-      if (!dateParts) {
+      // Get a formatted date string and parse and validate it
+      try {
+        return Boolean(dateFormatter.parseDate(date, format));
+      } catch (error) {
         return false;
       }
-
-      // Create the expected date string based on the date parts
-      const month = dateParts.month || "01";
-      const day = dateParts.day || "01";
-      const year = this.getFourDigitYear(dateParts.year || "2000");
-      const expectedDateStr = `${month}/${day}/${year}`;
-
-      // Generate a date object that we will extract a string date from to compare to the passed in date string
-      const dateObj = new Date(year, month - 1, day);
-
-      // Get the date string of the date object we created from the string date
-      const actualDateStr = dateFormatter.getDateAsString(dateObj, "en-US");
-
-      // Guard Clause: Generated date matches date string input
-      if (expectedDateStr !== actualDateStr) {
-        return false;
-      }
-
-      // If we passed all other checks, we can assume the date is valid
-      return true;
     };
 
     /**
@@ -118,12 +97,8 @@ export class AuroDateUtilities extends AuroDateUtilitiesBase {
       }
 
       // Get the parts of the date
-      const dateParts = dateFormatter.parseDate(value, format);
-      if (!dateParts) {
-        throw new Error(
-          "AuroFormValidation | dateFormatMatch: Unable to parse date string",
-        );
-      }
+      const dateParts = dateFormatter.getDateParts(value, format);
+
       // Validator for day
       const dayValueIsValid = (day) => {
         // Guard clause: if there is no day in the dateParts, we can ignore this check.
