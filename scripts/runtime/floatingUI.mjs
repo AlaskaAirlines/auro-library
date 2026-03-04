@@ -448,9 +448,9 @@ export default class AuroFloatingUI {
       existedVisibleFloatingUI &&
       existedVisibleFloatingUI !== this &&
       existedVisibleFloatingUI.element.isPopoverVisible &&
-      document.expandedAuroFloater.eventPrefix === this.eventPrefix
+      existedVisibleFloatingUI.eventPrefix === this.eventPrefix
     ) {
-      document.expandedAuroFloater.hideBib();
+      existedVisibleFloatingUI.hideBib();
     }
 
     document.expandedAuroFloater = this;
