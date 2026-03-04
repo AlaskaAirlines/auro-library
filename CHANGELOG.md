@@ -1,5 +1,13 @@
 # Semantic Release Automated Changelog
 
+## [5.11.1](https://github.com/AlaskaAirlines/auro-library/compare/v5.11.0...v5.11.1) (2026-03-04)
+
+
+### Bug Fixes
+
+* prevent TypeError in updateCurrentExpandedDropdown when expandedAuroFloater is undefined ([8fb98bc](https://github.com/AlaskaAirlines/auro-library/commit/8fb98bc1ea1ce5d1643cdb406cb5cbd239ca4476))
+* skip outside-click handler when bib is fullscreen for VoiceOver compatibility #AB1503186 ([d958258](https://github.com/AlaskaAirlines/auro-library/commit/d958258e4d0557345e46290d21298b581ed88dd2)), closes [#AB1503186](https://github.com/AlaskaAirlines/auro-library/issues/AB1503186)
+
 # [5.11.0](https://github.com/AlaskaAirlines/auro-library/compare/v5.10.0...v5.11.0) (2026-02-20)
 
 
