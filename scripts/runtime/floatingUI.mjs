@@ -488,7 +488,13 @@ export default class AuroFloatingUI {
    * @param {String} eventType - The event type that triggered the hiding action.
    */
   hideBib(eventType = "unknown") {
-    if (!this.element.disabled && !this.element.noToggle) {
+    // noToggle dropdowns should not close when the trigger is clicked (the
+    // "toggle" behavior), but they CAN still close via other interactions like
+    // Escape key or focus loss.
+    if (
+      !this.element.disabled &&
+      !(this.element.noToggle && eventType === "click")
+    ) {
       this.lockScroll(false);
       this.element.triggerChevron?.removeAttribute("data-expanded");
 
@@ -500,8 +506,12 @@ export default class AuroFloatingUI {
         this.showing = false;
         this.dispatchEventDropdownToggle(eventType);
       }
+
+      // Only clear the global reference if the bib was actually hidden.
+      // Clearing it when hideBib is blocked (e.g. noToggle + click) corrupts
+      // the singleton state so other dropdowns can't detect this one is still open.
+      document.expandedAuroFloater = null;
     }
-    document.expandedAuroFloater = null;
   }
 
   /**
