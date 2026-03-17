@@ -1,5 +1,14 @@
 # Semantic Release Automated Changelog
 
+## [5.11.2](https://github.com/AlaskaAirlines/auro-library/compare/v5.11.1...v5.11.2) (2026-03-17)
+
+
+### Bug Fixes
+
+* prevent dropdown from closing on click for noToggle elements AB[#1494298](https://github.com/AlaskaAirlines/auro-library/issues/1494298) ([4d23b40](https://github.com/AlaskaAirlines/auro-library/commit/4d23b4082c8e22d9a865ba51b702f70185cfd455))
+* return comment ([d2b315c](https://github.com/AlaskaAirlines/auro-library/commit/d2b315c0ca08d724ac6239d0e25b6127173f990e))
+* simplify hideBib logic with early returns for readability ([bd4038d](https://github.com/AlaskaAirlines/auro-library/commit/bd4038dce05969e18e87910a234344f95c729ac2))
+
 ## [5.11.1](https://github.com/AlaskaAirlines/auro-library/compare/v5.11.0...v5.11.1) (2026-03-04)
 
 
