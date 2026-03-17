@@ -511,6 +511,9 @@ export default class AuroFloatingUI {
       this.dispatchEventDropdownToggle(eventType);
     }
 
+    // Only clear the global reference if the bib was actually hidden.
+    // Clearing it when hideBib is blocked (e.g. noToggle + click) corrupts
+    // the singleton state so other dropdowns can't detect this one is still open.
     document.expandedAuroFloater = null;
   }
 
