@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [5.11.3](https://github.com/AlaskaAirlines/auro-library/compare/v5.11.2...v5.11.3) (2026-03-31)
+
+
+### Bug Fixes
+
+* correct focus local check for shadow DOM ([e713cfc](https://github.com/AlaskaAirlines/auro-library/commit/e713cfc07f1be4809c97e05af97b89050478e988))
+
 ## [5.11.2](https://github.com/AlaskaAirlines/auro-library/compare/v5.11.1...v5.11.2) (2026-03-17)
 
 
