@@ -331,7 +331,6 @@ export default class AuroFloatingUI {
       return;
     }
 
-    const { activeElement } = document;
     // if focus is still inside of trigger or bib, do not close
     if (
       this.element.matches(":focus") ||
