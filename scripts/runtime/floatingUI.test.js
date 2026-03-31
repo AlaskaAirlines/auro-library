@@ -1,0 +1,102 @@
+import { expect } from "@open-wc/testing";
+import sinon from "sinon";
+import AuroFloatingUI from "./floatingUI.mjs";
+
+describe("AuroFloatingUI", () => {
+  let host;
+  let bib;
+  let floatingUI;
+  let hideBibSpy;
+
+  beforeEach(() => {
+    host = document.createElement("div");
+    bib = document.createElement("div");
+    host.bib = bib;
+    host.triggerChevron = document.createElement("span");
+
+    document.body.append(host, bib);
+
+    AuroFloatingUI.isMousePressed = false;
+    floatingUI = new AuroFloatingUI(host, "dropdown");
+    hideBibSpy = sinon.spy(floatingUI, "hideBib");
+  });
+
+  afterEach(() => {
+    sinon.restore();
+    AuroFloatingUI.isMousePressed = false;
+    host?.remove();
+    bib?.remove();
+  });
+
+  it("does not hide when the host matches focus-within", () => {
+    const checkedSelectors = [];
+
+    sinon.stub(host, "matches").callsFake((selector) => {
+      checkedSelectors.push(selector);
+
+      if (selector === ":focus") {
+        return false;
+      }
+
+      if (selector === ":focus-within") {
+        return true;
+      }
+
+      return false;
+    });
+
+    floatingUI.handleFocusLoss();
+
+    expect(checkedSelectors).to.deep.equal([":focus", ":focus-within"]);
+    expect(hideBibSpy.called).to.be.false;
+  });
+
+  it("does not hide when the host matches focus", () => {
+    const checkedSelectors = [];
+
+    sinon.stub(host, "matches").callsFake((selector) => {
+      checkedSelectors.push(selector);
+
+      if (selector === ":focus") {
+        return true;
+      }
+
+      return false;
+    });
+
+    floatingUI.handleFocusLoss();
+
+    expect(checkedSelectors).to.deep.equal([":focus"]);
+    expect(hideBibSpy.called).to.be.false;
+  });
+
+  it("does not hide when the bib is fullscreen", () => {
+    const checkedSelectors = [];
+
+    bib.setAttribute("isfullscreen", "");
+
+    sinon.stub(host, "matches").callsFake((selector) => {
+      checkedSelectors.push(selector);
+      return false;
+    });
+
+    floatingUI.handleFocusLoss();
+
+    expect(checkedSelectors).to.deep.equal([":focus", ":focus-within"]);
+    expect(hideBibSpy.called).to.be.false;
+  });
+
+  it("hides with a keydown event when the host no longer has focus", () => {
+    const checkedSelectors = [];
+
+    sinon.stub(host, "matches").callsFake((selector) => {
+      checkedSelectors.push(selector);
+      return false;
+    });
+
+    floatingUI.handleFocusLoss();
+
+    expect(checkedSelectors).to.deep.equal([":focus", ":focus-within"]);
+    expect(hideBibSpy.calledOnceWithExactly("keydown")).to.be.true;
+  });
+});
