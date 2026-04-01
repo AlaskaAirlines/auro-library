@@ -74,6 +74,11 @@ export default class AuroFloatingUI {
     /**
      * @private
      */
+    this.enableKeyboardHandling = true;
+
+    /**
+     * @private
+     */
     this.configureTrial = 0;
 
     /**
@@ -405,7 +410,9 @@ export default class AuroFloatingUI {
       document.addEventListener("focusin", this.focusHandler);
     }
 
-    document.addEventListener("keydown", this.keyDownHandler);
+    if (this.enableKeyboardHandling) {
+      document.addEventListener("keydown", this.keyDownHandler);
+    }
 
     // send this task to the end of queue to prevent conflicting
     // it conflicts if showBib gets call from a button that's not this.element.trigger
@@ -662,8 +669,9 @@ export default class AuroFloatingUI {
     this.element.bib.setAttribute("id", `${this.id}-floater-bib`);
   }
 
-  configure(elem, eventPrefix) {
+  configure(elem, eventPrefix, enableKeyboardHandling = true) {
     AuroFloatingUI.setupMousePressChecker();
+    this.enableKeyboardHandling = enableKeyboardHandling;
 
     this.eventPrefix = eventPrefix;
     if (this.element !== elem) {
@@ -696,7 +704,9 @@ export default class AuroFloatingUI {
 
     this.handleEvent = this.handleEvent.bind(this);
     if (this.element.trigger) {
-      this.element.trigger.addEventListener("keydown", this.handleEvent);
+      if (this.enableKeyboardHandling) {
+        this.element.trigger.addEventListener("keydown", this.handleEvent);
+      }
       this.element.trigger.addEventListener("click", this.handleEvent);
       this.element.trigger.addEventListener("mouseenter", this.handleEvent);
       this.element.trigger.addEventListener("mouseleave", this.handleEvent);
