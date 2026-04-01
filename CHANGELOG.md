@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+# [5.12.0](https://github.com/AlaskaAirlines/auro-library/compare/v5.11.3...v5.12.0) (2026-04-01)
+
+
+### Features
+
+* add keyboard handling toggle to AuroFloatingUI ([100bbe9](https://github.com/AlaskaAirlines/auro-library/commit/100bbe940ff2f1589d8b738ce83631bd5c7b8568))
+
 ## [5.11.3](https://github.com/AlaskaAirlines/auro-library/compare/v5.11.2...v5.11.3) (2026-03-31)
 
 
