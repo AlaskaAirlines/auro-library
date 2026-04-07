@@ -11,48 +11,118 @@ import {
 
 const MAX_CONFIGURATION_COUNT = 10;
 
+// Shared coordination state across all bundled copies of AuroFloatingUI.
+// Each component bundles its own copy of this file at build time, so the
+// runtime may have multiple distinct class objects on a single page.
+// Symbol.for() uses the global Symbol registry, which is shared across all
+// module instances regardless of how they were bundled, making it the only
+// reliable coordination key for this scenario.
+const _SHARED_STATE_KEY = Symbol.for("auro.floatingUI.shared");
+
+/**
+ * Returns (and lazily initializes) the single shared coordination state object.
+ * All bundled copies of AuroFloatingUI converge on the same object through this
+ * function, enabling cross-copy coordination for mouse-press tracking and the
+ * "only one dropdown open at a time" singleton.
+ * @private
+ * @returns {object}
+ */
+function getSharedState() {
+  const defaults = {
+    _version: 1,
+    expandedFloater: null,
+    isMousePressed: false,
+    isMousePressHandlerInitialized: false,
+    _mousePressedTimeout: null,
+  };
+
+  if (!globalThis[_SHARED_STATE_KEY]) {
+    // First copy to load: initialize from any legacy document properties set
+    // by already-built dist bundles that still write document.expandedAuroFloater.
+    globalThis[_SHARED_STATE_KEY] = Object.assign(
+      Object.create(null),
+      defaults,
+      {
+        expandedFloater:
+          typeof document !== "undefined"
+            ? document.expandedAuroFormkitDropdown ||
+              document.expandedAuroFloater ||
+              null
+            : null,
+      },
+    );
+
+    // Bidirectional property proxy: redirect legacy document property reads/writes
+    // from older bundled copies into the shared namespace so they participate in
+    // cross-copy coordination without being rebuilt.
+    if (typeof document !== "undefined") {
+      const shared = globalThis[_SHARED_STATE_KEY];
+      try {
+        Object.defineProperty(document, "expandedAuroFloater", {
+          get() {
+            return shared.expandedFloater;
+          },
+          set(v) {
+            shared.expandedFloater = v;
+          },
+          configurable: true,
+        });
+        Object.defineProperty(document, "expandedAuroFormkitDropdown", {
+          get() {
+            return shared.expandedFloater;
+          },
+          set(v) {
+            shared.expandedFloater = v;
+          },
+          configurable: true,
+        });
+      } catch (_e) {
+        // A non-configurable descriptor already exists (e.g. another copy already
+        // installed the proxy). Safe to ignore — coordination will still work.
+      }
+    }
+  } else {
+    // A different copy initialized the namespace first. Backfill any fields
+    // added in a newer version so this copy can use them safely.
+    for (const key of Object.keys(defaults)) {
+      if (!(key in globalThis[_SHARED_STATE_KEY])) {
+        globalThis[_SHARED_STATE_KEY][key] = defaults[key];
+      }
+    }
+  }
+
+  return globalThis[_SHARED_STATE_KEY];
+}
+
 export default class AuroFloatingUI {
   /**
    * @private
    */
-  static isMousePressed = false;
-
-  /**
-   * @private
-   */
-  static isMousePressHandlerInitialized = false;
-
-  /**
-   * @private
-   */
   static setupMousePressChecker() {
+    const shared = getSharedState();
     if (
-      !AuroFloatingUI.isMousePressHandlerInitialized &&
+      !shared.isMousePressHandlerInitialized &&
       window &&
       window.addEventListener
     ) {
-      AuroFloatingUI.isMousePressHandlerInitialized = true;
+      shared.isMousePressHandlerInitialized = true;
 
-      // Track timeout for isMousePressed reset to avoid race conditions
-      if (!AuroFloatingUI._mousePressedTimeout) {
-        AuroFloatingUI._mousePressedTimeout = null;
-      }
       const mouseEventGlobalHandler = (event) => {
         const isPressed = event.type === "mousedown";
         if (isPressed) {
           // Clear any pending timeout to prevent race condition
-          if (AuroFloatingUI._mousePressedTimeout !== null) {
-            clearTimeout(AuroFloatingUI._mousePressedTimeout);
-            AuroFloatingUI._mousePressedTimeout = null;
+          if (shared._mousePressedTimeout !== null) {
+            clearTimeout(shared._mousePressedTimeout);
+            shared._mousePressedTimeout = null;
           }
-          if (!AuroFloatingUI.isMousePressed) {
-            AuroFloatingUI.isMousePressed = true;
+          if (!shared.isMousePressed) {
+            shared.isMousePressed = true;
           }
-        } else if (AuroFloatingUI.isMousePressed && !isPressed) {
+        } else if (shared.isMousePressed && !isPressed) {
           // Schedule reset and track timeout ID
-          AuroFloatingUI._mousePressedTimeout = setTimeout(() => {
-            AuroFloatingUI.isMousePressed = false;
-            AuroFloatingUI._mousePressedTimeout = null;
+          shared._mousePressedTimeout = setTimeout(() => {
+            shared.isMousePressed = false;
+            shared._mousePressedTimeout = null;
           }, 0);
         }
       };
@@ -109,8 +179,10 @@ export default class AuroFloatingUI {
    */
   mirrorSize() {
     // mirror the boxsize from bibSizer
-    if (this.element.bibSizer && this.element.matchWidth) {
-      const sizerStyle = window.getComputedStyle(this.element.bibSizer);
+    if (this.element && this.element.bibSizer && this.element.matchWidth) {
+      const sizerStyle = window.getComputedStyle(
+        this.element && this.element.bibSizer,
+      );
       const bibContent =
         this.element.bib.shadowRoot.querySelector(".container");
       if (sizerStyle.width !== "0px") {
@@ -149,7 +221,7 @@ export default class AuroFloatingUI {
 
           this.element.expanded = smallerThanBreakpoint;
         }
-        if (this.element.nested) {
+        if (this.element && this.element.nested) {
           return "cover";
         }
         return "fullscreen";
@@ -186,31 +258,37 @@ export default class AuroFloatingUI {
       this.mirrorSize();
       // Define the middlware for the floater configuration
       const middleware = [
-        offset(this.element.floaterConfig?.offset || 0),
-        ...(this.element.floaterConfig?.shift ? [shift()] : []), // Add shift middleware if shift is enabled.
-        ...(this.element.floaterConfig?.flip ? [flip()] : []), // Add flip middleware if flip is enabled.
-        ...(this.element.floaterConfig?.autoPlacement ? [autoPlacement()] : []), // Add autoPlacement middleware if autoPlacement is enabled.
+        offset((this.element && this.element.floaterConfig?.offset) || 0),
+        ...(this.element && this.element.floaterConfig?.shift ? [shift()] : []), // Add shift middleware if shift is enabled.
+        ...(this.element && this.element.floaterConfig?.flip ? [flip()] : []), // Add flip middleware if flip is enabled.
+        ...(this.element && this.element.floaterConfig?.autoPlacement
+          ? [autoPlacement()]
+          : []), // Add autoPlacement middleware if autoPlacement is enabled.
       ];
 
       // Compute the position of the bib
-      computePosition(this.element.trigger, this.element.bib, {
+      computePosition(this.element && this.element.trigger, this.element.bib, {
         strategy: this.element.floaterConfig?.strategy || "fixed",
         placement: this.element.floaterConfig?.placement,
         middleware: middleware || [],
       }).then(({ x, y }) => {
         // eslint-disable-line id-length
-        Object.assign(this.element.bib.style, {
+        Object.assign(this.element && this.element.bib.style, {
           left: `${x}px`,
           top: `${y}px`,
         });
       });
     } else if (strategy === "cover") {
       // Compute the position of the bib
-      computePosition(this.element.parentNode, this.element.bib, {
-        placement: "bottom-start",
-      }).then(({ x, y }) => {
+      computePosition(
+        this.element && this.element.parentNode,
+        this.element.bib,
+        {
+          placement: "bottom-start",
+        },
+      ).then(({ x, y }) => {
         // eslint-disable-line id-length
-        Object.assign(this.element.bib.style, {
+        Object.assign(this.element && this.element.bib.style, {
           left: `${x}px`,
           top: `${y - this.element.parentNode.offsetHeight}px`,
           width: `${this.element.parentNode.offsetWidth}px`,
@@ -274,7 +352,7 @@ export default class AuroFloatingUI {
         }, 0);
       }
 
-      if (this.element.isPopoverVisible) {
+      if (this.element && this.element.isPopoverVisible) {
         this.lockScroll(true);
       }
     } else {
@@ -325,7 +403,7 @@ export default class AuroFloatingUI {
    */
   handleFocusLoss() {
     // if mouse is being pressed, skip and let click event to handle the action
-    if (AuroFloatingUI.isMousePressed) {
+    if (getSharedState().isMousePressed) {
       return;
     }
 
@@ -345,7 +423,7 @@ export default class AuroFloatingUI {
     }
 
     // if fullscreen bib is in fullscreen mode, do not close
-    if (this.element.bib.hasAttribute("isfullscreen")) {
+    if (this.element && this.element.bib.hasAttribute("isfullscreen")) {
       return;
     }
 
@@ -361,18 +439,24 @@ export default class AuroFloatingUI {
       // clicks. VoiceOver's synthetic click events inside a top-layer modal
       // <dialog> may not include the bib in composedPath(), causing false
       // positives. This mirrors the fullscreen guard in handleFocusLoss().
-      if (this.element.bib && this.element.bib.hasAttribute("isfullscreen")) {
+      if (
+        this.element &&
+        this.element.bib &&
+        this.element.bib.hasAttribute("isfullscreen")
+      ) {
         return;
       }
 
       if (
-        (!evt.composedPath().includes(this.element.trigger) &&
-          !evt.composedPath().includes(this.element.bib)) ||
-        (this.element.bib.backdrop &&
-          evt.composedPath().includes(this.element.bib.backdrop))
+        (!evt.composedPath().includes(this.element && this.element.trigger) &&
+          !evt.composedPath().includes(this.element && this.element.bib)) ||
+        (this.element &&
+          this.element.bib.backdrop &&
+          evt
+            .composedPath()
+            .includes(this.element && this.element.bib.backdrop))
       ) {
-        const existedVisibleFloatingUI =
-          document.expandedAuroFormkitDropdown || document.expandedAuroFloater;
+        const existedVisibleFloatingUI = getSharedState().expandedFloater;
 
         if (
           existedVisibleFloatingUI &&
@@ -380,8 +464,7 @@ export default class AuroFloatingUI {
         ) {
           // if something else is open, close that
           existedVisibleFloatingUI.hideBib();
-          document.expandedAuroFormkitDropdown = null;
-          document.expandedAuroFloater = this;
+          getSharedState().expandedFloater = this;
         } else {
           this.hideBib("click");
         }
@@ -391,8 +474,7 @@ export default class AuroFloatingUI {
     // ESC key handler
     this.keyDownHandler = (evt) => {
       if (evt.key === "Escape" && this.element.isPopoverVisible) {
-        const existedVisibleFloatingUI =
-          document.expandedAuroFormkitDropdown || document.expandedAuroFloater;
+        const existedVisibleFloatingUI = getSharedState().expandedFloater;
         if (
           existedVisibleFloatingUI &&
           existedVisibleFloatingUI !== this &&
@@ -448,8 +530,7 @@ export default class AuroFloatingUI {
 
   updateCurrentExpandedDropdown() {
     // Close any other dropdown that is already open
-    const existedVisibleFloatingUI =
-      document.expandedAuroFormkitDropdown || document.expandedAuroFloater;
+    const existedVisibleFloatingUI = getSharedState().expandedFloater;
     if (
       existedVisibleFloatingUI &&
       existedVisibleFloatingUI !== this &&
@@ -459,7 +540,7 @@ export default class AuroFloatingUI {
       existedVisibleFloatingUI.hideBib();
     }
 
-    document.expandedAuroFloater = this;
+    getSharedState().expandedFloater = this;
   }
 
   showBib() {
@@ -494,21 +575,21 @@ export default class AuroFloatingUI {
    * @param {String} eventType - The event type that triggered the hiding action.
    */
   hideBib(eventType = "unknown") {
-    if (this.element.disabled) {
+    if (this.element && this.element.disabled) {
       return;
     }
 
     // noToggle dropdowns should not close when the trigger is clicked (the
     // "toggle" behavior), but they CAN still close via other interactions like
     // Escape key or focus loss.
-    if (this.element.noToggle && eventType === "click") {
+    if (this.element && this.element.noToggle && eventType === "click") {
       return;
     }
 
     this.lockScroll(false);
     this.element.triggerChevron?.removeAttribute("data-expanded");
 
-    if (this.element.isPopoverVisible) {
+    if (this.element && this.element.isPopoverVisible) {
       this.element.isPopoverVisible = false;
     }
     if (this.showing) {
@@ -517,10 +598,12 @@ export default class AuroFloatingUI {
       this.dispatchEventDropdownToggle(eventType);
     }
 
-    // Only clear the global reference if the bib was actually hidden.
-    // Clearing it when hideBib is blocked (e.g. noToggle + click) corrupts
-    // the singleton state so other dropdowns can't detect this one is still open.
-    document.expandedAuroFloater = null;
+    // Only clear the global reference if this floater is the tracked one.
+    // Clearing it unconditionally corrupts the singleton if another dropdown
+    // opened between this one closing (e.g. noToggle + click scenario).
+    if (getSharedState().expandedFloater === this) {
+      getSharedState().expandedFloater = null;
+    }
   }
 
   /**
@@ -544,7 +627,7 @@ export default class AuroFloatingUI {
   }
 
   handleClick() {
-    if (this.element.isPopoverVisible) {
+    if (this.element && this.element.isPopoverVisible) {
       this.hideBib("click");
     } else {
       this.showBib();
@@ -581,17 +664,17 @@ export default class AuroFloatingUI {
           break;
         }
         case "mouseenter":
-          if (this.element.hoverToggle) {
+          if (this.element && this.element.hoverToggle) {
             this.showBib();
           }
           break;
         case "mouseleave":
-          if (this.element.hoverToggle) {
+          if (this.element && this.element.hoverToggle) {
             this.hideBib("mouseleave");
           }
           break;
         case "focus":
-          if (this.element.focusShow) {
+          if (this.element && this.element.focusShow) {
             /*
               This needs to better handle clicking that gives focus -
               currently it shows and then immediately hides the bib
@@ -682,7 +765,7 @@ export default class AuroFloatingUI {
       this.behavior = this.element.behavior;
     }
 
-    if (this.element.trigger) {
+    if (this.element && this.element.trigger) {
       this.disconnect();
     }
     this.element.trigger =
@@ -695,7 +778,7 @@ export default class AuroFloatingUI {
     this.element.triggerChevron =
       this.element.shadowRoot.querySelector("#showStateIcon");
 
-    if (this.element.floaterConfig) {
+    if (this.element && this.element.floaterConfig) {
       this.element.hoverToggle = this.element.floaterConfig.hoverToggle;
     }
 
@@ -703,7 +786,7 @@ export default class AuroFloatingUI {
     this.handleTriggerTabIndex();
 
     this.handleEvent = this.handleEvent.bind(this);
-    if (this.element.trigger) {
+    if (this.element && this.element.trigger) {
       if (this.enableKeyboardHandling) {
         this.element.trigger.addEventListener("keydown", this.handleEvent);
       }
@@ -720,8 +803,8 @@ export default class AuroFloatingUI {
     if (this.element) {
       this.element.cleanup?.();
 
-      if (this.element.bib) {
-        this.element.shadowRoot.append(this.element.bib);
+      if (this.element && this.element.bib) {
+        this.element.shadowRoot.append(this.element && this.element.bib);
       }
 
       // Remove event & keyboard listeners
