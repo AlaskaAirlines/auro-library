@@ -108,11 +108,19 @@ export default class AuroFloatingUI {
    * This ensures that the bib content has the same dimensions as the sizer element.
    */
   mirrorSize() {
+    const element = this.element;
+    if (!element) {
+      return;
+    }
+
     // mirror the boxsize from bibSizer
-    if (this.element.bibSizer && this.element.matchWidth) {
-      const sizerStyle = window.getComputedStyle(this.element.bibSizer);
-      const bibContent =
-        this.element.bib.shadowRoot.querySelector(".container");
+    if (element.bibSizer && element.matchWidth && element.bib?.shadowRoot) {
+      const sizerStyle = window.getComputedStyle(element.bibSizer);
+      const bibContent = element.bib.shadowRoot.querySelector(".container");
+      if (!bibContent) {
+        return;
+      }
+
       if (sizerStyle.width !== "0px") {
         bibContent.style.width = sizerStyle.width;
       }
@@ -134,9 +142,14 @@ export default class AuroFloatingUI {
    * @returns {String} The positioning strategy, one of 'fullscreen', 'floating', 'cover'.
    */
   getPositioningStrategy() {
+    const element = this.element;
+    if (!element) {
+      return this.behavior || "floating";
+    }
+
     const breakpoint =
-      this.element.bib.mobileFullscreenBreakpoint ||
-      this.element.floaterConfig?.fullscreenBreakpoint;
+      element.bib?.mobileFullscreenBreakpoint ||
+      element.floaterConfig?.fullscreenBreakpoint;
     switch (this.behavior) {
       case "tooltip":
         return "floating";
@@ -147,9 +160,9 @@ export default class AuroFloatingUI {
             `(max-width: ${breakpoint})`,
           ).matches;
 
-          this.element.expanded = smallerThanBreakpoint;
+          element.expanded = smallerThanBreakpoint;
         }
-        if (this.element.nested) {
+        if (element.nested) {
           return "cover";
         }
         return "fullscreen";
@@ -179,42 +192,65 @@ export default class AuroFloatingUI {
    * and applies the calculated position to the bib's style.
    */
   position() {
+    const element = this.element;
+    if (!element) {
+      return;
+    }
+
     const strategy = this.getPositioningStrategy();
     this.configureBibStrategy(strategy);
 
     if (strategy === "floating") {
+      if (!element.trigger || !element.bib) {
+        return;
+      }
+
       this.mirrorSize();
       // Define the middlware for the floater configuration
       const middleware = [
-        offset(this.element.floaterConfig?.offset || 0),
-        ...(this.element.floaterConfig?.shift ? [shift()] : []), // Add shift middleware if shift is enabled.
-        ...(this.element.floaterConfig?.flip ? [flip()] : []), // Add flip middleware if flip is enabled.
-        ...(this.element.floaterConfig?.autoPlacement ? [autoPlacement()] : []), // Add autoPlacement middleware if autoPlacement is enabled.
+        offset(element.floaterConfig?.offset || 0),
+        ...(element.floaterConfig?.shift ? [shift()] : []), // Add shift middleware if shift is enabled.
+        ...(element.floaterConfig?.flip ? [flip()] : []), // Add flip middleware if flip is enabled.
+        ...(element.floaterConfig?.autoPlacement ? [autoPlacement()] : []), // Add autoPlacement middleware if autoPlacement is enabled.
       ];
 
       // Compute the position of the bib
-      computePosition(this.element.trigger, this.element.bib, {
-        strategy: this.element.floaterConfig?.strategy || "fixed",
-        placement: this.element.floaterConfig?.placement,
+      computePosition(element.trigger, element.bib, {
+        strategy: element.floaterConfig?.strategy || "fixed",
+        placement: element.floaterConfig?.placement,
         middleware: middleware || [],
       }).then(({ x, y }) => {
         // eslint-disable-line id-length
-        Object.assign(this.element.bib.style, {
+        const currentElement = this.element;
+        if (!currentElement?.bib) {
+          return;
+        }
+
+        Object.assign(currentElement.bib.style, {
           left: `${x}px`,
           top: `${y}px`,
         });
       });
     } else if (strategy === "cover") {
+      if (!element.parentNode || !element.bib) {
+        return;
+      }
+
       // Compute the position of the bib
-      computePosition(this.element.parentNode, this.element.bib, {
+      computePosition(element.parentNode, element.bib, {
         placement: "bottom-start",
       }).then(({ x, y }) => {
         // eslint-disable-line id-length
-        Object.assign(this.element.bib.style, {
+        const currentElement = this.element;
+        if (!currentElement?.bib || !currentElement.parentNode) {
+          return;
+        }
+
+        Object.assign(currentElement.bib.style, {
           left: `${x}px`,
-          top: `${y - this.element.parentNode.offsetHeight}px`,
-          width: `${this.element.parentNode.offsetWidth}px`,
-          height: `${this.element.parentNode.offsetHeight}px`,
+          top: `${y - currentElement.parentNode.offsetHeight}px`,
+          width: `${currentElement.parentNode.offsetWidth}px`,
+          height: `${currentElement.parentNode.offsetHeight}px`,
         });
       });
     }
@@ -226,11 +262,17 @@ export default class AuroFloatingUI {
    * @param {Boolean} lock - If true, locks the body's scrolling functionlity; otherwise, unlock.
    */
   lockScroll(lock = true) {
+    const element = this.element;
+
     if (lock) {
+      if (!element?.bib) {
+        return;
+      }
+
       document.body.style.overflow = "hidden"; // hide body's scrollbar
 
       // Move `bib` by the amount the viewport is shifted to stay aligned in fullscreen.
-      this.element.bib.style.transform = `translateY(${window?.visualViewport?.offsetTop}px)`;
+      element.bib.style.transform = `translateY(${window?.visualViewport?.offsetTop}px)`;
     } else {
       document.body.style.overflow = "";
     }
@@ -246,20 +288,24 @@ export default class AuroFloatingUI {
    * @param {string} strategy - The positioning strategy ('fullscreen' or 'floating').
    */
   configureBibStrategy(value) {
+    const element = this.element;
+    if (!element?.bib) {
+      return;
+    }
+
     if (value === "fullscreen") {
-      this.element.isBibFullscreen = true;
+      element.isBibFullscreen = true;
       // reset the prev position
-      this.element.bib.setAttribute("isfullscreen", "");
-      this.element.bib.style.position = "fixed";
-      this.element.bib.style.top = "0px";
-      this.element.bib.style.left = "0px";
-      this.element.bib.style.width = "";
-      this.element.bib.style.height = "";
-      this.element.style.contain = "";
+      element.bib.setAttribute("isfullscreen", "");
+      element.bib.style.position = "fixed";
+      element.bib.style.top = "0px";
+      element.bib.style.left = "0px";
+      element.bib.style.width = "";
+      element.bib.style.height = "";
+      element.style.contain = "";
 
       // reset the size that was mirroring `size` css-part
-      const bibContent =
-        this.element.bib.shadowRoot.querySelector(".container");
+      const bibContent = element.bib.shadowRoot?.querySelector(".container");
       if (bibContent) {
         bibContent.style.width = "";
         bibContent.style.height = "";
@@ -274,14 +320,14 @@ export default class AuroFloatingUI {
         }, 0);
       }
 
-      if (this.element.isPopoverVisible) {
+      if (element.isPopoverVisible) {
         this.lockScroll(true);
       }
     } else {
-      this.element.bib.style.position = "";
-      this.element.bib.removeAttribute("isfullscreen");
-      this.element.isBibFullscreen = false;
-      this.element.style.contain = "layout";
+      element.bib.style.position = "";
+      element.bib.removeAttribute("isfullscreen");
+      element.isBibFullscreen = false;
+      element.style.contain = "layout";
     }
 
     const isChanged = this.strategy && this.strategy !== value;
@@ -299,16 +345,21 @@ export default class AuroFloatingUI {
         },
       );
 
-      this.element.dispatchEvent(event);
+      element.dispatchEvent(event);
     }
   }
 
   updateState() {
-    const isVisible = this.element.isPopoverVisible;
+    const element = this.element;
+    if (!element) {
+      return;
+    }
+
+    const isVisible = element.isPopoverVisible;
     if (!isVisible) {
       this.cleanupHideHandlers();
       try {
-        this.element.cleanup?.();
+        element.cleanup?.();
       } catch (error) {
         // Do nothing
       }
@@ -324,28 +375,30 @@ export default class AuroFloatingUI {
    * If not, and if the bib isn't in fullscreen mode with focus lost, it hides the bib.
    */
   handleFocusLoss() {
+    const element = this.element;
+    if (!element?.bib) {
+      return;
+    }
+
     // if mouse is being pressed, skip and let click event to handle the action
     if (AuroFloatingUI.isMousePressed) {
       return;
     }
 
     if (
-      this.element.noHideOnThisFocusLoss ||
-      this.element.hasAttribute("noHideOnThisFocusLoss")
+      element.noHideOnThisFocusLoss ||
+      element.hasAttribute("noHideOnThisFocusLoss")
     ) {
       return;
     }
 
     // if focus is still inside of trigger or bib, do not close
-    if (
-      this.element.matches(":focus") ||
-      this.element.matches(":focus-within")
-    ) {
+    if (element.matches(":focus") || element.matches(":focus-within")) {
       return;
     }
 
     // if fullscreen bib is in fullscreen mode, do not close
-    if (this.element.bib.hasAttribute("isfullscreen")) {
+    if (element.bib.hasAttribute("isfullscreen")) {
       return;
     }
 
@@ -353,23 +406,32 @@ export default class AuroFloatingUI {
   }
 
   setupHideHandlers() {
+    if (!this.element) {
+      return;
+    }
+
     // Define handlers & store references
     this.focusHandler = () => this.handleFocusLoss();
 
     this.clickHandler = (evt) => {
+      const element = this.element;
+      if (!element?.bib) {
+        return;
+      }
+
       // When the bib is fullscreen (modal dialog), don't close on outside
       // clicks. VoiceOver's synthetic click events inside a top-layer modal
       // <dialog> may not include the bib in composedPath(), causing false
       // positives. This mirrors the fullscreen guard in handleFocusLoss().
-      if (this.element.bib && this.element.bib.hasAttribute("isfullscreen")) {
+      if (element.bib.hasAttribute("isfullscreen")) {
         return;
       }
 
       if (
-        (!evt.composedPath().includes(this.element.trigger) &&
-          !evt.composedPath().includes(this.element.bib)) ||
-        (this.element.bib.backdrop &&
-          evt.composedPath().includes(this.element.bib.backdrop))
+        (!evt.composedPath().includes(element.trigger) &&
+          !evt.composedPath().includes(element.bib)) ||
+        (element.bib.backdrop &&
+          evt.composedPath().includes(element.bib.backdrop))
       ) {
         const existedVisibleFloatingUI =
           document.expandedAuroFormkitDropdown || document.expandedAuroFloater;
@@ -390,7 +452,12 @@ export default class AuroFloatingUI {
 
     // ESC key handler
     this.keyDownHandler = (evt) => {
-      if (evt.key === "Escape" && this.element.isPopoverVisible) {
+      const element = this.element;
+      if (!element) {
+        return;
+      }
+
+      if (evt.key === "Escape" && element.isPopoverVisible) {
         const existedVisibleFloatingUI =
           document.expandedAuroFormkitDropdown || document.expandedAuroFloater;
         if (
@@ -447,6 +514,10 @@ export default class AuroFloatingUI {
   }
 
   updateCurrentExpandedDropdown() {
+    if (!this.element) {
+      return;
+    }
+
     // Close any other dropdown that is already open
     const existedVisibleFloatingUI =
       document.expandedAuroFormkitDropdown || document.expandedAuroFloater;
@@ -463,25 +534,34 @@ export default class AuroFloatingUI {
   }
 
   showBib() {
-    if (!this.element.disabled && !this.showing) {
+    const element = this.element;
+    if (!element) {
+      return;
+    }
+
+    if (!element.disabled && !this.showing) {
       this.updateCurrentExpandedDropdown();
-      this.element.triggerChevron?.setAttribute("data-expanded", true);
+      element.triggerChevron?.setAttribute("data-expanded", true);
 
       // prevent double showing: isPopovervisible gets first and showBib gets called later
       if (!this.showing) {
-        if (!this.element.modal) {
+        if (!element.modal) {
           this.setupHideHandlers();
         }
         this.showing = true;
-        this.element.isPopoverVisible = true;
+        element.isPopoverVisible = true;
         this.position();
         this.dispatchEventDropdownToggle();
       }
 
+      if (!element.bib || (!element.trigger && !element.parentNode)) {
+        return;
+      }
+
       // Setup auto update to handle resize and scroll
-      this.element.cleanup = autoUpdate(
-        this.element.trigger || this.element.parentNode,
-        this.element.bib,
+      element.cleanup = autoUpdate(
+        element.trigger || element.parentNode,
+        element.bib,
         () => {
           this.position();
         },
@@ -494,22 +574,27 @@ export default class AuroFloatingUI {
    * @param {String} eventType - The event type that triggered the hiding action.
    */
   hideBib(eventType = "unknown") {
-    if (this.element.disabled) {
+    const element = this.element;
+    if (!element) {
+      return;
+    }
+
+    if (element.disabled) {
       return;
     }
 
     // noToggle dropdowns should not close when the trigger is clicked (the
     // "toggle" behavior), but they CAN still close via other interactions like
     // Escape key or focus loss.
-    if (this.element.noToggle && eventType === "click") {
+    if (element.noToggle && eventType === "click") {
       return;
     }
 
     this.lockScroll(false);
-    this.element.triggerChevron?.removeAttribute("data-expanded");
+    element.triggerChevron?.removeAttribute("data-expanded");
 
-    if (this.element.isPopoverVisible) {
-      this.element.isPopoverVisible = false;
+    if (element.isPopoverVisible) {
+      element.isPopoverVisible = false;
     }
     if (this.showing) {
       this.cleanupHideHandlers();
@@ -529,6 +614,11 @@ export default class AuroFloatingUI {
    * @param {String} eventType - The event type that triggered the toggle action.
    */
   dispatchEventDropdownToggle(eventType) {
+    const element = this.element;
+    if (!element) {
+      return;
+    }
+
     const event = new CustomEvent(
       this.eventPrefix ? `${this.eventPrefix}-toggled` : "toggled",
       {
@@ -540,11 +630,16 @@ export default class AuroFloatingUI {
       },
     );
 
-    this.element.dispatchEvent(event);
+    element.dispatchEvent(event);
   }
 
   handleClick() {
-    if (this.element.isPopoverVisible) {
+    const element = this.element;
+    if (!element) {
+      return;
+    }
+
+    if (element.isPopoverVisible) {
       this.hideBib("click");
     } else {
       this.showBib();
@@ -555,64 +650,67 @@ export default class AuroFloatingUI {
       {
         composed: true,
         detail: {
-          expanded: this.element.isPopoverVisible,
+          expanded: element.isPopoverVisible,
         },
       },
     );
 
-    this.element.dispatchEvent(event);
+    element.dispatchEvent(event);
   }
 
   handleEvent(event) {
-    if (!this.element.disableEventShow) {
-      switch (event.type) {
-        case "keydown": {
-          // Support both Enter and Space keys for accessibility
-          // Space is included as it's expected behavior for interactive elements
+    const element = this.element;
+    if (!element || element.disableEventShow) {
+      return;
+    }
 
-          const origin = event.composedPath()[0];
-          if (
-            event.key === "Enter" ||
-            (event.key === " " && (!origin || origin.tagName !== "INPUT"))
-          ) {
-            event.preventDefault();
-            this.handleClick();
-          }
-          break;
-        }
-        case "mouseenter":
-          if (this.element.hoverToggle) {
-            this.showBib();
-          }
-          break;
-        case "mouseleave":
-          if (this.element.hoverToggle) {
-            this.hideBib("mouseleave");
-          }
-          break;
-        case "focus":
-          if (this.element.focusShow) {
-            /*
-              This needs to better handle clicking that gives focus -
-              currently it shows and then immediately hides the bib
-            */
-            this.showBib();
-          }
-          break;
-        case "blur":
-          // send this task 100ms later queue to
-          // wait a frame in case focus moves within the floating element/bib
-          setTimeout(() => this.handleFocusLoss(), 0);
-          break;
-        case "click":
-          if (document.activeElement === document.body) {
-            event.currentTarget.focus();
-          }
+    switch (event.type) {
+      case "keydown": {
+        // Support both Enter and Space keys for accessibility
+        // Space is included as it's expected behavior for interactive elements
+
+        const origin = event.composedPath()[0];
+        if (
+          event.key === "Enter" ||
+          (event.key === " " && (!origin || origin.tagName !== "INPUT"))
+        ) {
+          event.preventDefault();
           this.handleClick();
-          break;
-        default:
-        // Do nothing
+        }
+        break;
       }
+      case "mouseenter":
+        if (element.hoverToggle) {
+          this.showBib();
+        }
+        break;
+      case "mouseleave":
+        if (element.hoverToggle) {
+          this.hideBib("mouseleave");
+        }
+        break;
+      case "focus":
+        if (element.focusShow) {
+          /*
+            This needs to better handle clicking that gives focus -
+            currently it shows and then immediately hides the bib
+          */
+          this.showBib();
+        }
+        break;
+      case "blur":
+        // send this task 100ms later queue to
+        // wait a frame in case focus moves within the floating element/bib
+        setTimeout(() => this.handleFocusLoss(), 0);
+        break;
+      case "click":
+        if (document.activeElement === document.body) {
+          event.currentTarget.focus();
+        }
+        this.handleClick();
+        break;
+      default:
+      // Do nothing
     }
   }
 
@@ -623,6 +721,11 @@ export default class AuroFloatingUI {
    * This prevents the component itself from being focusable when the trigger element already handles focus.
    */
   handleTriggerTabIndex() {
+    const element = this.element;
+    if (!element) {
+      return;
+    }
+
     const focusableElementSelectors = [
       "a",
       "button",
@@ -635,7 +738,7 @@ export default class AuroFloatingUI {
       "auro-hyperlink",
     ];
 
-    const triggerNode = this.element.querySelectorAll('[slot="trigger"]')[0];
+    const triggerNode = element.querySelectorAll('[slot="trigger"]')[0];
     if (!triggerNode) {
       return;
     }
@@ -644,13 +747,13 @@ export default class AuroFloatingUI {
     focusableElementSelectors.forEach((selector) => {
       // Check if the trigger node element is focusable
       if (triggerNodeTagName === selector) {
-        this.element.tabIndex = -1;
+        element.tabIndex = -1;
         return;
       }
 
       // Check if any child is focusable
       if (triggerNode.querySelector(selector)) {
-        this.element.tabIndex = -1;
+        element.tabIndex = -1;
       }
     });
   }
@@ -660,13 +763,18 @@ export default class AuroFloatingUI {
    * @param {*} eventPrefix
    */
   regenerateBibId() {
-    this.id = this.element.getAttribute("id");
-    if (!this.id) {
-      this.id = window.crypto.randomUUID();
-      this.element.setAttribute("id", this.id);
+    const element = this.element;
+    if (!element) {
+      return;
     }
 
-    this.element.bib.setAttribute("id", `${this.id}-floater-bib`);
+    this.id = element.getAttribute("id");
+    if (!this.id) {
+      this.id = window.crypto.randomUUID();
+      element.setAttribute("id", this.id);
+    }
+
+    element.bib?.setAttribute("id", `${this.id}-floater-bib`);
   }
 
   configure(elem, eventPrefix, enableKeyboardHandling = true) {
@@ -678,67 +786,69 @@ export default class AuroFloatingUI {
       this.element = elem;
     }
 
-    if (this.behavior !== this.element.behavior) {
-      this.behavior = this.element.behavior;
+    const element = this.element;
+    if (!element) {
+      return;
     }
 
-    if (this.element.trigger) {
+    if (this.behavior !== element.behavior) {
+      this.behavior = element.behavior;
+    }
+
+    if (element.trigger) {
       this.disconnect();
     }
-    this.element.trigger =
-      this.element.triggerElement ||
-      this.element.shadowRoot.querySelector("#trigger") ||
-      this.element.trigger;
-    this.element.bib =
-      this.element.shadowRoot.querySelector("#bib") || this.element.bib;
-    this.element.bibSizer = this.element.shadowRoot.querySelector("#bibSizer");
-    this.element.triggerChevron =
-      this.element.shadowRoot.querySelector("#showStateIcon");
+    element.trigger =
+      element.triggerElement ||
+      element.shadowRoot?.querySelector("#trigger") ||
+      element.trigger;
+    element.bib = element.shadowRoot?.querySelector("#bib") || element.bib;
+    element.bibSizer = element.shadowRoot?.querySelector("#bibSizer");
+    element.triggerChevron =
+      element.shadowRoot?.querySelector("#showStateIcon");
 
-    if (this.element.floaterConfig) {
-      this.element.hoverToggle = this.element.floaterConfig.hoverToggle;
+    if (element.floaterConfig) {
+      element.hoverToggle = element.floaterConfig.hoverToggle;
     }
 
     this.regenerateBibId();
     this.handleTriggerTabIndex();
 
     this.handleEvent = this.handleEvent.bind(this);
-    if (this.element.trigger) {
+    if (element.trigger) {
       if (this.enableKeyboardHandling) {
-        this.element.trigger.addEventListener("keydown", this.handleEvent);
+        element.trigger.addEventListener("keydown", this.handleEvent);
       }
-      this.element.trigger.addEventListener("click", this.handleEvent);
-      this.element.trigger.addEventListener("mouseenter", this.handleEvent);
-      this.element.trigger.addEventListener("mouseleave", this.handleEvent);
-      this.element.trigger.addEventListener("focus", this.handleEvent);
-      this.element.trigger.addEventListener("blur", this.handleEvent);
+      element.trigger.addEventListener("click", this.handleEvent);
+      element.trigger.addEventListener("mouseenter", this.handleEvent);
+      element.trigger.addEventListener("mouseleave", this.handleEvent);
+      element.trigger.addEventListener("focus", this.handleEvent);
+      element.trigger.addEventListener("blur", this.handleEvent);
     }
   }
 
   disconnect() {
     this.cleanupHideHandlers();
-    if (this.element) {
-      this.element.cleanup?.();
 
-      if (this.element.bib) {
-        this.element.shadowRoot.append(this.element.bib);
-      }
+    const element = this.element;
+    if (!element) {
+      return;
+    }
 
-      // Remove event & keyboard listeners
-      if (this.element?.trigger) {
-        this.element.trigger.removeEventListener("keydown", this.handleEvent);
-        this.element.trigger.removeEventListener("click", this.handleEvent);
-        this.element.trigger.removeEventListener(
-          "mouseenter",
-          this.handleEvent,
-        );
-        this.element.trigger.removeEventListener(
-          "mouseleave",
-          this.handleEvent,
-        );
-        this.element.trigger.removeEventListener("focus", this.handleEvent);
-        this.element.trigger.removeEventListener("blur", this.handleEvent);
-      }
+    element.cleanup?.();
+
+    if (element.bib && element.shadowRoot) {
+      element.shadowRoot.append(element.bib);
+    }
+
+    // Remove event & keyboard listeners
+    if (element.trigger) {
+      element.trigger.removeEventListener("keydown", this.handleEvent);
+      element.trigger.removeEventListener("click", this.handleEvent);
+      element.trigger.removeEventListener("mouseenter", this.handleEvent);
+      element.trigger.removeEventListener("mouseleave", this.handleEvent);
+      element.trigger.removeEventListener("focus", this.handleEvent);
+      element.trigger.removeEventListener("blur", this.handleEvent);
     }
   }
 }
