@@ -144,7 +144,7 @@ export default class AuroFloatingUI {
   getPositioningStrategy() {
     const element = this.element;
     if (!element) {
-      return;
+      return "floating";
     }
 
     const breakpoint =
@@ -540,6 +540,10 @@ export default class AuroFloatingUI {
       return;
     }
 
+    if (!element.bib || (!element.trigger && !element.parentNode)) {
+      return;
+    }
+
     if (!element.disabled && !this.showing) {
       this.updateCurrentExpandedDropdown();
       element.triggerChevron?.setAttribute("data-expanded", true);
@@ -553,10 +557,6 @@ export default class AuroFloatingUI {
         element.isPopoverVisible = true;
         this.position();
         this.dispatchEventDropdownToggle();
-      }
-
-      if (!element.bib || (!element.trigger && !element.parentNode)) {
-        return;
       }
 
       // Setup auto update to handle resize and scroll

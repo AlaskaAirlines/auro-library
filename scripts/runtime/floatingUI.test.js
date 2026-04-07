@@ -112,4 +112,21 @@ describe("AuroFloatingUI", () => {
     expect(() => floatingUI.configureBibStrategy("floating")).to.not.throw();
     expect(() => floatingUI.position()).to.not.throw();
   });
+
+  it("does not enter a visible state when required DOM nodes are missing", () => {
+    host.bib = null;
+    host.isPopoverVisible = false;
+
+    floatingUI.showBib();
+
+    expect(floatingUI.showing).to.equal(false);
+    expect(host.isPopoverVisible).to.equal(false);
+    expect(document.expandedAuroFloater).to.not.equal(floatingUI);
+  });
+
+  it("returns an explicit positioning strategy when element is not set", () => {
+    floatingUI.element = null;
+
+    expect(floatingUI.getPositioningStrategy()).to.equal("floating");
+  });
 });
