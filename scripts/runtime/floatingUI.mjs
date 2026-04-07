@@ -144,7 +144,7 @@ export default class AuroFloatingUI {
   getPositioningStrategy() {
     const element = this.element;
     if (!element) {
-      return this.behavior || "floating";
+      return;
     }
 
     const breakpoint =
@@ -406,7 +406,8 @@ export default class AuroFloatingUI {
   }
 
   setupHideHandlers() {
-    if (!this.element) {
+    const element = this.element;
+    if (!element) {
       return;
     }
 
