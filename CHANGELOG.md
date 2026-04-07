@@ -1,5 +1,14 @@
 # Semantic Release Automated Changelog
 
+## [5.12.1](https://github.com/AlaskaAirlines/auro-library/compare/v5.12.0...v5.12.1) (2026-04-07)
+
+
+### Bug Fixes
+
+* guard element access and add null-element safety test ([efd5f8d](https://github.com/AlaskaAirlines/auro-library/commit/efd5f8d978c18341d49a6908600dca0a5f94bfda))
+* normalize null-element guards in getPositioningStrategy and setupHideHandlers ([d02617c](https://github.com/AlaskaAirlines/auro-library/commit/d02617c05998030f7c0ed15a8d207b3176191c58))
+* tighten floatingUI null guard behavior ([e194e61](https://github.com/AlaskaAirlines/auro-library/commit/e194e61439ac9c49170c5145b75917fb301b9495))
+
 # [5.12.0](https://github.com/AlaskaAirlines/auro-library/compare/v5.11.3...v5.12.0) (2026-04-01)
 
 
