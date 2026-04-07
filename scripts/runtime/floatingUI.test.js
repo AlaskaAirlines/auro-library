@@ -99,4 +99,17 @@ describe("AuroFloatingUI", () => {
     expect(checkedSelectors).to.deep.equal([":focus", ":focus-within"]);
     expect(hideBibSpy.calledOnceWithExactly("keydown")).to.be.true;
   });
+
+  it("no-ops safely when element is not set", () => {
+    floatingUI.element = null;
+
+    expect(() => floatingUI.showBib()).to.not.throw();
+    expect(() => floatingUI.hideBib()).to.not.throw();
+    expect(() => floatingUI.handleClick()).to.not.throw();
+    expect(() => floatingUI.handleEvent(new Event("click"))).to.not.throw();
+    expect(() => floatingUI.handleFocusLoss()).to.not.throw();
+    expect(() => floatingUI.updateState()).to.not.throw();
+    expect(() => floatingUI.configureBibStrategy("floating")).to.not.throw();
+    expect(() => floatingUI.position()).to.not.throw();
+  });
 });
