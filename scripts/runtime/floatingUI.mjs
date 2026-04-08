@@ -70,6 +70,7 @@ export default class AuroFloatingUI {
     this.focusHandler = null;
     this.clickHandler = null;
     this.keyDownHandler = null;
+    this.touchHandler = null;
 
     /**
      * @private
@@ -487,6 +488,28 @@ export default class AuroFloatingUI {
     setTimeout(() => {
       window.addEventListener("click", this.clickHandler);
     }, 0);
+
+    // iOS Safari does not fire `click` on non-interactive elements, so
+    // tapping an inert backdrop never reaches the click handler above.
+    // Mirror the same outside-tap logic with a passive touchstart listener.
+    this.touchHandler = (evt) => {
+      const element = this.element;
+      if (!element?.bib) {
+        return;
+      }
+
+      // fullscreen (modal) dialog handles its own dismissal
+      if (element.bib.hasAttribute("isfullscreen")) {
+        return;
+      }
+
+      const path = evt.composedPath();
+      if (!path.includes(element.trigger) && !path.includes(element.bib)) {
+        this.hideBib("click");
+      }
+    };
+
+    window.addEventListener("touchstart", this.touchHandler, { passive: true });
   }
 
   cleanupHideHandlers() {
@@ -500,6 +523,11 @@ export default class AuroFloatingUI {
     if (this.clickHandler) {
       window.removeEventListener("click", this.clickHandler);
       this.clickHandler = null;
+    }
+
+    if (this.touchHandler) {
+      window.removeEventListener("touchstart", this.touchHandler);
+      this.touchHandler = null;
     }
 
     if (this.keyDownHandler) {
