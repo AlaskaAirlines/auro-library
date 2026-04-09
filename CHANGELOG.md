@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [5.12.2](https://github.com/AlaskaAirlines/auro-library/compare/v5.12.1...v5.12.2) (2026-04-09)
+
+
+### Performance Improvements
+
+* add touch handler to floatingUI ([c89a29c](https://github.com/AlaskaAirlines/auro-library/commit/c89a29c5d9ce5945f52ee3e00f79a648e5da6ca7))
+
 ## [5.12.1](https://github.com/AlaskaAirlines/auro-library/compare/v5.12.0...v5.12.1) (2026-04-07)
 
 
