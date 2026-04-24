@@ -156,17 +156,20 @@ export default class AuroFloatingUI {
         return "floating";
       case "dialog":
       case "drawer":
+        if (this.element.nested) {
+          return "cover";
+        }
         if (breakpoint) {
           const smallerThanBreakpoint = window.matchMedia(
             `(max-width: ${breakpoint})`,
           ).matches;
 
-          element.expanded = smallerThanBreakpoint;
+          this.element.expanded = smallerThanBreakpoint;
+          return smallerThanBreakpoint || this.element.modal
+            ? "fullscreen"
+            : "dialog";
         }
-        if (element.nested) {
-          return "cover";
-        }
-        return "fullscreen";
+        return "dialog";
       case "dropdown":
       case undefined:
       case null:
@@ -263,19 +266,69 @@ export default class AuroFloatingUI {
    * @param {Boolean} lock - If true, locks the body's scrolling functionlity; otherwise, unlock.
    */
   lockScroll(lock = true) {
-    const element = this.element;
-
     if (lock) {
-      if (!element?.bib) {
+      if (!this._scrollLocked) {
+        this._scrollLocked = true;
+        this._savedScrollStyles = {
+          rootScrollbarGutter: document.documentElement.style.scrollbarGutter,
+          rootOverflow: document.documentElement.style.overflow,
+          bodyOverflow: document.body.style.overflow,
+        };
+        document.documentElement.style.scrollbarGutter = 'stable';
+        document.documentElement.style.overflow = 'hidden';
+        document.body.style.overflow = "hidden";
+
+        // Move `bib` by the amount the viewport is shifted to stay aligned in fullscreen.
+        if (this.element.bib) {
+          this.element.bib.style.transform = `translateY(${window?.visualViewport?.offsetTop}px)`;
+        }
+
+        this.lockTouchScroll(true);
+      }
+    } else {
+      if (this._scrollLocked) {
+        document.documentElement.style.scrollbarGutter = this._savedScrollStyles?.rootScrollbarGutter ?? '';
+        document.documentElement.style.overflow = this._savedScrollStyles?.rootOverflow ?? '';
+        document.body.style.overflow = this._savedScrollStyles?.bodyOverflow ?? "";
+        this._savedScrollStyles = undefined;
+        this._scrollLocked = false;
+
+        this.lockTouchScroll(false);
+      }
+    }
+  }
+
+  /**
+   * Locks page-level touch scroll while the drawer is open.
+   * Walks composedPath() so scrollable children inside the dialog still scroll.
+   * @private
+   */
+  lockTouchScroll(lock = true) {
+    if (lock) {
+      if (this._boundTouchMoveHandler) {
         return;
       }
-
-      document.body.style.overflow = "hidden"; // hide body's scrollbar
-
-      // Move `bib` by the amount the viewport is shifted to stay aligned in fullscreen.
-      element.bib.style.transform = `translateY(${window?.visualViewport?.offsetTop}px)`;
-    } else {
-      document.body.style.overflow = "";
+      this._boundTouchMoveHandler = (e) => {
+        const path = e.composedPath();
+        const insideScrollable = path.some(
+          (el) =>
+            el !== document &&
+            el !== document.documentElement &&
+            el !== document.body &&
+            el.scrollHeight > el.clientHeight,
+        );
+        if (!insideScrollable) {
+          e.preventDefault();
+        }
+      };
+      document.addEventListener("touchmove", this._boundTouchMoveHandler, {
+        passive: false,
+      });
+    } else if (this._boundTouchMoveHandler) {
+      document.removeEventListener("touchmove", this._boundTouchMoveHandler, {
+        passive: false,
+      });
+      this._boundTouchMoveHandler = undefined;
     }
   }
 
@@ -294,7 +347,7 @@ export default class AuroFloatingUI {
       return;
     }
 
-    if (value === "fullscreen") {
+    if (value === "fullscreen" || value === "dialog") {
       element.isBibFullscreen = true;
       // reset the prev position
       element.bib.setAttribute("isfullscreen", "");
@@ -322,7 +375,7 @@ export default class AuroFloatingUI {
       }
 
       if (element.isPopoverVisible) {
-        this.lockScroll(true);
+        this.lockScroll(value === "fullscreen");
       }
     } else {
       element.bib.style.position = "";
