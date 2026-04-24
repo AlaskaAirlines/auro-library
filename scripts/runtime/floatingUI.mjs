@@ -266,6 +266,8 @@ export default class AuroFloatingUI {
    * @param {Boolean} lock - If true, locks the body's scrolling functionlity; otherwise, unlock.
    */
   lockScroll(lock = true) {
+    const element = this.element;
+
     if (lock) {
       if (!this._scrollLocked) {
         this._scrollLocked = true;
@@ -273,23 +275,31 @@ export default class AuroFloatingUI {
           rootScrollbarGutter: document.documentElement.style.scrollbarGutter,
           rootOverflow: document.documentElement.style.overflow,
           bodyOverflow: document.body.style.overflow,
+          bibTransform: element?.bib?.style.transform,
         };
-        document.documentElement.style.scrollbarGutter = 'stable';
-        document.documentElement.style.overflow = 'hidden';
+        document.documentElement.style.scrollbarGutter = "stable";
+        document.documentElement.style.overflow = "hidden";
         document.body.style.overflow = "hidden";
 
         // Move `bib` by the amount the viewport is shifted to stay aligned in fullscreen.
-        if (this.element.bib) {
-          this.element.bib.style.transform = `translateY(${window?.visualViewport?.offsetTop}px)`;
+        if (element?.bib && window?.visualViewport?.offsetTop) {
+          element.bib.style.transform = `translateY(${window?.visualViewport?.offsetTop}px)`;
         }
 
         this.lockTouchScroll(true);
       }
     } else {
       if (this._scrollLocked) {
-        document.documentElement.style.scrollbarGutter = this._savedScrollStyles?.rootScrollbarGutter ?? '';
-        document.documentElement.style.overflow = this._savedScrollStyles?.rootOverflow ?? '';
-        document.body.style.overflow = this._savedScrollStyles?.bodyOverflow ?? "";
+        document.documentElement.style.scrollbarGutter =
+          this._savedScrollStyles?.rootScrollbarGutter ?? "";
+        document.documentElement.style.overflow =
+          this._savedScrollStyles?.rootOverflow ?? "";
+        document.body.style.overflow =
+          this._savedScrollStyles?.bodyOverflow ?? "";
+        if (element?.bib) {
+          element.bib.style.transform =
+            this._savedScrollStyles?.bibTransform ?? "";
+        }
         this._savedScrollStyles = undefined;
         this._scrollLocked = false;
 
