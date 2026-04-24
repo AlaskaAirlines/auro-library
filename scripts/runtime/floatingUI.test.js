@@ -129,4 +129,57 @@ describe("AuroFloatingUI", () => {
 
     expect(floatingUI.getPositioningStrategy()).to.equal("floating");
   });
+
+  it("restores pre-existing inline scroll styles after lock/unlock", () => {
+    document.documentElement.style.scrollbarGutter = "auto";
+    document.documentElement.style.overflow = "clip";
+    document.body.style.overflow = "scroll";
+
+    floatingUI.lockScroll(true);
+
+    expect(document.documentElement.style.scrollbarGutter).to.equal("stable");
+    expect(document.documentElement.style.overflow).to.equal("hidden");
+    expect(document.body.style.overflow).to.equal("hidden");
+
+    floatingUI.lockScroll(false);
+
+    expect(document.documentElement.style.scrollbarGutter).to.equal("auto");
+    expect(document.documentElement.style.overflow).to.equal("clip");
+    expect(document.body.style.overflow).to.equal("scroll");
+    expect(floatingUI._boundTouchMoveHandler).to.equal(undefined);
+  });
+
+  it("prevents touch scroll when gesture is outside scrollable content", () => {
+    floatingUI.lockTouchScroll(true);
+
+    const preventDefault = sinon.spy();
+    floatingUI._boundTouchMoveHandler({
+      composedPath: () => [document.body],
+      preventDefault,
+    });
+
+    expect(preventDefault.calledOnce).to.be.true;
+  });
+
+  it("allows touch scroll when gesture is inside scrollable content", () => {
+    floatingUI.lockTouchScroll(true);
+
+    const scrollable = document.createElement("div");
+    Object.defineProperty(scrollable, "scrollHeight", {
+      configurable: true,
+      value: 200,
+    });
+    Object.defineProperty(scrollable, "clientHeight", {
+      configurable: true,
+      value: 100,
+    });
+
+    const preventDefault = sinon.spy();
+    floatingUI._boundTouchMoveHandler({
+      composedPath: () => [scrollable],
+      preventDefault,
+    });
+
+    expect(preventDefault.called).to.be.false;
+  });
 });
