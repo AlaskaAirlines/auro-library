@@ -271,15 +271,25 @@ export default class AuroFloatingUI {
     if (lock) {
       if (!this._scrollLocked) {
         this._scrollLocked = true;
+        this._savedScrollY = window.scrollY;
         this._savedScrollStyles = {
           rootScrollbarGutter: document.documentElement.style.scrollbarGutter,
           rootOverflow: document.documentElement.style.overflow,
           bodyOverflow: document.body.style.overflow,
+          bodyPosition: document.body.style.position,
+          bodyTop: document.body.style.top,
+          bodyWidth: document.body.style.width,
           bibTransform: element?.bib?.style.transform,
         };
         document.documentElement.style.scrollbarGutter = "stable";
         document.documentElement.style.overflow = "hidden";
         document.body.style.overflow = "hidden";
+
+        // position:fixed is the only way to block VoiceOver three-finger swipe,
+        // which bypasses both overflow:hidden and touchmove preventDefault.
+        document.body.style.position = "fixed";
+        document.body.style.top = `-${this._savedScrollY}px`;
+        document.body.style.width = "100%";
 
         // Move `bib` by the amount the viewport is shifted to stay aligned in fullscreen.
         if (element?.bib && window?.visualViewport?.offsetTop) {
@@ -296,10 +306,16 @@ export default class AuroFloatingUI {
           this._savedScrollStyles?.rootOverflow ?? "";
         document.body.style.overflow =
           this._savedScrollStyles?.bodyOverflow ?? "";
+        document.body.style.position =
+          this._savedScrollStyles?.bodyPosition ?? "";
+        document.body.style.top = this._savedScrollStyles?.bodyTop ?? "";
+        document.body.style.width = this._savedScrollStyles?.bodyWidth ?? "";
         if (element?.bib) {
           element.bib.style.transform =
             this._savedScrollStyles?.bibTransform ?? "";
         }
+        window.scrollTo(0, this._savedScrollY || 0);
+        this._savedScrollY = undefined;
         this._savedScrollStyles = undefined;
         this._scrollLocked = false;
 
@@ -896,6 +912,10 @@ export default class AuroFloatingUI {
       element.trigger;
     element.bib = element.shadowRoot?.querySelector("#bib") || element.bib;
     element.bibSizer = element.shadowRoot?.querySelector("#bibSizer");
+    const bibContent = element.bib.shadowRoot?.querySelector(".container");
+    if (bibContent) {
+      bibContent.setAttribute("role", "application");
+    }
     element.triggerChevron =
       element.shadowRoot?.querySelector("#showStateIcon");
 

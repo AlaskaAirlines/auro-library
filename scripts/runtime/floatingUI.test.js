@@ -134,18 +134,28 @@ describe("AuroFloatingUI", () => {
     document.documentElement.style.scrollbarGutter = "auto";
     document.documentElement.style.overflow = "clip";
     document.body.style.overflow = "scroll";
+    document.body.style.position = "sticky";
+    document.body.style.top = "12px";
+    document.body.style.width = "75%";
+    const scrollToStub = sinon.stub(window, "scrollTo");
 
     floatingUI.lockScroll(true);
 
     expect(document.documentElement.style.scrollbarGutter).to.equal("stable");
     expect(document.documentElement.style.overflow).to.equal("hidden");
     expect(document.body.style.overflow).to.equal("hidden");
+    expect(document.body.style.position).to.equal("fixed");
+    expect(document.body.style.width).to.equal("100%");
 
     floatingUI.lockScroll(false);
 
     expect(document.documentElement.style.scrollbarGutter).to.equal("auto");
     expect(document.documentElement.style.overflow).to.equal("clip");
     expect(document.body.style.overflow).to.equal("scroll");
+    expect(document.body.style.position).to.equal("sticky");
+    expect(document.body.style.top).to.equal("12px");
+    expect(document.body.style.width).to.equal("75%");
+    expect(scrollToStub.calledOnceWithExactly(0, 0)).to.be.true;
     expect(floatingUI._boundTouchMoveHandler).to.equal(undefined);
   });
 
