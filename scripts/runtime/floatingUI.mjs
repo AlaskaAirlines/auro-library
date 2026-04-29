@@ -62,6 +62,34 @@ export default class AuroFloatingUI {
     }
   }
 
+  static openingQueue = [];
+
+  /**
+   * Returns the currently active floating UI instance that should be considered "on top".
+   * Prefers any globally tracked expanded dropdown or floater, falling back to the last entry in the local opening queue.
+   *
+   * This getter first checks the global document references for a visible floating UI and returns it if found.
+   * If the global reference is stale or not visible, it clears those references and instead returns the most recently opened instance from `openingQueue`, or `null` if none exist.
+   */
+  static get topOpeningFloatingUI() {
+    const existedVisibleFloatingUI =
+      document.expandedAuroFormkitDropdown || document.expandedAuroFloater;
+    if (
+      existedVisibleFloatingUI &&
+      existedVisibleFloatingUI.element.isPopoverVisible
+    ) {
+      return existedVisibleFloatingUI;
+    }
+
+    // clear existedVisibleFloatingUI in case it's not flushed well when it hidden by other reasons (e.g. noToggle + click)
+    document.expandedAuroFormkitDropdown = null;
+    document.expandedAuroFloater = null;
+
+    return AuroFloatingUI.openingQueue.length > 0
+      ? AuroFloatingUI.openingQueue[AuroFloatingUI.openingQueue.length - 1]
+      : null;
+  }
+
   constructor(element, behavior) {
     this.element = element;
     this.behavior = behavior;
@@ -156,15 +184,16 @@ export default class AuroFloatingUI {
         return "floating";
       case "dialog":
       case "drawer":
-        if (this.element.nested) {
-          return "cover";
-        }
         if (breakpoint) {
           const smallerThanBreakpoint = window.matchMedia(
             `(max-width: ${breakpoint})`,
           ).matches;
 
           this.element.expanded = smallerThanBreakpoint;
+
+          if (this.element.nested) {
+            return "cover";
+          }
           return smallerThanBreakpoint || this.element.modal
             ? "fullscreen"
             : "dialog";
@@ -267,6 +296,11 @@ export default class AuroFloatingUI {
    */
   lockScroll(lock = true) {
     const element = this.element;
+
+    if (!element?.bib) {
+      return;
+    }
+
     const dialog = (
       element.bib?.shadowRoot ||
       element.bib ||
@@ -274,7 +308,7 @@ export default class AuroFloatingUI {
     ).querySelector("dialog");
     if (dialog) {
       if (lock) {
-        dialog.setAttribute("aria-modal", "");
+        dialog.setAttribute("aria-modal", "true");
       } else {
         dialog.removeAttribute("aria-modal");
       }
@@ -337,7 +371,7 @@ export default class AuroFloatingUI {
   }
 
   /**
-   * Locks page-level touch scroll while the drawer is open.
+   * Locks page-level touch scroll while bib is open.
    * Walks composedPath() so scrollable children inside the dialog still scroll.
    * @private
    */
@@ -353,7 +387,8 @@ export default class AuroFloatingUI {
             el !== document &&
             el !== document.documentElement &&
             el !== document.body &&
-            el.scrollHeight > el.clientHeight,
+            (el.scrollHeight > el.clientHeight ||
+              el.scrollWidth > el.clientWidth),
         );
         if (!insideScrollable) {
           e.preventDefault();
@@ -687,6 +722,12 @@ export default class AuroFloatingUI {
         },
       );
     }
+
+    const idx = AuroFloatingUI.openingQueue.indexOf(this);
+    if (idx > -1) {
+      AuroFloatingUI.openingQueue.splice(idx, 1);
+    }
+    AuroFloatingUI.openingQueue.push(this);
   }
 
   /**
@@ -726,6 +767,10 @@ export default class AuroFloatingUI {
     // Clearing it when hideBib is blocked (e.g. noToggle + click) corrupts
     // the singleton state so other dropdowns can't detect this one is still open.
     document.expandedAuroFloater = null;
+    const idx = AuroFloatingUI.openingQueue.indexOf(this);
+    if (idx > -1) {
+      AuroFloatingUI.openingQueue.splice(idx, 1);
+    }
   }
 
   /**
