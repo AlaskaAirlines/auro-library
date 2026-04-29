@@ -267,6 +267,18 @@ export default class AuroFloatingUI {
    */
   lockScroll(lock = true) {
     const element = this.element;
+    const dialog = (
+      element.bib?.shadowRoot ||
+      element.bib ||
+      element
+    ).querySelector("dialog");
+    if (dialog) {
+      if (lock) {
+        dialog.setAttribute("aria-modal", "");
+      } else {
+        dialog.removeAttribute("aria-modal");
+      }
+    }
 
     if (lock) {
       if (!this._scrollLocked) {
@@ -912,10 +924,6 @@ export default class AuroFloatingUI {
       element.trigger;
     element.bib = element.shadowRoot?.querySelector("#bib") || element.bib;
     element.bibSizer = element.shadowRoot?.querySelector("#bibSizer");
-    const bibContent = element.bib.shadowRoot?.querySelector(".container");
-    if (bibContent) {
-      bibContent.setAttribute("role", "application");
-    }
     element.triggerChevron =
       element.shadowRoot?.querySelector("#showStateIcon");
 
