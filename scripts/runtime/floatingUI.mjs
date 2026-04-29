@@ -70,6 +70,8 @@ export default class AuroFloatingUI {
    *
    * This getter first checks the global document references for a visible floating UI and returns it if found.
    * If the global reference is stale or not visible, it clears those references and instead returns the most recently opened instance from `openingQueue`, or `null` if none exist.
+   *
+   * Side effect: clears stale global refs so callers don't need a separate cleanup step.
    */
   static get topOpeningFloatingUI() {
     const existedVisibleFloatingUI =
@@ -721,13 +723,13 @@ export default class AuroFloatingUI {
           this.position();
         },
       );
-    }
 
-    const idx = AuroFloatingUI.openingQueue.indexOf(this);
-    if (idx > -1) {
-      AuroFloatingUI.openingQueue.splice(idx, 1);
+      const idx = AuroFloatingUI.openingQueue.indexOf(this);
+      if (idx > -1) {
+        AuroFloatingUI.openingQueue.splice(idx, 1);
+      }
+      AuroFloatingUI.openingQueue.push(this);
     }
-    AuroFloatingUI.openingQueue.push(this);
   }
 
   /**
