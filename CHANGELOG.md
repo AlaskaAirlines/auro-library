@@ -1,5 +1,20 @@
 # Semantic Release Automated Changelog
 
+## [5.12.3](https://github.com/AlaskaAirlines/auro-library/compare/v5.12.2...v5.12.3) (2026-04-30)
+
+
+### Bug Fixes
+
+* **floatingUI:** restore bib transform ([65a236f](https://github.com/AlaskaAirlines/auro-library/commit/65a236f0419d4946b6cb194e1ea6e8af74cdf15e))
+* **floatingUI:** set `role="application"` on bib Container to lock 3finger swipe ([88fa5ca](https://github.com/AlaskaAirlines/auro-library/commit/88fa5ca6875f91a301b4a26f2d195d47b7e0192a))
+* **floatingUI:** use `aria-modal` instead of `role="application"` ([7a3dddc](https://github.com/AlaskaAirlines/auro-library/commit/7a3dddc2a42a6bc416ae5b35f0b9efc5aeb2998f))
+
+
+### Performance Improvements
+
+* **floatingUI:** add queue to main track opened floatingUI activities ([662ce52](https://github.com/AlaskaAirlines/auro-library/commit/662ce52efc0b0b74db6512f7e6b2a60d64a3ab98))
+* **floatingUI:** lock scroll for fullscreen mode ([6d425b6](https://github.com/AlaskaAirlines/auro-library/commit/6d425b64e66a2ec1519f098b5472580e29dcf6a7))
+
 ## [5.12.2](https://github.com/AlaskaAirlines/auro-library/compare/v5.12.1...v5.12.2) (2026-04-09)
 
 
