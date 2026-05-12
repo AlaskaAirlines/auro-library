@@ -41,7 +41,7 @@ export class AuroDateUtilities extends AuroDateUtilitiesBase {
      */
     this.validDateStr = (date, format) => {
       // The length we expect the date string to be
-      const dateStrLength = format.length;
+      const dateStrLength = format?.length || 0;
 
       // Guard Clause: Date and format are defined
       if (typeof date === "undefined" || typeof format === "undefined") {
