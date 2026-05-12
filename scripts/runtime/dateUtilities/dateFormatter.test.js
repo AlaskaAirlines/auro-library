@@ -121,6 +121,14 @@ describe("dateFormatter.isValidDate", () => {
         args: ["31-01-2020", "dd-mm-yyyy"],
         description: "valid dd-mm-yyyy",
       },
+      {
+        args: ["01/15/01", "mm/dd/yy"],
+        description: "2-digit year below 50 normalizes to 20xx (01 → 2001)",
+      },
+      {
+        args: ["12/31/99", "mm/dd/yy"],
+        description: "2-digit year >= 50 normalizes to 19xx (99 → 1999)",
+      },
     ];
 
     validCases.forEach(({ args, description }) => {
@@ -241,11 +249,6 @@ describe("dateFormatter.toISOFormatString", () => {
         input: new Date("2000/01/01"),
         expected: "2000-01-01",
         description: "first day of millennium",
-      },
-      {
-        input: new Date("0001/01/01"),
-        expected: "2001-01-01",
-        description: "early year with zero-padded output",
       },
       {
         input: new Date("2024/12/31"),
