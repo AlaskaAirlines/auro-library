@@ -1,6 +1,48 @@
 import { expect } from "@open-wc/testing";
 import { dateFormatter } from "./dateFormatter.mjs";
 
+describe("dateFormatter.parseDate", () => {
+  describe("null / undefined / empty input", () => {
+    it("returns undefined for null", () => {
+      expect(dateFormatter.parseDate(null)).to.be.undefined;
+    });
+
+    it("returns undefined for undefined", () => {
+      expect(dateFormatter.parseDate(undefined)).to.be.undefined;
+    });
+
+    it("returns undefined for empty string", () => {
+      expect(dateFormatter.parseDate("")).to.be.undefined;
+    });
+  });
+});
+
+describe("dateFormatter.toNorthAmericanFormat", () => {
+  it("returns the string unchanged for mm/dd/yyyy", () => {
+    expect(
+      dateFormatter.toNorthAmericanFormat("01/15/2024", "mm/dd/yyyy"),
+    ).to.equal("01/15/2024");
+  });
+
+  it("reorders dd/mm/yyyy to mm/dd/yyyy", () => {
+    expect(
+      dateFormatter.toNorthAmericanFormat("15/01/2024", "dd/mm/yyyy"),
+    ).to.equal("01/15/2024");
+  });
+
+  it("reorders yyyy-mm-dd to mm/dd/yyyy", () => {
+    expect(
+      dateFormatter.toNorthAmericanFormat("2024-01-15", "yyyy-mm-dd"),
+    ).to.equal("01/15/2024");
+  });
+
+  it("throws when the date string cannot be parsed", () => {
+    expect(() =>
+      dateFormatter.toNorthAmericanFormat(null, "dd/mm/yyyy"),
+    ).to.throw(Error);
+  });
+});
+
 describe("dateFormatter.stringToDateInstance", () => {
   describe("ISO input", () => {
     const isoCases = [
