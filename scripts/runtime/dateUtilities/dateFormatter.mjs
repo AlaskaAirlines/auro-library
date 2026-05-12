@@ -1,5 +1,5 @@
 /**
- * @description Parses a date string into its parts according to the provided format.
+ * @description Splits a date string into its parts according to the provided format. Does NOT validate that the result is a real calendar date — use `parseDate` when validation is required.
  * @param {string} dateStr - Date string to parse.
  * @param {string} format - Date format to parse.
  * @returns {{ month?: string, day?: string, year?: string }|undefined}
@@ -36,7 +36,7 @@ function getDateParts(dateStr, format) {
 
   if (valueParts.length !== formatParts.length) {
     throw new Error(
-      `AuroDatepickerUtilities | parseDate: Date string and format do not match : ${dateStr} vs ${format})`,
+      `AuroDatepickerUtilities | parseDate: Date string and format do not match : ${dateStr} vs ${format}`,
     );
   }
 
@@ -84,7 +84,7 @@ function isCalendarDate(year, month, day) {
   }
 
   const stringified = `${String(yearNumber).padStart(4, "0")}-${String(monthNumber).padStart(2, "0")}-${String(dayNumber).padStart(2, "0")}`;
-  const date = new Date(stringified.replace(/[.-]/, "/"));
+  const date = new Date(stringified.replace(/[.-]/g, "/"));
 
   return (
     !Number.isNaN(date.getTime()) && toISOFormatString(date) === stringified
@@ -92,34 +92,37 @@ function isCalendarDate(year, month, day) {
 }
 
 /**
- * @description Parses a date string into its components.
+ * @description Parses a date string into its components and validates that the result is a real calendar date. Use `getDateParts` instead when raw splitting without validation is needed (e.g. for in-progress input).
+ *
+ * Partial formats are supported: components absent from `format` default to `year → "0"`,
+ * `month → "01"`, `day → "01"` for calendar validation only. The returned object contains
+ * only the fields actually present in the format string — missing fields are never injected.
  * @param {string} dateStr - Date string to parse.
  * @param {string} format - Date format to parse.
  * @returns {{ month?: string, day?: string, year?: string }|undefined}
+ * @throws {Error} Throws when the parsed result does not represent a valid calendar date.
  */
 function parseDate(dateStr, format = "mm/dd/yyyy") {
-  const result = getDateParts(dateStr?.trim(), format);
+  if (!dateStr || !format) {
+    return undefined;
+  }
+  const result = getDateParts(dateStr.trim(), format);
 
   if (!result) {
     return undefined;
   }
 
-  if (!format.toLowerCase().includes("yy")) {
-    result.year = "0";
-  }
-  if (!format.toLowerCase().includes("mm")) {
-    result.month = "01";
-  }
-  if (!format.toLowerCase().includes("dd")) {
-    result.day = "01";
-  }
+  const lowerFormat = format.toLowerCase();
+  const year = lowerFormat.includes("yy") ? result.year : "0";
+  const month = lowerFormat.includes("mm") ? result.month : "01";
+  const day = lowerFormat.includes("dd") ? result.day : "01";
 
-  if (isCalendarDate(result.year, result.month, result.day)) {
+  if (isCalendarDate(year, month, day)) {
     return result;
   }
 
   throw new Error(
-    `AuroDatepickerUtilities | parseDate: Date string is not a valid date${JSON.stringify(result)} with format ${format}`,
+    `AuroDatepickerUtilities | parseDate: Date string is not a valid date ${JSON.stringify(result)} with format ${format}`,
   );
 }
 
@@ -180,17 +183,7 @@ function isValidDate(dateStr, format = "yyyy-mm-dd") {
   } catch (error) {
     return false;
   }
-}
-
-/**
- * Determines whether a string is in ISO date format (yyyy-mm-dd).
- * This is used to quickly identify dates that can be directly parsed as ISO strings.
- *
- * @param {string} dateStr - The value to check for ISO date formatting.
- * @returns {boolean} Returns true when the value is a non-empty string in yyyy-mm-dd format, otherwise false.
- */
-function isValidISODate(dateStr) {
-  return isValidDate(dateStr);
+  return false;
 }
 
 /**
@@ -232,7 +225,6 @@ export const dateFormatter = {
   getDateAsString,
   toNorthAmericanFormat,
   isValidDate,
-  isValidISODate,
   toISOFormatString,
   stringToDateInstance,
 };
