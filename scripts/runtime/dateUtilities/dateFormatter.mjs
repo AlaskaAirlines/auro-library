@@ -98,7 +98,7 @@ function isCalendarDate(year, month, day) {
  * @returns {{ month?: string, day?: string, year?: string }|undefined}
  */
 function parseDate(dateStr, format = "mm/dd/yyyy") {
-  const result = getDateParts(dateStr.trim(), format);
+  const result = getDateParts(dateStr?.trim(), format);
 
   if (!result) {
     return undefined;
@@ -170,7 +170,7 @@ function toNorthAmericanFormat(dateStr, format) {
  */
 function isValidDate(dateStr, format = "yyyy-mm-dd") {
   try {
-    if (typeof dateStr !== "string" || !dateStr || format.length < 8) {
+    if (typeof dateStr !== "string" || !dateStr || format?.length < 8) {
       return false;
     }
 
