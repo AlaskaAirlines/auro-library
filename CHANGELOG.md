@@ -1,5 +1,19 @@
 # Semantic Release Automated Changelog
 
+# [5.13.0](https://github.com/AlaskaAirlines/auro-library/compare/v5.12.3...v5.13.0) (2026-05-14)
+
+
+### Features
+
+* add ISO date formatting support AB[#1495381](https://github.com/AlaskaAirlines/auro-library/issues/1495381) ([006947a](https://github.com/AlaskaAirlines/auro-library/commit/006947abf0736ec8efa25fe7861d99327e459a3b))
+
+
+### Performance Improvements
+
+* **dateutil:** add null check guard ([e5187f4](https://github.com/AlaskaAirlines/auro-library/commit/e5187f45a96aeec66c286ba9ca858e5bce9b6860))
+* **dateutil:** clean up some dup logics ([bbed2ee](https://github.com/AlaskaAirlines/auro-library/commit/bbed2ee4257ff1d107505158809eaa8cc3245685))
+* refactor structure and performance ([42247a0](https://github.com/AlaskaAirlines/auro-library/commit/42247a03392c80dd29ab3447bf65b73fc461ba38))
+
 ## [5.12.3](https://github.com/AlaskaAirlines/auro-library/compare/v5.12.2...v5.12.3) (2026-04-30)
 
 
