@@ -526,6 +526,31 @@ export default class AuroFloatingUI {
       return;
     }
 
+    // Chrome-specific: during popover top-layer promotion after a click on a
+    // slotted focusable, :focus-within can briefly evaluate false while the
+    // active element is still structurally inside the trigger/bib. Fall back
+    // to a shadow-piercing ancestry walk from the deep active element before
+    // treating this as a real focus loss.
+    try {
+      let active = document.activeElement;
+      while (active && active.shadowRoot && active.shadowRoot.activeElement) {
+        active = active.shadowRoot.activeElement;
+      }
+      const targets = [element, element.trigger, element.bib].filter(Boolean);
+      let node = active;
+      while (node) {
+        if (targets.includes(node)) {
+          return;
+        }
+        node =
+          node.parentElement ||
+          (node.getRootNode && node.getRootNode().host) ||
+          null;
+      }
+    } catch (e) {
+      // Defensive: fall through to the existing close path if traversal fails.
+    }
+
     // if fullscreen bib is in fullscreen mode, do not close
     if (element.bib.hasAttribute("isfullscreen")) {
       return;
