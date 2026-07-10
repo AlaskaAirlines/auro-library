@@ -1,5 +1,13 @@
 # Semantic Release Automated Changelog
 
+## [5.13.1](https://github.com/AlaskaAirlines/auro-library/compare/v5.13.0...v5.13.1) (2026-07-10)
+
+
+### Bug Fixes
+
+* **floatingUI:** handle focus loss in Chrome during popover promotion ([511b2a0](https://github.com/AlaskaAirlines/auro-library/commit/511b2a04ffb28b421d183f1a192fea59e7082c4c))
+* **floatingUI:** update hideBib method to differentiate focus loss events ([632366f](https://github.com/AlaskaAirlines/auro-library/commit/632366f24b2aa66455c9024f0538a588e7e8f9d1))
+
 # [5.13.0](https://github.com/AlaskaAirlines/auro-library/compare/v5.12.3...v5.13.0) (2026-05-14)
 
 
