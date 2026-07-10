@@ -556,7 +556,10 @@ export default class AuroFloatingUI {
       return;
     }
 
-    this.hideBib("keydown");
+    // eventType "focusloss" distinguishes a Tab/click-driven close from an
+    // Escape keydown close. Consumers use this to decide whether to restore
+    // focus to the trigger (Escape) or let it advance naturally (Tab).
+    this.hideBib("focusloss");
   }
 
   setupHideHandlers() {
