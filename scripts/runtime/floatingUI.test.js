@@ -86,7 +86,7 @@ describe("AuroFloatingUI", () => {
     expect(hideBibSpy.called).to.be.false;
   });
 
-  it("hides with a keydown event when the host no longer has focus", () => {
+  it("hides with a focus loss event when the host no longer has focus", () => {
     const checkedSelectors = [];
 
     sinon.stub(host, "matches").callsFake((selector) => {
@@ -97,7 +97,7 @@ describe("AuroFloatingUI", () => {
     floatingUI.handleFocusLoss();
 
     expect(checkedSelectors).to.deep.equal([":focus", ":focus-within"]);
-    expect(hideBibSpy.calledOnceWithExactly("keydown")).to.be.true;
+    expect(hideBibSpy.calledOnceWithExactly("focusloss")).to.be.true;
   });
 
   it("no-ops safely when element is not set", () => {
