@@ -339,15 +339,57 @@ export default class AuroFloatingUI {
         document.body.style.top = `-${this._savedScrollY}px`;
         document.body.style.width = "100%";
 
-        // Move `bib` by the amount the viewport is shifted to stay aligned in fullscreen.
-        if (element?.bib && window?.visualViewport?.offsetTop) {
-          element.bib.style.transform = `translateY(${window?.visualViewport?.offsetTop}px)`;
+        // Keep the bib aligned with the visual viewport as the VKB opens.
+        // A one-shot offsetTop check at lock time is stale by the time the user
+        // taps an input mid-drawer — iOS then pans visualViewport upward and the
+        // bib drifts off-screen. Listen continuously so the transform tracks the pan.
+        // RAF-throttled to avoid a style recalc on every scroll tick during the
+        // keyboard animation; the pending frame is canceled on unlock so it cannot
+        // reapply a translate after bibTransform has been restored.
+        if (window.visualViewport) {
+          this._viewportRafId = undefined;
+          this._viewportHandler = () => {
+            if (this._viewportRafId !== undefined) {
+              return;
+            }
+            this._viewportRafId = requestAnimationFrame(() => {
+              this._viewportRafId = undefined;
+              if (element?.bib) {
+                element.bib.style.transform = `translateY(${window.visualViewport.offsetTop}px)`;
+              }
+            });
+          };
+          window.visualViewport.addEventListener(
+            "resize",
+            this._viewportHandler,
+          );
+          window.visualViewport.addEventListener(
+            "scroll",
+            this._viewportHandler,
+          );
+          this._viewportHandler();
         }
 
         this.lockTouchScroll(true);
       }
     } else {
       if (this._scrollLocked) {
+        if (this._viewportHandler && window.visualViewport) {
+          window.visualViewport.removeEventListener(
+            "resize",
+            this._viewportHandler,
+          );
+          window.visualViewport.removeEventListener(
+            "scroll",
+            this._viewportHandler,
+          );
+          this._viewportHandler = undefined;
+        }
+        if (this._viewportRafId !== undefined) {
+          cancelAnimationFrame(this._viewportRafId);
+          this._viewportRafId = undefined;
+        }
+
         document.documentElement.style.scrollbarGutter =
           this._savedScrollStyles?.rootScrollbarGutter ?? "";
         document.documentElement.style.overflow =
@@ -439,7 +481,7 @@ export default class AuroFloatingUI {
         bibContent.style.width = "";
         bibContent.style.height = "";
         bibContent.style.maxWidth = "";
-        bibContent.style.maxHeight = `${window?.visualViewport?.height}px`;
+        bibContent.style.maxHeight = "";
         this.configureTrial = 0;
       } else if (this.configureTrial < MAX_CONFIGURATION_COUNT) {
         this.configureTrial += 1;
