@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [5.13.2](https://github.com/AlaskaAirlines/auro-library/compare/v5.13.1...v5.13.2) (2026-07-28)
+
+
+### Bug Fixes
+
+* track visualViewport continuously during scroll lock ([631cf89](https://github.com/AlaskaAirlines/auro-library/commit/631cf89627fd4053b0ae8252736eb1db78919843))
+
 ## [5.13.1](https://github.com/AlaskaAirlines/auro-library/compare/v5.13.0...v5.13.1) (2026-07-10)
 
 
