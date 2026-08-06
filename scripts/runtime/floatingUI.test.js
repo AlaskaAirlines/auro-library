@@ -295,6 +295,85 @@ describe("AuroFloatingUI", () => {
   });
 });
 
+describe("AuroFloatingUI modal Escape suppression (AB#1613688)", () => {
+  let host;
+  let bib;
+  let floatingUI;
+  let hideBibSpy;
+
+  beforeEach(() => {
+    host = document.createElement("div");
+    bib = document.createElement("div");
+    host.bib = bib;
+    host.modal = true;
+    host.isPopoverVisible = false;
+    host.triggerChevron = document.createElement("span");
+    document.body.append(host, bib);
+
+    AuroFloatingUI.openingQueue = [];
+    document.expandedAuroFloater = null;
+
+    floatingUI = new AuroFloatingUI(host, "dialog");
+    hideBibSpy = sinon.spy(floatingUI, "hideBib");
+  });
+
+  afterEach(() => {
+    floatingUI.cleanupHideHandlers();
+    sinon.restore();
+    AuroFloatingUI.isMousePressed = false;
+    AuroFloatingUI.openingQueue = [];
+    document.expandedAuroFloater = null;
+    host?.remove();
+    bib?.remove();
+  });
+
+  it("registers a keydown handler and skips setupHideHandlers when modal=true", () => {
+    const setupHideHandlersSpy = sinon.spy(floatingUI, "setupHideHandlers");
+
+    floatingUI.showBib();
+
+    expect(setupHideHandlersSpy.called).to.be.false;
+    expect(floatingUI.keyDownHandler).to.be.a("function");
+    expect(floatingUI.showing).to.be.true;
+  });
+
+  it("does not call hideBib when Escape is pressed while modal dialog is open", () => {
+    floatingUI.showBib();
+
+    document.dispatchEvent(
+      new KeyboardEvent("keydown", {
+        key: "Escape",
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+
+    expect(hideBibSpy.called).to.be.false;
+  });
+
+  it("calls preventDefault on Escape keydown while modal dialog is open", () => {
+    floatingUI.showBib();
+
+    const escEvent = new KeyboardEvent("keydown", {
+      key: "Escape",
+      bubbles: true,
+      cancelable: true,
+    });
+    const preventDefaultSpy = sinon.spy(escEvent, "preventDefault");
+    document.dispatchEvent(escEvent);
+
+    expect(preventDefaultSpy.calledOnce).to.be.true;
+  });
+
+  it("removes the modal Escape keydown handler via cleanupHideHandlers", () => {
+    floatingUI.showBib();
+    expect(floatingUI.keyDownHandler).to.be.a("function");
+
+    floatingUI.cleanupHideHandlers();
+    expect(floatingUI.keyDownHandler).to.be.null;
+  });
+});
+
 describe("AuroFloatingUI.openingQueue and topOpeningFloatingUI", () => {
   let floatingUI1;
   let floatingUI2;

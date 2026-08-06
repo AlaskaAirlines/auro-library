@@ -778,6 +778,24 @@ export default class AuroFloatingUI {
       if (!this.showing) {
         if (!element.modal) {
           this.setupHideHandlers();
+        } else {
+          if (this.keyDownHandler) {
+            document.removeEventListener("keydown", this.keyDownHandler);
+          }
+          this.keyDownHandler = (evt) => {
+            if (evt.key === "Escape" && element.isPopoverVisible) {
+              // Intercept at keydown so CloseWatcher never sees the keystroke.
+              // Canceling `cancel` alone is insufficient — a second Esc with no
+              // intervening user activation triggers the anti-trap and fires `close`
+              // directly, bypassing any `cancel` preventDefault (AB#1613688).
+              // stopImmediatePropagation is intentional: it prevents other document
+              // keydown handlers (e.g. consumer code, auro-dialog) from also acting
+              // on Escape while the modal owns the key.
+              evt.preventDefault();
+              evt.stopImmediatePropagation();
+            }
+          };
+          document.addEventListener("keydown", this.keyDownHandler);
         }
         this.showing = true;
         element.isPopoverVisible = true;
