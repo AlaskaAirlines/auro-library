@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [5.13.3](https://github.com/AlaskaAirlines/auro-library/compare/v5.13.2...v5.13.3) (2026-08-07)
+
+
+### Bug Fixes
+
+* **floatingUI:** suppress Escape keydown for modal dialogs to prevent CloseWatcher force-close AB[#1613688](https://github.com/AlaskaAirlines/auro-library/issues/1613688) ([efd81c5](https://github.com/AlaskaAirlines/auro-library/commit/efd81c5fd96f4d02253e4ce76b4e7a2ddb8d25c7))
+
 ## [5.13.2](https://github.com/AlaskaAirlines/auro-library/compare/v5.13.1...v5.13.2) (2026-07-28)
 
 
