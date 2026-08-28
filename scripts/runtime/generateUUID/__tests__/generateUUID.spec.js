@@ -34,6 +34,16 @@ describe("generateUUID", () => {
     expect(getRandomValuesSpy).toHaveBeenCalledOnce();
   });
 
+  it("replaces a leading digit with 'a' in the getRandomValues fallback path", () => {
+    vi.spyOn(crypto, "randomUUID", "get").mockReturnValue(undefined);
+    vi.spyOn(crypto, "getRandomValues").mockImplementation((buf) => {
+      buf.fill(0x10); // first byte 0x10 → hex '1', which is a digit
+      return buf;
+    });
+
+    expect(generateUUID()).toMatch(/^[a-f]/);
+  });
+
   it("falls back to timestamp+random when both randomUUID and getRandomValues are unavailable", () => {
     vi.spyOn(crypto, "randomUUID", "get").mockReturnValue(undefined);
     vi.spyOn(crypto, "getRandomValues", "get").mockReturnValue(undefined);
