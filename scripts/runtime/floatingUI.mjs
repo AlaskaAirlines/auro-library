@@ -8,6 +8,7 @@ import {
   offset,
   shift,
 } from "@floating-ui/dom";
+import { generateUUID } from "./generateUUID/index.mjs";
 
 const MAX_CONFIGURATION_COUNT = 10;
 
@@ -1025,7 +1026,7 @@ export default class AuroFloatingUI {
 
     this.id = element.getAttribute("id");
     if (!this.id) {
-      this.id = window.crypto.randomUUID();
+      this.id = generateUUID();
       element.setAttribute("id", this.id);
     }
 
