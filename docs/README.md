@@ -38,3 +38,10 @@
 
 <!-- AURO-GENERATED-CONTENT:START (FILE:src=./../docs/partials/generateWcaComponent.md) -->
 <!-- AURO-GENERATED-CONTENT:END -->
+
+---
+
+### Deprecation Prose to CEM Field Plugin
+
+<!-- AURO-GENERATED-CONTENT:START (FILE:src=./../docs/partials/deprecatedProseToFieldPlugin.md) -->
+<!-- AURO-GENERATED-CONTENT:END -->
