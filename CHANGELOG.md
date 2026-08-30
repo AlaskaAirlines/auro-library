@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+# [5.14.0](https://github.com/AlaskaAirlines/auro-library/compare/v5.13.3...v5.14.0) (2026-08-30)
+
+
+### Features
+
+* add shared deprecatedProseToFieldPlugin CEM build utility AB[#1633054](https://github.com/AlaskaAirlines/auro-library/issues/1633054) ([0230385](https://github.com/AlaskaAirlines/auro-library/commit/0230385fb7870411e00b05b8dc18204ce70e4e2f))
+
 ## [5.13.3](https://github.com/AlaskaAirlines/auro-library/compare/v5.13.2...v5.13.3) (2026-08-07)
 
 
