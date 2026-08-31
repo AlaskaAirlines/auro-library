@@ -4,8 +4,8 @@
  * Tier 1 (secure contexts): crypto.randomUUID() — native, fully random.
  * Tier 2 (insecure contexts): crypto.getRandomValues() — available on all
  *   modern browsers regardless of secure-context status.
- * Tier 3 (last resort, no crypto API): Math.random() — lower entropy, but
- *   sufficient for element IDs where collision risk is negligible.
+ * Tier 3 (last resort, no crypto API): new Date().getTime() — lower entropy,
+ *   but sufficient for element IDs where collision risk is negligible.
  *
  * See: https://w3c.github.io/webcrypto/#dom-crypto-randomuuid (secure-context restriction)
  */
@@ -28,8 +28,10 @@ export function generateUUID() {
     const hex = Array.from(bytes).map((b) => b.toString(16).padStart(2, "0"));
     uuid = `${hex.slice(0, 4).join("")}-${hex.slice(4, 6).join("")}-${hex.slice(6, 8).join("")}-${hex.slice(8, 10).join("")}-${hex.slice(10).join("")}`;
   } else {
+    let d = new Date().getTime();
     uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
-      const r = (Math.random() * 16) | 0;
+      const r = (d % 16) | 0;
+      d = (d - r) / 16 || new Date().getTime();
       return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
     });
   }
