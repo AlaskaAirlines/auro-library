@@ -44,7 +44,7 @@ describe("generateUUID", () => {
     expect(generateUUID()).toMatch(/^[a-f]/);
   });
 
-  it("falls back to timestamp+random when both randomUUID and getRandomValues are unavailable", () => {
+  it("falls back to Date.getTime() when both randomUUID and getRandomValues are unavailable", () => {
     vi.spyOn(crypto, "randomUUID", "get").mockReturnValue(undefined);
     vi.spyOn(crypto, "getRandomValues", "get").mockReturnValue(undefined);
 
