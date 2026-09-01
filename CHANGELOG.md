@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [5.14.1](https://github.com/AlaskaAirlines/auro-library/compare/v5.14.0...v5.14.1) (2026-09-01)
+
+
+### Bug Fixes
+
+* **floatingUI:** add generateUUID helper with insecure-context fallback AB[#1602198](https://github.com/AlaskaAirlines/auro-library/issues/1602198) ([329db41](https://github.com/AlaskaAirlines/auro-library/commit/329db41a1dccec136573ae049867e697cd10e648))
+
 # [5.14.0](https://github.com/AlaskaAirlines/auro-library/compare/v5.13.3...v5.14.0) (2026-08-30)
 
 
