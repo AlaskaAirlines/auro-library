@@ -76,10 +76,11 @@ export const nonEsmComponents = ['combobox', 'datepicker', 'menu', 'pane', 'sele
 export function fromAuroComponentRoot(pathLike) {
   if (pathLike.startsWith('/')) {
     // remove the first slash
-    return path.join(auroLibraryUtils.getProjectRootPath, pathLike.slice(1))
+    // To prevent errors with markdown-magic we need to convert Windows default path (\) to  Unix (/)
+    return path.join(auroLibraryUtils.getProjectRootPath, pathLike.slice(1)).replace(/\\/g, '/')
   }
 
-  return path.join(auroLibraryUtils.getProjectRootPath, pathLike)
+  return path.join(auroLibraryUtils.getProjectRootPath, pathLike).replace(/\\/g, '/')
 }
 
 
@@ -183,12 +184,11 @@ export async function retrieveRemoteFileCopy(input) {
 
 /**
  * Run markdown magic on a file.
- * @param {string} input
  * @param {string} output
  * @param {Partial<MarkdownMagicOptions>} [extraMdMagicConfig] - extra configuration options for md magic
  * @return {Promise<void>}
  */
-export async function runMarkdownMagicOnFile(input, output, extraMdMagicConfig = {}) {
+export async function runMarkdownMagicOnFile(output, extraMdMagicConfig = {}) {
   await applyMarkdownMagic(output, {
     ...MD_MAGIC_CONFIG,
     ...extraMdMagicConfig
@@ -240,7 +240,7 @@ export async function processContentForFile(config) {
 
   // 2. If the file is a Markdown file, run markdown magic to inject contents and perform replacements
   if (output.endsWith(".md")) {
-    await runMarkdownMagicOnFile(derivedInputPath, output, mdMagicConfig);
+    await runMarkdownMagicOnFile(output, mdMagicConfig);
   }
 
   // 3a. Read the output file contents
