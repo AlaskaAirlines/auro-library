@@ -1,17 +1,23 @@
 /* eslint-disable no-console */
 
-import chalk from 'chalk';
+import { hex } from "../utils/ansiColors.mjs";
 
-console.log(chalk.hex('#ffd200')(`
+console.log(
+  hex("#ffd200")(`
 
-╭ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ──────────────────────────────╮`) + chalk.hex('#f26135')(`
+╭ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ──────────────────────────────╮`) +
+    hex("#f26135")(`
 
     Are you familiar with Auro's Definition of Done?
 
-                Please be sure to review`) + chalk.hex('#ffd200')(`
-      https://auro.alaskaair.com/definition-of-done`) + chalk.hex('#f26135')(`
+                Please be sure to review`) +
+    hex("#ffd200")(`
+      https://auro.alaskaair.com/definition-of-done`) +
+    hex("#f26135")(`
             before submitting your pull request
-             to ensure that you are compliant.`) + chalk.hex('#ffd200')(`
+             to ensure that you are compliant.`) +
+    hex("#ffd200")(`
 
 ╰─────────────────────────────── ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─╯
-`));
+`),
+);

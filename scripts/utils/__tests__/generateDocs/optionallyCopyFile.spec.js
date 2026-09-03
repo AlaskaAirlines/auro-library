@@ -1,11 +1,13 @@
 /* eslint-disable no-unused-vars */
 
-import {describe, it, beforeEach, afterAll, expect} from 'vitest';
-import {mkdir, writeFile, access, rm, readFile} from 'node:fs/promises';
+import { access, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { afterAll, beforeEach, describe, expect, it } from "vitest";
 
-import {optionallyCopyFile} from "../../sharedFileProcessorUtils.mjs";
+// Import the source, not the shim in scripts/, so the suite exercises the real
+// implementation rather than requiring a dist/ build first.
+import { optionallyCopyFile } from "../../../../src/utils/sharedFileProcessorUtils.mjs";
 
-const workingDir = './tmp/optionallyCopyFile';
+const workingDir = "./tmp/optionallyCopyFile";
 
 const mockFileData = `
 # Mock File Data
@@ -19,7 +21,7 @@ const mockFileData = `
 \`\`\`
 `;
 
-const alternateData = `#Some other MD data`;
+const alternateData = "#Some other MD data";
 
 const fileData = {
   mockInput: `${workingDir}/mockInput.md`,
@@ -39,15 +41,15 @@ async function exists(filePath) {
   }
 }
 
-describe('optionallyCopyFile', () => {
+describe("optionallyCopyFile", () => {
   beforeEach(async () => {
-    if (!await exists(workingDir)) {
+    if (!(await exists(workingDir))) {
       await mkdir(workingDir, {
-        recursive: true
+        recursive: true,
       });
     }
 
-    if (!await exists(fileData.mockInput)) {
+    if (!(await exists(fileData.mockInput))) {
       await writeFile(fileData.mockInput, mockFileData);
     }
 
@@ -62,20 +64,20 @@ describe('optionallyCopyFile', () => {
     if (await exists(workingDir)) {
       await rm(workingDir, {
         recursive: true,
-        force: true
+        force: true,
       });
     }
   });
 
-  it('should copy file even if output exists (by default)', async () => {
+  it("should copy file even if output exists (by default)", async () => {
     await optionallyCopyFile(fileData.mockInput, fileData.mockOutput);
 
     const fileContents = (await readFile(fileData.mockOutput)).toString();
     expect(fileContents).toEqual(mockFileData);
   });
 
-  describe('when passing `overwrite: false` flag', () => {
-    it('should still copy the file when file is missing', async () => {
+  describe("when passing `overwrite: false` flag", () => {
+    it("should still copy the file when file is missing", async () => {
       await rm(fileData.mockOutput);
       // Pass overwrite flag so copy doesn't get made
       await optionallyCopyFile(fileData.mockInput, fileData.mockOutput, false);
@@ -85,7 +87,7 @@ describe('optionallyCopyFile', () => {
       expect(fileContents).toEqual(mockFileData);
     });
 
-    it('should NOT copy the file when file exists', async () => {
+    it("should NOT copy the file when file exists", async () => {
       // Pass overwrite flag so copy doesn't get made
       await optionallyCopyFile(fileData.mockInput, fileData.mockOutput, false);
 
