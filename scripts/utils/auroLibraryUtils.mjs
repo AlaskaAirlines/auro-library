@@ -5,12 +5,12 @@
 
 /* eslint-disable arrow-parens, line-comment-position, no-console, no-inline-comments, no-magic-numbers, prefer-arrow-callback, require-unicode-regexp, jsdoc/require-description-complete-sentence, prefer-named-capture-group */
 
-import * as fs from 'fs';
-import * as path from 'path';
-import chalk from 'chalk';
-import { fileURLToPath } from 'url';
+import * as fs from "fs";
+import * as path from "path";
+import { fileURLToPath } from "url";
+import { hex } from "./ansiColors.mjs";
 
-import {Logger} from "./logger.mjs";
+import { Logger } from "./logger.mjs";
 
 export default class AuroLibraryUtils {
   getDirname() {
@@ -20,12 +20,15 @@ export default class AuroLibraryUtils {
   get getProjectRootPath() {
     const currentDir = this.getDirname();
 
-    if (!currentDir.includes('node_modules')) {
-      Logger.warn(`Unable to determine best project root as node_modules \nis not in the directory path.\n\nAssuming - "${currentDir}"`, true);
+    if (!currentDir.includes("node_modules")) {
+      Logger.warn(
+        `Unable to determine best project root as node_modules \nis not in the directory path.\n\nAssuming - "${currentDir}"`,
+        true,
+      );
       return currentDir;
     }
 
-    return currentDir.split('node_modules')[0];
+    return currentDir.split("node_modules")[0];
   }
 
   /**
@@ -36,7 +39,11 @@ export default class AuroLibraryUtils {
    */
   copyDirectory(srcDir, destDir, removeFiles) {
     if (!fs.existsSync(srcDir)) {
-      this.auroLogger(`Source directory ${srcDir} does not exist`, 'error', false);
+      this.auroLogger(
+        `Source directory ${srcDir} does not exist`,
+        "error",
+        false,
+      );
     } else {
       // Removes all files from directory
       if (removeFiles && fs.existsSync(destDir)) {
@@ -44,16 +51,16 @@ export default class AuroLibraryUtils {
 
         let filesRemoved = 0;
 
-        destFiles.forEach(file => {
+        destFiles.forEach((file) => {
           const filePath = path.join(destDir, file);
           fs.unlinkSync(filePath);
-          this.auroLogger(`Removed file: ${file}`, 'success', false);
+          this.auroLogger(`Removed file: ${file}`, "success", false);
 
           filesRemoved += 1;
         });
 
         if (filesRemoved > 0) {
-          this.auroLogger(`Removed ${filesRemoved} files`, 'success', false);
+          this.auroLogger(`Removed ${filesRemoved} files`, "success", false);
         }
       }
 
@@ -66,7 +73,7 @@ export default class AuroLibraryUtils {
       const files = fs.readdirSync(srcDir);
 
       // Copies over all files from source directory to destination directory
-      files.forEach(file => {
+      files.forEach((file) => {
         const sourceFilePath = path.join(srcDir, file);
         const destFilePath = path.join(destDir, file);
 
@@ -77,11 +84,11 @@ export default class AuroLibraryUtils {
         } else {
           fs.copyFileSync(sourceFilePath, destFilePath);
 
-          fs.readFile(destFilePath, 'utf8', (err, data) => {
+          fs.readFile(destFilePath, "utf8", (err, data) => {
             this.formatFileContents(data, destFilePath);
           });
 
-          this.auroLogger(`Copied file: ${file}`, 'success');
+          this.auroLogger(`Copied file: ${file}`, "success");
         }
       });
     }
@@ -95,38 +102,50 @@ export default class AuroLibraryUtils {
    */
   auroLogger(message, status, section) {
     if (status) {
-      const infoColor = '#0096FF'; // blue
-      const successColor = '#4CBB17'; // green
-      const errorColor = '#ff0000'; // red
+      const infoColor = "#0096FF"; // blue
+      const successColor = "#4CBB17"; // green
+      const errorColor = "#ff0000"; // red
 
-      let color = undefined; // eslint-disable-line no-undef-init
+      let color; // eslint-disable-line no-undef-init
 
-      if (status === 'info') {
+      if (status === "info") {
         color = infoColor;
-      } else if (status === 'success') {
+      } else if (status === "success") {
         color = successColor;
-      } else if (status === 'error') {
+      } else if (status === "error") {
         color = errorColor;
       }
 
       if (section) {
-        console.log(chalk.hex(color)(`╭ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ──────────────────────────────╮\n`));
+        console.log(
+          hex(color)(
+            "╭ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ──────────────────────────────╮\n",
+          ),
+        );
       }
 
-      console.log(chalk.hex(color)(message));
+      console.log(hex(color)(message));
 
       if (section) {
-        console.log(chalk.hex(color)('\n╰─────────────────────────────── ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─╯'));
+        console.log(
+          hex(color)(
+            "\n╰─────────────────────────────── ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─╯",
+          ),
+        );
       }
     } else {
       if (section) {
-        console.log(`╭ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ──────────────────────────────╮\n`);
+        console.log(
+          "╭ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ──────────────────────────────╮\n",
+        );
       }
 
       console.log(message);
 
       if (section) {
-        console.log(`\n╰─────────────────────────────── ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─╯`);
+        console.log(
+          "\n╰─────────────────────────────── ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─╯",
+        );
       }
     }
   }
@@ -136,31 +155,40 @@ export default class AuroLibraryUtils {
    * @returns {Object} result - Object containing data from package.json.
    */
   nameExtraction() {
-    let packageJson = fs.readFileSync('package.json', 'utf8', function(err) {
+    let packageJson = fs.readFileSync("package.json", "utf8", (err) => {
       if (err) {
-        console.log('ERROR: Unable to read package.json file', err);
+        console.log("ERROR: Unable to read package.json file", err);
       }
     });
 
     packageJson = JSON.parse(packageJson);
 
     const pName = packageJson.name;
-    const npmStart = pName.indexOf('@');
-    const namespaceStart = pName.indexOf('/');
-    const nameStart = pName.indexOf('-');
+    const npmStart = pName.indexOf("@");
+    const namespaceStart = pName.indexOf("/");
+    const nameStart = pName.indexOf("-");
 
     return {
-      'abstractNodeVersion': packageJson.engines.node.substring(2),
-      'branchName': packageJson.release.branch,
-      'npm': pName.substring(npmStart, namespaceStart),
-      'namespace': pName.substring(namespaceStart + 1, nameStart),
-      'namespaceCap': pName.substring(namespaceStart + 1)[0].toUpperCase() + pName.substring(namespaceStart + 2, nameStart),
-      'name': pName.substring(nameStart + 1),
-      'nameCap': pName.substring(nameStart + 1)[0].toUpperCase() + pName.substring(nameStart + 2),
-      'version': packageJson.version,
-      'tokensVersion': packageJson.peerDependencies['@aurodesignsystem/design-tokens'].substring(1),
-      'wcssVersion': packageJson.peerDependencies['@aurodesignsystem/webcorestylesheets'].substring(1)
-
+      abstractNodeVersion: packageJson.engines.node.substring(2),
+      branchName: packageJson.release.branch,
+      npm: pName.substring(npmStart, namespaceStart),
+      namespace: pName.substring(namespaceStart + 1, nameStart),
+      namespaceCap:
+        pName.substring(namespaceStart + 1)[0].toUpperCase() +
+        pName.substring(namespaceStart + 2, nameStart),
+      name: pName.substring(nameStart + 1),
+      nameCap:
+        pName.substring(nameStart + 1)[0].toUpperCase() +
+        pName.substring(nameStart + 2),
+      version: packageJson.version,
+      tokensVersion:
+        packageJson.peerDependencies?.[
+          "@aurodesignsystem/design-tokens"
+        ]?.substring(1) ?? "",
+      wcssVersion:
+        packageJson.peerDependencies?.[
+          "@aurodesignsystem/webcorestylesheets"
+        ]?.substring(1) ?? "",
     };
   }
 
@@ -177,7 +205,10 @@ export default class AuroLibraryUtils {
     /**
      * Replace placeholder strings.
      */
-    result = result.replace(/\[abstractNodeVersion]/g, nameExtractionData.abstractNodeVersion);
+    result = result.replace(
+      /\[abstractNodeVersion]/g,
+      nameExtractionData.abstractNodeVersion,
+    );
     result = result.replace(/\[branchName]/g, nameExtractionData.branchName);
     result = result.replace(/\[npm]/g, nameExtractionData.npm);
     result = result.replace(/\[name](?!\()/g, nameExtractionData.name);
@@ -191,16 +222,21 @@ export default class AuroLibraryUtils {
     /**
      * Cleanup line breaks.
      */
-    result = result.replace(/(\r\n|\r|\n)[\s]+(\r\n|\r|\n)/g, '\r\n\r\n'); // Replace lines containing only whitespace with a carriage return.
-    result = result.replace(/>(\r\n|\r|\n){2,}/g, '>\r\n'); // Remove empty lines directly after a closing html tag.
-    result = result.replace(/>(\r\n|\r|\n)```/g, '>\r\n\r\n```'); // Ensure an empty line before code samples.
-    result = result.replace(/>(\r\n|\r|\n){2,}```(\r\n|\r|\n)/g, '>\r\n```\r\n'); // Ensure no empty lines before close of code sample.
-    result = result.replace(/([^(\r\n|\r|\n)])(\r?\n|\r(?!\n))+#/g, "$1\r\n\r\n#"); // Ensure empty line before header sections.
+    result = result.replace(/(\r\n|\r|\n)[\s]+(\r\n|\r|\n)/g, "\r\n\r\n"); // Replace lines containing only whitespace with a carriage return.
+    result = result.replace(/>(\r\n|\r|\n){2,}/g, ">\r\n"); // Remove empty lines directly after a closing html tag.
+    result = result.replace(/>(\r\n|\r|\n)```/g, ">\r\n\r\n```"); // Ensure an empty line before code samples.
+    result = result.replace(
+      />(\r\n|\r|\n){2,}```(\r\n|\r|\n)/g,
+      ">\r\n```\r\n",
+    ); // Ensure no empty lines before close of code sample.
+    result = result.replace(
+      /([^(\r\n|\r|\n)])(\r?\n|\r(?!\n))+#/g,
+      "$1\r\n\r\n#",
+    ); // Ensure empty line before header sections.
 
     /**
      * Write the result to the destination file.
      */
-    fs.writeFileSync(destination, result, { encoding: 'utf8'});
+    fs.writeFileSync(destination, result, { encoding: "utf8" });
   }
 }
-

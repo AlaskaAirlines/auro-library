@@ -3,3 +3,13 @@ node_modules/
 .cache/
 docs/diagrams/.$*
 tmp/
+
+# Pre-compiled doc-generation scripts, built from src/ by build/bundleDocsScripts.mjs
+dist/
+
+# Local `npm pack` output. Nothing in the release pipeline writes one here
+# (@semantic-release/npm has no tarballDir, so `npm publish` packs to a temp
+# dir), but verifying a consumer's dependency tree means packing a tarball and
+# installing it into a clean project. Ignored so that artifact can't be
+# committed by accident.
+*.tgz

@@ -1,9 +1,8 @@
 /* eslint-disable no-inline-comments, no-console, line-comment-position */
 
-import chalk from 'chalk';
+import { hex } from "./ansiColors.mjs";
 
 export class Logger {
-
   /**
    * Logs out messages in a readable format.
    * @param {String} message - Message to be logged.
@@ -12,41 +11,53 @@ export class Logger {
    */
   static auroLogger(message, status, section) {
     if (status !== false) {
-      const infoColor = '#0096FF'; // blue
-      const successColor = '#4CBB17'; // green
-      const errorColor = '#ff0000'; // red
-      const warningColor = '#FFA500'; // orange
+      const infoColor = "#0096FF"; // blue
+      const successColor = "#4CBB17"; // green
+      const errorColor = "#ff0000"; // red
+      const warningColor = "#FFA500"; // orange
 
-      let color = undefined; // eslint-disable-line no-undef-init
+      let color; // eslint-disable-line no-undef-init
 
-      if (status === 'info') {
+      if (status === "info") {
         color = infoColor;
-      } else if (status === 'success') {
+      } else if (status === "success") {
         color = successColor;
-      } else if (status === 'error') {
+      } else if (status === "error") {
         color = errorColor;
-      } else if (status === 'warn') {
+      } else if (status === "warn") {
         color = warningColor;
       }
 
       if (section) {
-        console.log(chalk.hex(color)(`╭ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ──────────────────────────────╮\n`));
+        console.log(
+          hex(color)(
+            "╭ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ──────────────────────────────╮\n",
+          ),
+        );
       }
 
-      console.log(chalk.hex(color)(message));
+      console.log(hex(color)(message));
 
       if (section) {
-        console.log(chalk.hex(color)('\n╰─────────────────────────────── ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─╯'));
+        console.log(
+          hex(color)(
+            "\n╰─────────────────────────────── ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─╯",
+          ),
+        );
       }
     } else {
       if (section) {
-        console.log(`╭ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ──────────────────────────────╮\n`);
+        console.log(
+          "╭ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ──────────────────────────────╮\n",
+        );
       }
 
       console.log(message);
 
       if (section) {
-        console.log(`\n╰─────────────────────────────── ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─╯`);
+        console.log(
+          "\n╰─────────────────────────────── ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─╯",
+        );
       }
     }
   }

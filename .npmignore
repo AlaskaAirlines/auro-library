@@ -14,4 +14,20 @@ tests/
 docs/
 docTemplates/
 tmp/
+
+# Tests. This repo uses three layouts and `tests/` above matches none of them:
+# `__tests__/` directories, `test/` directories under scripts/runtime, and
+# specs sitting next to the module they cover.
 **/__tests__/
+**/test/
+*.spec.js
+*.test.js
+
+# Doc-generation sources and their build tooling. Consumers get the
+# pre-compiled output in dist/ instead, reached via the shims in scripts/ and
+# bin/. Keep dist/ published.
+#
+# Both patterns are root-anchored on purpose: a bare `build/` would also match
+# scripts/build/ and dist/build/ and drop them from the published package.
+/src/
+/build/
