@@ -1,14 +1,12 @@
-'use strict';
-
-import chalk from 'chalk';
-import { createRequire } from 'node:module';
-import { resolve } from 'path';
-
+import { createRequire } from "node:module";
+import { resolve } from "path";
+import { hex } from "../utils/ansiColors.mjs";
 
 const require = createRequire(import.meta.url);
-const pjson = require(resolve(process.cwd(), 'package.json'));
+const pjson = require(resolve(process.cwd(), "package.json"));
 
-console.log(chalk.hex('#f26135')(`
+console.log(
+  hex("#f26135")(`
 
  _______                   __           __ __
 |     __|.---.-.--.--.    |  |--.-----.|  |  |.-----.
@@ -24,8 +22,10 @@ console.log(chalk.hex('#f26135')(`
 ╭ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ──────────────────────────────╮
 
         Thanks for installing the latest version
-        of `) + chalk.hex('#ffd200').bold(`${pjson.name} v${pjson.version}.`) + chalk.hex('#f26135')(`
+        of `) +
+    hex("#ffd200").bold(`${pjson.name} v${pjson.version}.`) +
+    hex("#f26135")(`
 
 ╰─────────────────────────────── ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─╯
-`)
+`),
 );
