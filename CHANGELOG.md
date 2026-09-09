@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [5.14.2](https://github.com/AlaskaAirlines/auro-library/compare/v5.14.1...v5.14.2) (2026-09-09)
+
+
+### Bug Fixes
+
+* **deps:** pre-compile doc-gen scripts; drop handlebars / markdown-magic from deps AB[#1616087](https://github.com/AlaskaAirlines/auro-library/issues/1616087) ([8d29b4b](https://github.com/AlaskaAirlines/auro-library/commit/8d29b4b79a73af72d603b91746edaac54902b074))
+
 ## [5.14.1](https://github.com/AlaskaAirlines/auro-library/compare/v5.14.0...v5.14.1) (2026-09-01)
 
 
