@@ -300,15 +300,17 @@ export default class AuroFloatingUI {
   lockScroll(lock = true) {
     const element = this.element;
 
-    if (!element?.bib) {
+    // Locking needs a bib to lock around; unlocking must not, or a bib that has
+    // already been detached would leave the page frozen with no way back.
+    if (lock && !element?.bib) {
       return;
     }
 
-    const dialog = (
-      element.bib?.shadowRoot ||
-      element.bib ||
-      element
-    ).querySelector("dialog");
+    const dialog = element?.bib
+      ? (element.bib?.shadowRoot || element.bib || element).querySelector(
+          "dialog",
+        )
+      : undefined;
     if (dialog) {
       if (lock) {
         dialog.setAttribute("aria-modal", "true");
@@ -493,9 +495,26 @@ export default class AuroFloatingUI {
       }
 
       if (element.isPopoverVisible) {
-        this.lockScroll(value === "fullscreen");
+        // Positioning strategy is not scroll ownership. Both "fullscreen" and
+        // "dialog" lay the bib over the page and trap focus inside it, so both
+        // must freeze the page behind them (AB#1647843). Gating this on
+        // "fullscreen" alone left dismissible desktop dialogs and drawers
+        // scrollable, and actively released the lock on every reposition
+        // (AB#1625424, AB#1625435). The nested "cover" strategy takes the else
+        // branch and stays scrollable by design — it sits inside its parent
+        // rather than over the page.
+        this.lockScroll(true);
       }
     } else {
+      // The mirror of the lock above: a strategy that does not own the page must
+      // hand the lock back, not merely decline to take it. autoUpdate re-runs
+      // this method on every resize tick, and getPositioningStrategy() flips
+      // "fullscreen" -> "floating" across the breakpoint for dropdown behavior —
+      // so an overlay that locked while narrow can land here while still open.
+      // Without this, the page stays frozen behind a small floating bib until
+      // hideBib() happens to run.
+      this.lockScroll(false);
+
       element.bib.style.position = "";
       element.bib.removeAttribute("isfullscreen");
       element.isBibFullscreen = false;
@@ -1052,7 +1071,9 @@ export default class AuroFloatingUI {
     }
 
     if (element.trigger) {
-      this.disconnect();
+      // Rewiring, not tearing down — an overlay that is open right now keeps
+      // its page scroll lock across a trigger change.
+      this.disconnect({ teardown: false });
     }
     element.trigger =
       element.triggerElement ||
@@ -1083,8 +1104,29 @@ export default class AuroFloatingUI {
     }
   }
 
-  disconnect() {
+  /**
+   * Tears the floater's connections down.
+   *
+   * Two callers with different intent share this: a real teardown, which must
+   * release the page scroll lock, and configure(), which re-runs it purely to
+   * rewire a changed trigger and must leave an open overlay's lock alone.
+   * @param {Object} [options] - Teardown options.
+   * @param {Boolean} [options.teardown] - False when only rewiring; keeps the
+   *   page scroll lock held for an overlay that is still open.
+   * @returns {void}
+   */
+  disconnect({ teardown = true } = {}) {
     this.cleanupHideHandlers();
+
+    // Tearing down while the bib is still open would otherwise strand
+    // body{position:fixed} and leave the page permanently unscrollable —
+    // hideBib() is the only other unlock, and it never runs in this path.
+    // Skipped when merely rewiring: configure() routes through here on every
+    // triggerElement change, and releasing the lock there would unlock the page
+    // behind an overlay that is still open (AB#1625424, AB#1625435).
+    if (teardown) {
+      this.lockScroll(false);
+    }
 
     const element = this.element;
     if (!element) {
