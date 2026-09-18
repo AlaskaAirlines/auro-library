@@ -203,6 +203,9 @@ describe("AuroFloatingUI", () => {
     const originalScrollY = window.scrollY;
     floatingUI.lockScroll(true);
     expect(floatingUI._savedScrollY).to.equal(originalScrollY);
+    // Unlock before finishing: the lock mutates document.body for the whole
+    // browser page, so leaving it engaged pollutes every later test.
+    floatingUI.lockScroll(false);
   });
 
   it("lockScroll restores scroll position when unlocking", () => {
@@ -292,6 +295,325 @@ describe("AuroFloatingUI", () => {
     floatingUI.element = null;
     const strategy = floatingUI.getPositioningStrategy();
     expect(strategy).to.equal("floating");
+  });
+});
+
+/**
+ * Which strategies own the page scroll lock.
+ *
+ * The lock used to be gated on the "fullscreen" strategy alone, which left
+ * dismissible desktop dialogs and drawers scrollable and released the lock again
+ * on every reposition (AB#1625424, AB#1625435). These tests pin the contract that
+ * both overlay strategies lock and the nested/floating ones do not, so the two
+ * consuming components can rely on it.
+ *
+ * Note the deliberate `isPopoverVisible = true` — it is the guard on the
+ * lockScroll call inside configureBibStrategy, and the older
+ * configureBibStrategy tests above set it false, which is why none of them
+ * reached the lock.
+ */
+describe("AuroFloatingUI scroll lock ownership (AB#1647843)", () => {
+  let host;
+  let bib;
+  let floatingUI;
+  let pageStyles;
+
+  const SCROLL_STYLE_PROPS = [
+    [() => document.documentElement.style, "scrollbarGutter"],
+    [() => document.documentElement.style, "overflow"],
+    [() => document.body.style, "overflow"],
+    [() => document.body.style, "position"],
+    [() => document.body.style, "top"],
+    [() => document.body.style, "width"],
+  ];
+
+  /**
+   * Stubs the viewport as narrower or wider than the fullscreen breakpoint.
+   * @param {Boolean} matches - True to report a viewport below the breakpoint.
+   * @returns {void}
+   */
+  const stubBreakpoint = (matches) => {
+    sinon.stub(window, "matchMedia").returns({ matches });
+  };
+
+  beforeEach(() => {
+    // lockScroll restores whatever inline styles it found, so a lock leaked by
+    // an earlier test would be faithfully restored and read as a failure here.
+    // Snapshot, clear, and put back in afterEach so this suite is hermetic.
+    pageStyles = SCROLL_STYLE_PROPS.map(([style, prop]) => style()[prop]);
+    for (const [style, prop] of SCROLL_STYLE_PROPS) {
+      style()[prop] = "";
+    }
+
+    host = document.createElement("div");
+    bib = document.createElement("div");
+    host.bib = bib;
+    host.triggerChevron = document.createElement("span");
+    host.isPopoverVisible = true;
+    host.floaterConfig = { fullscreenBreakpoint: "660px" };
+
+    // configureBibStrategy re-schedules itself until it finds .container in the
+    // bib's shadowRoot. Give it one so no retry timer survives the test and
+    // re-locks the page after teardown.
+    bib.attachShadow({ mode: "open" });
+    const container = document.createElement("div");
+    container.classList.add("container");
+    bib.shadowRoot.append(container);
+
+    document.body.append(host, bib);
+
+    AuroFloatingUI.isMousePressed = false;
+    AuroFloatingUI.openingQueue = [];
+    document.expandedAuroFloater = null;
+
+    floatingUI = new AuroFloatingUI(host, "dialog");
+    sinon.stub(window, "scrollTo");
+  });
+
+  afterEach(() => {
+    // Always release: a leaked body{position:fixed} would follow the browser
+    // page into every test that runs after this suite.
+    host.isPopoverVisible = false;
+    floatingUI.lockScroll(false);
+    floatingUI.cleanupHideHandlers();
+    sinon.restore();
+    AuroFloatingUI.isMousePressed = false;
+    AuroFloatingUI.openingQueue = [];
+    document.expandedAuroFloater = null;
+    host?.remove();
+    bib?.remove();
+
+    SCROLL_STYLE_PROPS.forEach(([style, prop], index) => {
+      style()[prop] = pageStyles[index];
+    });
+  });
+
+  it("locks page scroll for a dismissible dialog above the breakpoint", () => {
+    stubBreakpoint(false);
+    host.modal = false;
+
+    expect(floatingUI.getPositioningStrategy()).to.equal("dialog");
+
+    floatingUI.configureBibStrategy("dialog");
+
+    expect(floatingUI._scrollLocked, "dialog strategy must lock page scroll").to
+      .be.true;
+    expect(document.body.style.position).to.equal("fixed");
+    expect(document.body.style.overflow).to.equal("hidden");
+    expect(document.documentElement.style.overflow).to.equal("hidden");
+  });
+
+  it("locks page scroll for a dismissible drawer above the breakpoint", () => {
+    floatingUI.behavior = "drawer";
+    stubBreakpoint(false);
+    host.modal = false;
+
+    expect(floatingUI.getPositioningStrategy()).to.equal("dialog");
+
+    floatingUI.configureBibStrategy("dialog");
+
+    expect(floatingUI._scrollLocked).to.be.true;
+  });
+
+  it("locks page scroll for a blocking dialog", () => {
+    stubBreakpoint(false);
+    host.modal = true;
+
+    expect(floatingUI.getPositioningStrategy()).to.equal("fullscreen");
+
+    floatingUI.configureBibStrategy("fullscreen");
+
+    expect(floatingUI._scrollLocked).to.be.true;
+  });
+
+  it("locks page scroll below the fullscreen breakpoint", () => {
+    stubBreakpoint(true);
+    host.modal = false;
+
+    expect(floatingUI.getPositioningStrategy()).to.equal("fullscreen");
+
+    floatingUI.configureBibStrategy("fullscreen");
+
+    expect(floatingUI._scrollLocked).to.be.true;
+  });
+
+  it("leaves the page scrollable for a nested overlay", () => {
+    stubBreakpoint(false);
+    host.nested = true;
+
+    expect(floatingUI.getPositioningStrategy()).to.equal("cover");
+
+    floatingUI.configureBibStrategy("cover");
+
+    expect(
+      floatingUI._scrollLocked,
+      "a nested overlay sits inside its parent, not over the page",
+    ).to.not.be.true;
+    expect(document.body.style.position).to.not.equal("fixed");
+  });
+
+  it("leaves the page scrollable for a floating dropdown", () => {
+    floatingUI.behavior = "dropdown";
+    stubBreakpoint(false);
+
+    expect(floatingUI.getPositioningStrategy()).to.equal("floating");
+
+    floatingUI.configureBibStrategy("floating");
+
+    expect(floatingUI._scrollLocked).to.not.be.true;
+  });
+
+  it("releases the lock when an open overlay widens out of fullscreen", () => {
+    // A dropdown opened below the breakpoint locks the page; autoUpdate re-runs
+    // configureBibStrategy on every resize tick, so widening past the breakpoint
+    // lands on the non-overlay branch while the bib is still open. That branch
+    // has to give the lock back — declining to take it is not enough, or the
+    // page stays frozen behind a small floating bib until hideBib() runs.
+    floatingUI.behavior = "dropdown";
+    stubBreakpoint(true);
+
+    expect(floatingUI.getPositioningStrategy()).to.equal("fullscreen");
+    floatingUI.configureBibStrategy("fullscreen");
+    expect(floatingUI._scrollLocked, "locked while narrow").to.be.true;
+
+    // Re-stub for the wider viewport; stubBreakpoint wraps matchMedia, which
+    // sinon refuses to wrap twice.
+    window.matchMedia.restore();
+    stubBreakpoint(false);
+    expect(floatingUI.getPositioningStrategy()).to.equal("floating");
+    floatingUI.configureBibStrategy("floating");
+
+    expect(
+      floatingUI._scrollLocked,
+      "widening past the breakpoint must not strand the page frozen",
+    ).to.be.false;
+    expect(document.body.style.position).to.not.equal("fixed");
+    expect(document.documentElement.style.overflow).to.not.equal("hidden");
+  });
+
+  it("keeps the lock when configure() rewires the trigger while open", () => {
+    // configure() routes through disconnect() on every triggerElement change,
+    // so an unconditional unlock there releases the page behind an overlay that
+    // is still open — and autoUpdate is torn down by then, so nothing re-locks
+    // it. Only a real teardown may release the lock.
+    stubBreakpoint(false);
+    host.modal = false;
+    floatingUI.configureBibStrategy("dialog");
+    expect(floatingUI._scrollLocked, "locked while open").to.be.true;
+
+    host.trigger = document.createElement("button");
+    floatingUI.configure(host, "auroDialog");
+
+    expect(
+      floatingUI._scrollLocked,
+      "rewiring the trigger must not unlock the page behind an open overlay",
+    ).to.be.true;
+    expect(document.body.style.position).to.equal("fixed");
+  });
+
+  it("still releases the lock on a real teardown", () => {
+    // The companion to the test above: the default path must keep unlocking, or
+    // tearing down an open floater strands body{position:fixed}.
+    stubBreakpoint(false);
+    floatingUI.configureBibStrategy("dialog");
+    expect(floatingUI._scrollLocked).to.be.true;
+
+    floatingUI.disconnect();
+
+    expect(
+      floatingUI._scrollLocked,
+      "an explicit teardown still hands the page back",
+    ).to.be.false;
+    expect(document.body.style.position).to.not.equal("fixed");
+  });
+
+  it("mirrors aria-modal onto the inner dialog for the overlay strategies", () => {
+    // The one user-visible side effect of locking on the "dialog" strategy:
+    // dismissible desktop overlays now carry aria-modal. It is a deliberate
+    // decision (see the post-mortem), so pin it — a refactor of lockScroll()
+    // could otherwise drop or invert it silently.
+    stubBreakpoint(false);
+    host.modal = false;
+    // The shared fixture's shadowRoot holds only .container; lockScroll looks up
+    // a <dialog> inside the bib, so this test supplies one.
+    const innerDialog = document.createElement("dialog");
+    bib.shadowRoot.append(innerDialog);
+
+    floatingUI.configureBibStrategy("dialog");
+
+    expect(
+      innerDialog.getAttribute("aria-modal"),
+      "a locked overlay hides the page behind it from assistive tech",
+    ).to.equal("true");
+
+    floatingUI.lockScroll(false);
+
+    expect(
+      innerDialog.hasAttribute("aria-modal"),
+      "unlocking must hand the page back to assistive tech",
+    ).to.be.false;
+  });
+
+  it("stays locked across repositions without re-saving the page styles", () => {
+    stubBreakpoint(false);
+    document.body.style.overflow = "scroll";
+
+    floatingUI.configureBibStrategy("dialog");
+    const savedStyles = floatingUI._savedScrollStyles;
+
+    // autoUpdate re-runs position() -> configureBibStrategy() on every resize
+    // and scroll tick while the bib is open.
+    floatingUI.configureBibStrategy("dialog");
+    floatingUI.configureBibStrategy("dialog");
+
+    expect(floatingUI._scrollLocked).to.be.true;
+    expect(
+      floatingUI._savedScrollStyles,
+      "repositioning must not overwrite the saved page styles",
+    ).to.equal(savedStyles);
+    expect(savedStyles.bodyOverflow).to.equal("scroll");
+
+    floatingUI.lockScroll(false);
+
+    expect(document.body.style.overflow).to.equal("scroll");
+    document.body.style.overflow = "";
+  });
+
+  it("releases the lock when the bib is hidden", () => {
+    stubBreakpoint(false);
+    floatingUI.configureBibStrategy("dialog");
+    expect(floatingUI._scrollLocked).to.be.true;
+
+    floatingUI.hideBib("click");
+
+    expect(floatingUI._scrollLocked).to.be.false;
+    expect(document.body.style.position).to.equal("");
+  });
+
+  it("releases the lock when the floater is torn down while open", () => {
+    stubBreakpoint(false);
+    floatingUI.configureBibStrategy("dialog");
+    expect(floatingUI._scrollLocked).to.be.true;
+
+    floatingUI.disconnect();
+
+    expect(
+      floatingUI._scrollLocked,
+      "tearing down while open must not strand the page frozen",
+    ).to.be.false;
+    expect(document.body.style.position).to.equal("");
+  });
+
+  it("releases the lock even when the bib has already been detached", () => {
+    stubBreakpoint(false);
+    floatingUI.configureBibStrategy("dialog");
+    expect(floatingUI._scrollLocked).to.be.true;
+
+    host.bib = undefined;
+    floatingUI.lockScroll(false);
+
+    expect(floatingUI._scrollLocked).to.be.false;
+    expect(document.body.style.position).to.equal("");
   });
 });
 
