@@ -294,6 +294,37 @@ export default class AuroFloatingUI {
 
   /**
    * @private
+   * Mirrors `aria-modal` onto the `<dialog>` inside the bib, tracking the page
+   * scroll lock: an overlay that holds the page hides it from assistive tech.
+   *
+   * Called only from inside lockScroll()'s ownership guards, so the attribute
+   * is written and removed by the same instance. Outside them the removal ran
+   * on every autoUpdate tick of every NON-owning instance — a repositioning
+   * dropdown stripped `aria-modal` off an open modal dialog it had nothing to
+   * do with.
+   * @param {Boolean} modal - True to mark the dialog modal; false to unmark it.
+   */
+  mirrorAriaModal(modal) {
+    const element = this.element;
+    const dialog = element?.bib
+      ? (element.bib?.shadowRoot || element.bib || element).querySelector(
+          "dialog",
+        )
+      : undefined;
+
+    if (!dialog) {
+      return;
+    }
+
+    if (modal) {
+      dialog.setAttribute("aria-modal", "true");
+    } else {
+      dialog.removeAttribute("aria-modal");
+    }
+  }
+
+  /**
+   * @private
    * Controls whether to lock the scrolling for the document's body.
    * @param {Boolean} lock - If true, locks the body's scrolling functionlity; otherwise, unlock.
    */
@@ -306,22 +337,10 @@ export default class AuroFloatingUI {
       return;
     }
 
-    const dialog = element?.bib
-      ? (element.bib?.shadowRoot || element.bib || element).querySelector(
-          "dialog",
-        )
-      : undefined;
-    if (dialog) {
-      if (lock) {
-        dialog.setAttribute("aria-modal", "true");
-      } else {
-        dialog.removeAttribute("aria-modal");
-      }
-    }
-
     if (lock) {
       if (!this._scrollLocked) {
         this._scrollLocked = true;
+        this.mirrorAriaModal(true);
         this._savedScrollY = window.scrollY;
         this._savedScrollStyles = {
           rootScrollbarGutter: document.documentElement.style.scrollbarGutter,
@@ -377,6 +396,8 @@ export default class AuroFloatingUI {
       }
     } else {
       if (this._scrollLocked) {
+        this.mirrorAriaModal(false);
+
         if (this._viewportHandler && window.visualViewport) {
           window.visualViewport.removeEventListener(
             "resize",
@@ -624,6 +645,46 @@ export default class AuroFloatingUI {
     this.hideBib("focusloss");
   }
 
+  /**
+   * @private
+   * Installs the handlers that dismiss an open overlay.
+   *
+   * Shared by showBib(), which opens the overlay, and configure(), which has to
+   * put these back after a rewire tore them down under an overlay that is still
+   * open. A non-modal overlay dismisses on outside click, focus loss and
+   * Escape; a modal one instead swallows Escape so the native dialog's
+   * CloseWatcher never sees it (AB#1613688).
+   */
+  setupDismissHandlers() {
+    const element = this.element;
+    if (!element) {
+      return;
+    }
+
+    if (!element.modal) {
+      this.setupHideHandlers();
+      return;
+    }
+
+    if (this.keyDownHandler) {
+      document.removeEventListener("keydown", this.keyDownHandler);
+    }
+    this.keyDownHandler = (evt) => {
+      if (evt.key === "Escape" && element.isPopoverVisible) {
+        // Intercept at keydown so CloseWatcher never sees the keystroke.
+        // Canceling `cancel` alone is insufficient — a second Esc with no
+        // intervening user activation triggers the anti-trap and fires `close`
+        // directly, bypassing any `cancel` preventDefault (AB#1613688).
+        // stopImmediatePropagation is intentional: it prevents other document
+        // keydown handlers (e.g. consumer code, auro-dialog) from also acting
+        // on Escape while the modal owns the key.
+        evt.preventDefault();
+        evt.stopImmediatePropagation();
+      }
+    };
+    document.addEventListener("keydown", this.keyDownHandler);
+  }
+
   setupHideHandlers() {
     const element = this.element;
     if (!element) {
@@ -796,27 +857,7 @@ export default class AuroFloatingUI {
 
       // prevent double showing: isPopovervisible gets first and showBib gets called later
       if (!this.showing) {
-        if (!element.modal) {
-          this.setupHideHandlers();
-        } else {
-          if (this.keyDownHandler) {
-            document.removeEventListener("keydown", this.keyDownHandler);
-          }
-          this.keyDownHandler = (evt) => {
-            if (evt.key === "Escape" && element.isPopoverVisible) {
-              // Intercept at keydown so CloseWatcher never sees the keystroke.
-              // Canceling `cancel` alone is insufficient — a second Esc with no
-              // intervening user activation triggers the anti-trap and fires `close`
-              // directly, bypassing any `cancel` preventDefault (AB#1613688).
-              // stopImmediatePropagation is intentional: it prevents other document
-              // keydown handlers (e.g. consumer code, auro-dialog) from also acting
-              // on Escape while the modal owns the key.
-              evt.preventDefault();
-              evt.stopImmediatePropagation();
-            }
-          };
-          document.addEventListener("keydown", this.keyDownHandler);
-        }
+        this.setupDismissHandlers();
         this.showing = true;
         element.isPopoverVisible = true;
         this.position();
@@ -1057,7 +1098,14 @@ export default class AuroFloatingUI {
     this.enableKeyboardHandling = enableKeyboardHandling;
 
     this.eventPrefix = eventPrefix;
-    if (this.element !== elem) {
+
+    // A retained scroll lock's saved body styles were captured for whichever
+    // element held it, so only a same-element rewire may keep it. An actual
+    // element swap has to take the full teardown, or this instance is left
+    // holding a lock that no longer describes the page it points at — with no
+    // owner able to release it (AB#1647843).
+    const rewiringSameElement = this.element === elem;
+    if (!rewiringSameElement) {
       this.element = elem;
     }
 
@@ -1072,8 +1120,9 @@ export default class AuroFloatingUI {
 
     if (element.trigger) {
       // Rewiring, not tearing down — an overlay that is open right now keeps
-      // its page scroll lock across a trigger change.
-      this.disconnect({ teardown: false });
+      // its page scroll lock across a trigger change. A genuine element swap
+      // still tears down, so the stale global lock is released.
+      this.disconnect({ teardown: !rewiringSameElement });
     }
     element.trigger =
       element.triggerElement ||
@@ -1101,6 +1150,26 @@ export default class AuroFloatingUI {
       element.trigger.addEventListener("mouseleave", this.handleEvent);
       element.trigger.addEventListener("focus", this.handleEvent);
       element.trigger.addEventListener("blur", this.handleEvent);
+    }
+
+    // disconnect() above stripped the dismissal handlers and killed the
+    // autoUpdate loop; the trigger listeners re-registered here replace
+    // neither. An overlay that is open right now would otherwise be left on
+    // screen with outside-click, focus-loss and Escape all dead and its
+    // position frozen — and, since the lock is deliberately retained, holding
+    // the page with only its original trigger able to give it back.
+    if (rewiringSameElement && this.showing) {
+      this.setupDismissHandlers();
+
+      if (element.bib && (element.trigger || element.parentNode)) {
+        element.cleanup = autoUpdate(
+          element.trigger || element.parentNode,
+          element.bib,
+          () => {
+            this.position();
+          },
+        );
+      }
     }
   }
 
