@@ -403,6 +403,27 @@ describe("AuroFloatingUI scroll lock ownership (AB#1647843)", () => {
     expect(document.documentElement.style.overflow).to.equal("hidden");
   });
 
+  it("does not make the lock conditional on modal", () => {
+    // The AC guard. `modal` decides the positioning strategy, so it is an
+    // available and plausible-looking thing to gate the lock on — and gating on
+    // it re-creates AB#1625424 exactly: a default, dismissible dialog leaves
+    // the page scrolling. Both presentations must lock identically.
+    stubBreakpoint(false);
+
+    host.modal = true;
+    floatingUI.configureBibStrategy("dialog");
+    expect(floatingUI._scrollLocked, "blocking dialog locks").to.be.true;
+    floatingUI.lockScroll(false);
+
+    host.modal = false;
+    floatingUI.configureBibStrategy("dialog");
+    expect(
+      floatingUI._scrollLocked,
+      "the dismissible dialog is the one the bug was filed about",
+    ).to.be.true;
+    expect(document.body.style.position).to.equal("fixed");
+  });
+
   it("locks page scroll for a dismissible drawer above the breakpoint", () => {
     floatingUI.behavior = "drawer";
     stubBreakpoint(false);
@@ -614,6 +635,66 @@ describe("AuroFloatingUI scroll lock ownership (AB#1647843)", () => {
 
     expect(floatingUI._scrollLocked).to.be.false;
     expect(document.body.style.position).to.equal("");
+  });
+
+  it("does not strip aria-modal set by a different overlay", () => {
+    // configureBibStrategy() runs on every autoUpdate tick and its non-owning
+    // branch calls lockScroll(false). That unlock has to stay scoped to the
+    // lock this instance took, or a reposition of any open floating dropdown
+    // clears aria-modal off a modal dialog it has nothing to do with.
+    stubBreakpoint(false);
+    const innerDialog = document.createElement("dialog");
+    innerDialog.setAttribute("aria-modal", "true");
+    bib.shadowRoot.append(innerDialog);
+
+    expect(floatingUI._scrollLocked).to.not.be.true;
+    floatingUI.configureBibStrategy("floating");
+
+    expect(
+      innerDialog.getAttribute("aria-modal"),
+      "an instance that never locked must not unmark the dialog",
+    ).to.equal("true");
+  });
+
+  it("restores dismissal handlers when configure() rewires an open overlay", () => {
+    // disconnect() strips the hide handlers even when the lock is retained, and
+    // the trigger listeners configure() re-registers are not a substitute. An
+    // open overlay would be left undismissable by outside click, focus loss or
+    // Escape, holding the page with only its original trigger to give it back.
+    stubBreakpoint(false);
+    host.modal = false;
+    host.trigger = document.createElement("button");
+    floatingUI.showing = true;
+    floatingUI.setupDismissHandlers();
+    expect(floatingUI.clickHandler, "handlers installed while open").to.exist;
+
+    floatingUI.configure(host, "auroDialog");
+
+    expect(
+      floatingUI.clickHandler,
+      "rewiring must not leave an open overlay undismissable",
+    ).to.exist;
+    expect(floatingUI.keyDownHandler).to.exist;
+  });
+
+  it("releases the lock when configure() is handed a different element", () => {
+    // The saved body styles belong to whichever element took the lock. Keeping
+    // it across an element swap leaves this instance holding a lock that no
+    // longer describes the page it points at, with no owner able to release it.
+    stubBreakpoint(false);
+    host.trigger = document.createElement("button");
+    floatingUI.configureBibStrategy("dialog");
+    expect(floatingUI._scrollLocked).to.be.true;
+
+    const otherHost = document.createElement("div");
+    otherHost.trigger = document.createElement("button");
+    floatingUI.configure(otherHost, "auroDialog");
+
+    expect(
+      floatingUI._scrollLocked,
+      "an element swap is a teardown, not a rewire",
+    ).to.be.false;
+    expect(document.body.style.position).to.not.equal("fixed");
   });
 });
 
