@@ -696,6 +696,48 @@ describe("AuroFloatingUI scroll lock ownership (AB#1647843)", () => {
     ).to.be.false;
     expect(document.body.style.position).to.not.equal("fixed");
   });
+
+  it("does not re-lock the page when a pending retry fires after teardown", async () => {
+    // Deliberately opts out of the shared fixture's shadow-root `.container`.
+    // configureBibStrategy() retries until it finds one, and a bib that is a
+    // plain element never can — auro-dialog's `#bib` is a div whose
+    // `.container` is a sibling in the host's shadow root, not inside the bib.
+    // So it retries every time, and a retry landing after disconnect() used to
+    // re-enter with isPopoverVisible still true and take the lock back, leaving
+    // the page frozen with the floater already gone and nothing left to unlock
+    // it. The fixture's `.container` is exactly what stopped the rest of this
+    // suite from seeing it.
+    stubBreakpoint(false);
+    const plainBib = document.createElement("div");
+    host.bib = plainBib;
+    document.body.append(plainBib);
+
+    expect(plainBib.shadowRoot, "the premise: no shadow root to search").to.be
+      .null;
+
+    floatingUI.configureBibStrategy("dialog");
+    expect(floatingUI._scrollLocked, "locked while open").to.be.true;
+    expect(
+      floatingUI.configureTrial,
+      "a retry was scheduled",
+    ).to.be.greaterThan(0);
+
+    floatingUI.disconnect();
+    expect(floatingUI._scrollLocked, "teardown released the lock").to.be.false;
+
+    // Let the macrotask the retry was queued on run.
+    await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+    });
+
+    expect(
+      floatingUI._scrollLocked,
+      "a cancelled retry must not take the page back after teardown",
+    ).to.be.false;
+    expect(document.body.style.position).to.not.equal("fixed");
+
+    plainBib.remove();
+  });
 });
 
 describe("AuroFloatingUI modal Escape suppression (AB#1613688)", () => {

@@ -510,7 +510,22 @@ export default class AuroFloatingUI {
       } else if (this.configureTrial < MAX_CONFIGURATION_COUNT) {
         this.configureTrial += 1;
 
-        setTimeout(() => {
+        // The id is retained so disconnect() can cancel it. A retry that fires
+        // after teardown re-enters this method with isPopoverVisible still true
+        // — nothing clears it on the teardown path — and takes the page scroll
+        // lock back, with no owner left to release it.
+        //
+        // This is not the rare timing race it reads as: the lookup above wants
+        // a `.container` inside the BIB's own shadow root, which only a bib
+        // that is itself a custom element has. A consumer whose bib is a plain
+        // element (auro-dialog's `#bib` is a div, with its `.container` a
+        // sibling in the host's shadow root) can never satisfy it, so it
+        // retries the full MAX_CONFIGURATION_COUNT every time. Correcting the
+        // lookup would change bib sizing for those consumers and is tracked
+        // separately; cancelling the timer is what keeps it from freezing the
+        // page.
+        this._configureRetryId = setTimeout(() => {
+          this._configureRetryId = undefined;
           this.configureBibStrategy(value);
         }, 0);
       }
@@ -1186,6 +1201,15 @@ export default class AuroFloatingUI {
    */
   disconnect({ teardown = true } = {}) {
     this.cleanupHideHandlers();
+
+    // Cancel any pending configureBibStrategy() retry. It would otherwise fire
+    // a macrotask after the unlock below, re-lock the page, and leave it frozen
+    // with the floater already gone. Cancelled on a rewire too: configure()
+    // re-runs position() itself, so a stale retry has nothing to contribute.
+    if (this._configureRetryId !== undefined) {
+      clearTimeout(this._configureRetryId);
+      this._configureRetryId = undefined;
+    }
 
     // Tearing down while the bib is still open would otherwise strand
     // body{position:fixed} and leave the page permanently unscrollable —
