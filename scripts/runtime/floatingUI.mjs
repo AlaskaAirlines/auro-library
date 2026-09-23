@@ -297,11 +297,12 @@ export default class AuroFloatingUI {
    * Mirrors `aria-modal` onto the `<dialog>` inside the bib, tracking the page
    * scroll lock: an overlay that holds the page hides it from assistive tech.
    *
-   * Called only from inside lockScroll()'s ownership guards, so the attribute
-   * is written and removed by the same instance. Outside them the removal ran
-   * on every autoUpdate tick of every NON-owning instance — a repositioning
-   * dropdown stripped `aria-modal` off an open modal dialog it had nothing to
-   * do with.
+   * The removal is called only from inside lockScroll()'s ownership guard: run
+   * outside it, it fired on every autoUpdate tick of every NON-owning instance,
+   * and a repositioning dropdown stripped `aria-modal` off an open modal dialog
+   * it had nothing to do with. The write is unguarded by design — see the call
+   * site — but is skipped when the attribute already reads correctly, so the
+   * repeat costs no mutation record.
    * @param {Boolean} modal - True to mark the dialog modal; false to unmark it.
    */
   mirrorAriaModal(modal) {
@@ -317,7 +318,9 @@ export default class AuroFloatingUI {
     }
 
     if (modal) {
-      dialog.setAttribute("aria-modal", "true");
+      if (dialog.getAttribute("aria-modal") !== "true") {
+        dialog.setAttribute("aria-modal", "true");
+      }
     } else {
       dialog.removeAttribute("aria-modal");
     }
@@ -338,9 +341,16 @@ export default class AuroFloatingUI {
     }
 
     if (lock) {
+      // Re-asserted on every lock call rather than only on the unlocked ->
+      // locked transition. If the bib's inner <dialog> is replaced while this
+      // instance still holds the lock, the replacement would otherwise go
+      // unmarked until a full unlock/lock cycle. Safe to repeat: it targets
+      // this instance's own element, so it cannot reach another overlay's
+      // dialog, and mirrorAriaModal() skips the write when already correct.
+      this.mirrorAriaModal(true);
+
       if (!this._scrollLocked) {
         this._scrollLocked = true;
-        this.mirrorAriaModal(true);
         this._savedScrollY = window.scrollY;
         this._savedScrollStyles = {
           rootScrollbarGutter: document.documentElement.style.scrollbarGutter,
@@ -1120,7 +1130,28 @@ export default class AuroFloatingUI {
     // holding a lock that no longer describes the page it points at — with no
     // owner able to release it (AB#1647843).
     const rewiringSameElement = this.element === elem;
+
     if (!rewiringSameElement) {
+      // Tear down against the outgoing element, before this.element is
+      // repointed. Everything disconnect() releases is element-scoped:
+      // aria-modal on that element's inner dialog, the bib transform saved for
+      // it, its autoUpdate loop and its trigger listeners. Repointing first
+      // aimed all of it at the incoming element — the outgoing dialog kept
+      // aria-modal="true" for good, its bib stayed transformed, and the
+      // incoming bib had the outgoing element's saved transform written onto
+      // it. The trigger gate below read the incoming element's trigger, which
+      // is not assigned until later in this method, so on a swap teardown was
+      // usually skipped outright and the page stayed locked with no owner.
+      if (this.element?.trigger) {
+        this.disconnect({ teardown: true });
+      }
+
+      // disconnect() does not clear this.showing, and the rewire block at the
+      // end of this method only runs for a same-element rewire. Left true, the
+      // incoming element's first showBib() is silently dropped by its
+      // `!this.showing` guard and the overlay never opens.
+      this.showing = false;
+
       this.element = elem;
     }
 
@@ -1133,11 +1164,10 @@ export default class AuroFloatingUI {
       this.behavior = element.behavior;
     }
 
-    if (element.trigger) {
+    if (rewiringSameElement && element.trigger) {
       // Rewiring, not tearing down — an overlay that is open right now keeps
-      // its page scroll lock across a trigger change. A genuine element swap
-      // still tears down, so the stale global lock is released.
-      this.disconnect({ teardown: !rewiringSameElement });
+      // its page scroll lock across a trigger change.
+      this.disconnect({ teardown: false });
     }
     element.trigger =
       element.triggerElement ||
