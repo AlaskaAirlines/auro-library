@@ -697,6 +697,83 @@ describe("AuroFloatingUI scroll lock ownership (AB#1647843)", () => {
     expect(document.body.style.position).to.not.equal("fixed");
   });
 
+  it("tears down against the outgoing element when configure() swaps elements", () => {
+    // The page styles live on the instance, so the test above passes even when
+    // teardown runs against the wrong element. Everything else disconnect()
+    // releases is element-scoped: aria-modal on that element's inner dialog and
+    // its autoUpdate loop. Repointing this.element before disconnect() aimed
+    // both at the incoming element, so the outgoing dialog kept aria-modal for
+    // good and the outgoing autoUpdate was never cancelled.
+    stubBreakpoint(false);
+    const innerDialog = document.createElement("dialog");
+    bib.shadowRoot.append(innerDialog);
+    host.trigger = document.createElement("button");
+
+    floatingUI.configureBibStrategy("dialog");
+    expect(floatingUI._scrollLocked, "the outgoing element locked").to.be.true;
+    expect(innerDialog.getAttribute("aria-modal")).to.equal("true");
+
+    const outgoingCleanup = sinon.spy();
+    host.cleanup = outgoingCleanup;
+
+    const otherHost = document.createElement("div");
+    otherHost.trigger = document.createElement("button");
+    floatingUI.configure(otherHost, "auroDialog");
+
+    expect(
+      innerDialog.getAttribute("aria-modal"),
+      "the outgoing dialog must not keep aria-modal after the swap",
+    ).to.be.null;
+    expect(
+      outgoingCleanup.called,
+      "the outgoing element's autoUpdate must be cancelled, not the incoming one's",
+    ).to.be.true;
+  });
+
+  it("clears showing when configure() swaps elements", () => {
+    // disconnect() never resets showing, and the rewire block that would is
+    // gated on a same-element rewire. Left true, showBib() on the incoming
+    // element is dropped by its own `!this.showing` guard and never opens.
+    stubBreakpoint(false);
+    host.trigger = document.createElement("button");
+    floatingUI.showing = true;
+
+    const otherHost = document.createElement("div");
+    otherHost.trigger = document.createElement("button");
+    floatingUI.configure(otherHost, "auroDialog");
+
+    expect(
+      floatingUI.showing,
+      "a stale showing flag makes the incoming element's first open a no-op",
+    ).to.be.false;
+  });
+
+  it("re-applies aria-modal to a dialog replaced while the lock is held", () => {
+    // The mirror used to sit inside the `!_scrollLocked` guard, so it fired
+    // only on the unlocked -> locked transition. A bib re-render that swaps the
+    // inner <dialog> mid-lock then left the replacement unmarked until a full
+    // unlock/lock cycle.
+    stubBreakpoint(false);
+    const firstDialog = document.createElement("dialog");
+    bib.shadowRoot.append(firstDialog);
+
+    floatingUI.configureBibStrategy("dialog");
+    expect(firstDialog.getAttribute("aria-modal")).to.equal("true");
+
+    firstDialog.remove();
+    const secondDialog = document.createElement("dialog");
+    bib.shadowRoot.append(secondDialog);
+
+    // An autoUpdate tick, with no unlock in between.
+    floatingUI.configureBibStrategy("dialog");
+
+    expect(floatingUI._scrollLocked, "still the same lock").to.be.true;
+    expect(
+      secondDialog.getAttribute("aria-modal"),
+      "a dialog replaced mid-lock must still be marked",
+    ).to.equal("true");
+  });
+
   it("does not re-lock the page when a pending retry fires after teardown", async () => {
     // Deliberately opts out of the shared fixture's shadow-root `.container`.
     // configureBibStrategy() retries until it finds one, and a bib that is a
