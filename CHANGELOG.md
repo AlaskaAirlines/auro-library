@@ -1,5 +1,15 @@
 # Semantic Release Automated Changelog
 
+## [5.14.3](https://github.com/AlaskaAirlines/auro-library/compare/v5.14.2...v5.14.3) (2026-10-05)
+
+
+### Bug Fixes
+
+* **floatingUI:** cancel pending bib-strategy retry on teardown [#301](https://github.com/AlaskaAirlines/auro-library/issues/301) ([5138488](https://github.com/AlaskaAirlines/auro-library/commit/5138488209a8ff42d90fb2180057229de061ff20)), closes [#bib](https://github.com/AlaskaAirlines/auro-library/issues/bib)
+* **floatingUI:** lock page scroll for all overlay strategies AB[#1647843](https://github.com/AlaskaAirlines/auro-library/issues/1647843) ([75385f4](https://github.com/AlaskaAirlines/auro-library/commit/75385f49f01934bd8808f23a8c1cdd0c636aa760)), closes [AB#1625424](https://github.com/AB/issues/1625424) [AB#1625435](https://github.com/AB/issues/1625435)
+* **floatingUI:** scope aria-modal removal and restore handlers on rewire [#301](https://github.com/AlaskaAirlines/auro-library/issues/301) ([42b289e](https://github.com/AlaskaAirlines/auro-library/commit/42b289e53bb5b64f5b969f8bd8ce0ece1aff4058)), closes [AB#1647843](https://github.com/AB/issues/1647843)
+* **floatingUI:** scope swap teardown and re-assert aria-modal while locked [#301](https://github.com/AlaskaAirlines/auro-library/issues/301) ([2c32e98](https://github.com/AlaskaAirlines/auro-library/commit/2c32e98f63bc3e56c21fcb5ff1c27af3aefa4c0e)), closes [AB#1647843](https://github.com/AB/issues/1647843)
+
 ## [5.14.2](https://github.com/AlaskaAirlines/auro-library/compare/v5.14.1...v5.14.2) (2026-09-09)
 
 
