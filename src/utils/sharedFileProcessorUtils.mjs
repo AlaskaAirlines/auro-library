@@ -178,10 +178,19 @@ export async function retrieveRemoteFileCopy(input) {
 
   Logger.log(`Retrieving latest "${bareFileName}" file...`);
 
-  // 0b. Attempt to populate from remote file
-  const contents = await fetch(input.remoteUrl, {
+  // 0b. Attempt to populate from remote file. Fail on a non-2xx response so an
+  // error page (e.g. "404: Not Found") is never cached as the template.
+  const response = await fetch(input.remoteUrl, {
     redirect: "follow",
-  }).then((r) => r.text());
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      `Error retrieving "${bareFileName}" from ${input.remoteUrl}: HTTP ${response.status} ${response.statusText}`,
+    );
+  }
+
+  const contents = await response.text();
 
   // 0c. Write remote contents to local folder as cache
   await AuroFileHandler.tryWriteFile(input.fileName, contents);

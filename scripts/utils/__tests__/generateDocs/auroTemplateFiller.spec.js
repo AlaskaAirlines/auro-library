@@ -180,4 +180,74 @@ describe("AuroTemplateFiller", () => {
 
     expect(result.trim()).toBe("1.5.0");
   });
+
+  describe("line break cleanup", () => {
+    beforeEach(() => {
+      filler.values = {
+        name: "button",
+        nameCap: "Button",
+        namespace: "auro",
+        namespaceCap: "Auro",
+        version: "1.0.0",
+        tokensVersion: "2.0.0",
+        wcssVersion: "3.0.0",
+      };
+    });
+
+    it("should leave CSS `#id` rules in a fenced block unchanged", () => {
+      const css =
+        ".foo {\n  color: red;\n}\n#custom-tab-example::part(slider) {\n  color: blue;\n}";
+      const template = `Intro\n\n\`\`\`css\n${css}\n\`\`\`\n`;
+
+      const result = filler.replaceTemplateValues(template);
+
+      expect(result).toContain(`\`\`\`css\n${css}\n\`\`\``);
+      expect(result).not.toContain("\r");
+    });
+
+    it("should leave shell `#` comments and blank lines in a fenced block unchanged", () => {
+      const sh = "# comment\necho hi\n\n\n# another\necho bye";
+      const template = `\`\`\`sh\n${sh}\n\`\`\`\n`;
+
+      const result = filler.replaceTemplateValues(template);
+
+      expect(result).toBe(template);
+    });
+
+    it("should keep blank lines after a `>` inside a fenced block", () => {
+      const html = "<div>\n\n\n</div>";
+      const template = `\`\`\`html\n${html}\n\`\`\`\n`;
+
+      const result = filler.replaceTemplateValues(template);
+
+      expect(result).toBe(template);
+    });
+
+    it("should leave the body of a <pre> element unchanged", () => {
+      const template =
+        '<div>\n<pre class="language-css"><code class="language-css">a {}\n\n\n#b {}</code></pre>\n</div>\n';
+
+      const result = filler.replaceTemplateValues(template);
+
+      expect(result).toBe(template);
+    });
+
+    it("should still clean up line breaks outside code", () => {
+      const result = filler.replaceTemplateValues(
+        "Some text\n# Heading\n<div>\n\n\nAfter\n",
+      );
+
+      expect(result).toBe("Some text\r\n\r\n# Heading\n<div>\r\nAfter\n");
+    });
+
+    it("should still replace template values inside code", () => {
+      const result = filler.replaceTemplateValues(
+        "```shell\nnpm i @aurodesignsystem/{{ withAuroNamespace name }}\n```\n",
+      );
+
+      expect(result).toBe(
+        "```shell\nnpm i @aurodesignsystem/auro-button\n```\n",
+      );
+    });
+  });
 });
