@@ -1,5 +1,12 @@
 # Semantic Release Automated Changelog
 
+## [5.14.4](https://github.com/AlaskaAirlines/auro-library/compare/v5.14.3...v5.14.4) (2026-10-08)
+
+
+### Bug Fixes
+
+* **docs:** preserve code block whitespace in template line-break cleanup AB[#1660073](https://github.com/AlaskaAirlines/auro-library/issues/1660073) ([b47db80](https://github.com/AlaskaAirlines/auro-library/commit/b47db80916599d422d8fad094eb765b78af553f2))
+
 ## [5.14.3](https://github.com/AlaskaAirlines/auro-library/compare/v5.14.2...v5.14.3) (2026-10-05)
 
 
