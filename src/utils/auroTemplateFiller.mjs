@@ -24,6 +24,51 @@ import Handlebars from "handlebars";
  * @property {string} wcssVersion - Version of the webcorestylesheets.
  */
 
+/** Matches a markdown code fence: opening line, body, closing line. */
+const FENCED_CODE_PATTERN =
+  /^([ \t]*(`{3,}|~{3,})[^\r\n]*(?:\r\n|\r|\n))([\s\S]*?)((?:\r\n|\r|\n)[ \t]*\2[ \t]*)$/gm;
+
+/** Matches a `<pre>` element: opening tag, body, closing tag. */
+const PRE_ELEMENT_PATTERN = /(<pre\b[^>]*>)([\s\S]*?)(<\/pre>)/gi;
+
+/** Placeholder standing in for a stashed code body. */
+const CODE_BODY_TOKEN = /\uE000(\d+)\uE000/g;
+
+/**
+ * Run a transform over markdown without letting it touch the bodies of fenced
+ * code blocks or `<pre>` elements. Bodies are swapped for placeholders before
+ * the transform and restored afterwards, so code snippets keep their exact
+ * whitespace while the fences and tags themselves stay visible to the transform.
+ * @param {string} content - The markdown to transform.
+ * @param {(content: string) => string} transform - The transform to apply outside code.
+ * @return {string}
+ */
+export function transformOutsideCode(content, transform) {
+  const bodies = [];
+  const stash = (body) => `\uE000${bodies.push(body) - 1}\uE000`;
+
+  const shielded = content
+    .replace(
+      FENCED_CODE_PATTERN,
+      (_match, open, _fence, body, close) => `${open}${stash(body)}${close}`,
+    )
+    .replace(
+      PRE_ELEMENT_PATTERN,
+      (_match, open, body, close) => `${open}${stash(body)}${close}`,
+    );
+
+  // A body can itself contain a stashed body (a fence inside a <pre>), so keep
+  // restoring until no placeholders remain.
+  let result = transform(shielded);
+  let previous;
+  do {
+    previous = result;
+    result = result.replace(CODE_BODY_TOKEN, (_match, index) => bodies[index]);
+  } while (result !== previous);
+
+  return result;
+}
+
 export class AuroTemplateFiller {
   static designTokenPackage = "@aurodesignsystem/design-tokens";
   static webCoreStylesheetsPackage = "@aurodesignsystem/webcorestylesheets";
@@ -165,21 +210,25 @@ export class AuroTemplateFiller {
     }
 
     /**
-     * Cleanup line breaks.
+     * Cleanup line breaks. Code bodies are left untouched so snippets render
+     * (and copy) exactly as written — e.g. a CSS `#id` rule or a shell `#`
+     * comment is not mistaken for a markdown heading.
      */
-    result = result.replace(/(\r\n|\r|\n)[\s]+(\r\n|\r|\n)/g, "\r\n\r\n"); // Replace lines containing only whitespace with a carriage return.
-    result = result.replace(/>(\r\n|\r|\n){2,}/g, ">\r\n"); // Remove empty lines directly after a closing html tag.
-    result = result.replace(/>(\r\n|\r|\n)```/g, ">\r\n\r\n```"); // Ensure an empty line before code samples.
-    result = result.replace(
-      />(\r\n|\r|\n){2,}```(\r\n|\r|\n)/g,
-      ">\r\n```\r\n",
-    ); // Ensure no empty lines before close of code sample.
-    result = result.replace(
-      /([^(\r\n|\r|\n)])(\r?\n|\r(?!\n))+#/g,
-      "$1\r\n\r\n#",
-    ); // Ensure empty line before header sections.
-
-    return result;
+    return transformOutsideCode(result, (prose) => {
+      let cleaned = prose;
+      cleaned = cleaned.replace(/(\r\n|\r|\n)[\s]+(\r\n|\r|\n)/g, "\r\n\r\n"); // Replace lines containing only whitespace with a carriage return.
+      cleaned = cleaned.replace(/>(\r\n|\r|\n){2,}/g, ">\r\n"); // Remove empty lines directly after a closing html tag.
+      cleaned = cleaned.replace(/>(\r\n|\r|\n)```/g, ">\r\n\r\n```"); // Ensure an empty line before code samples.
+      cleaned = cleaned.replace(
+        />(\r\n|\r|\n){2,}```(\r\n|\r|\n)/g,
+        ">\r\n```\r\n",
+      ); // Ensure no empty lines before close of code sample.
+      cleaned = cleaned.replace(
+        /([^(\r\n|\r|\n)])(\r?\n|\r(?!\n))+#/g,
+        "$1\r\n\r\n#",
+      ); // Ensure empty line before header sections.
+      return cleaned;
+    });
   }
 
   /**
